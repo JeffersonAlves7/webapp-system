@@ -1,16 +1,25 @@
 <?php
 
+require_once "Models/Estoque.php";
+
 class EstoquesController
 {
-    public function index()
+    private $estoquesModel;
+
+    public function __construct()
     {
-
-
-        include_once "Views/Estoques.php";
+        $this->estoquesModel = new Estoque();
     }
 
-    public function criar()
+    public function index()
     {
-        
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["name"])) {
+            $name = $_POST["name"];
+            $this->estoquesModel->create($name);
+            header("location: /estoques");
+        }
+
+        $stocks = $this->estoquesModel->getAll();
+        include_once "Views/Estoques.php";
     }
 }

@@ -2,14 +2,29 @@
   --primary-color: rgba(255, 255, 255, 1);
   --secondary-color: rgb(255, 159, 159);
   --tertiary-color: rgb(83, 77, 86);
-  --text-color: rgba(0, 0, 0, 0.1);
   --text-hover-color: rgb(104, 210, 147);
+
+  --text-light: white;
+  --text-dark: black;
 }
 
 body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
+}
+
+.btn-custom,
+.btn-custom:active,
+.btn-custom:focus {
+  background-color: var(--secondary-color);
+  color: var(--text-light);
+}
+
+.btn-custom:hover,
+.btn-custom.active {
+  background-color: var(--text-hover-color);
+  color: var(--text-light);
 }
 
 .form-control.modified {
