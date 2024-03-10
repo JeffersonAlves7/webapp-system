@@ -1,4 +1,5 @@
 <?php
+
 class Database
 {
     private $host = "localhost";
@@ -7,7 +8,7 @@ class Database
     private $dbname = "webapp";
     private $conn;
 
-    public function __construct()
+    private function __construct()
     {
         $this->conn = new mysqli($this->host, $this->username, $this->password, $this->dbname);
 
@@ -24,5 +25,30 @@ class Database
     public function escapeString($string)
     {
         return $this->conn->real_escape_string($string);
+    }
+
+    public function beginTransaction()
+    {
+        return $this->conn->begin_transaction();
+    }
+
+    public function commit()
+    {
+        return $this->conn->commit();
+    }
+
+    public function rollback()
+    {
+        return $this->conn->rollback();
+    }
+
+    public function close()
+    {
+        return $this->conn->close();
+    }
+
+    public function get_con()
+    {
+        return $this->conn;
     }
 }

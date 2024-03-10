@@ -92,4 +92,26 @@ class ProductController
         header("location: /");
         exit(0);
     }
+
+    public function findAllByCodeOrEan()
+    {
+        header("Content-type: application/json");
+
+        if (!isset($_GET["search"]) || empty($_GET["search"])) {
+            echo json_encode(array());
+            exit(0);
+        }
+
+        $search = $_GET["search"];
+        $products = $this->productModel->findAllByCodeOrEan(htmlspecialchars($search));
+
+        $products_arr = array();
+        if ($products->num_rows > 0) {
+            while ($product = $products->fetch_assoc()) {
+                array_push($products_arr, $product);
+            }
+        }
+
+        echo json_encode(array("products" => $products_arr));
+    }
 }

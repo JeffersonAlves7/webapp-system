@@ -100,4 +100,19 @@ class Product extends Model
             return false;
         }
     }
+
+    /**
+     * Função utilizada para autocompletar inputs onde o usuário escreve o código ou ean na aba Lancamento.
+     */
+    public function findAllByCodeOrEan($code_or_ean, $limit = 10)
+    {
+        
+        $sql = "SELECT * FROM 
+            `products` 
+        WHERE 
+            `code` LIKE '$code_or_ean%' OR 
+            `ean` LIKE '$code_or_ean%' LIMIT $limit";
+
+        return $this->db->query($sql);
+    }
 }
