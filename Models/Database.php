@@ -1,5 +1,4 @@
 <?php
-
 class Database
 {
     private $host = "localhost";
@@ -8,7 +7,7 @@ class Database
     private $dbname = "webapp";
     private $conn;
 
-    private function __construct()
+    public function __construct()
     {
         $this->conn = new mysqli($this->host, $this->username, $this->password, $this->dbname);
 
