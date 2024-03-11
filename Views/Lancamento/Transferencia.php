@@ -182,7 +182,7 @@ require "Components/Header.php";
                 return;
             }
 
-            fetch(`/product/findAllByCodeOrEan?search=${search}`)
+            fetch(`/produto/findAllByCodeOrEan?search=${search}`)
                 .then(response => response.json())
                 .then(data => {
                     const products = data.products;

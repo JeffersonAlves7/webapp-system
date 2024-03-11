@@ -89,16 +89,7 @@ class Product extends Model
     public function byId($id)
     {
         $result = $this->db->query("SELECT * FROM `products` WHERE `ID` = $id");
-        if ($result) {
-            if ($result->num_rows > 0) {
-                $user = $result->fetch_assoc();
-                return $user;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        return $result;
     }
 
     /**
@@ -114,5 +105,15 @@ class Product extends Model
             `ean` LIKE '$code_or_ean%' LIMIT $limit";
 
         return $this->db->query($sql);
+    }
+
+    public function quantityInStockById($id)
+    {
+        $sql = "SELECT qs.ID, s.name as stock_name, qs.quantity, qs.product_ID FROM `quantity_in_stock` qs 
+        INNER JOIN `stocks` s ON s.ID = qs.stock_ID
+        WHERE qs.product_ID = $id";
+
+        $result = $this->db->query($sql);
+        return $result;
     }
 }

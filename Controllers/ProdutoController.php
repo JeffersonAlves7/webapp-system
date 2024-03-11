@@ -1,7 +1,7 @@
 <?php
 require_once "Models/Product.php";
 
-class ProductController
+class ProdutoController
 {
     public $productModel;
 
@@ -12,9 +12,17 @@ class ProductController
 
     public function index($id)
     {
-        $product = $this->productModel->byId($id);
+        $result = $this->productModel->byId($id);
 
-        require_once "Views/Product.php";
+        // Se não encontrar deve voltar para a página iniial
+        if ($result->num_rows == 0) {
+            header("Location: /");
+        }
+
+        $produto = $result->fetch_assoc();
+        $quantidade_em_estoque = $this->productModel->quantityInStockById($id);
+
+        require_once "Views/Produto.php";
     }
 
     public function list()

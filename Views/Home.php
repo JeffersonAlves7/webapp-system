@@ -47,7 +47,7 @@ ob_start();
                         echo "
                         <tr>
                             <td>
-                                <a href='/product/index/" . $row["ID"] . "' title='Ver mais'>
+                                <a href='/produto/index/" . $row["ID"] . "' title='Ver mais'>
                                     <i class='bi bi-zoom-in'></i>
                                 </a>
                             </td>
@@ -84,7 +84,7 @@ ob_start();
                                 </button>
                             </td>
                             <td>
-                                <a href='/product/delete/" . $row["ID"] . "' title='Apagar'>
+                                <a href='/produto/delete/" . $row["ID"] . "' title='Apagar'>
                                     <button type='button' class='btn'>
                                         <i class='bi bi-trash text-danger'></i>
                                     </button>
@@ -228,35 +228,36 @@ ob_start();
                 alert(fullDescription);
             });
         });
-    });
 
-    document.querySelectorAll('.btn-edit').forEach(function(button) {
-        button.addEventListener('click', function() {
-            var productId = this.getAttribute('data-id');
-            var code = this.getAttribute('data-code');
-            var ean = this.getAttribute('data-ean');
-            var importer = this.getAttribute('data-importer');
-            var description = this.getAttribute('data-description');
-            var chineseDescription = this.getAttribute('data-chinese-description');
-
-            document.getElementById('productId').value = productId;
-            document.getElementById('update-code').value = code;
-            document.getElementById('update-ean').value = ean;
-            document.getElementById('update-importer').value = importer;
-            document.getElementById('update-description').value = description;
-            document.getElementById('update-chineseDescription').value = chineseDescription;
-
-            document.querySelectorAll('.form-control').forEach(function(input) {
-                input.classList.remove('modified');
+        document.querySelectorAll('.btn-edit').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var productId = this.getAttribute('data-id');
+                var code = this.getAttribute('data-code');
+                var ean = this.getAttribute('data-ean');
+                var importer = this.getAttribute('data-importer');
+                var description = this.getAttribute('data-description');
+                var chineseDescription = this.getAttribute('data-chinese-description');
+    
+                document.getElementById('productId').value = productId;
+                document.getElementById('update-code').value = code;
+                document.getElementById('update-ean').value = ean;
+                document.getElementById('update-importer').value = importer;
+                document.getElementById('update-description').value = description;
+                document.getElementById('update-chineseDescription').value = chineseDescription;
+    
+                document.querySelectorAll('.form-control').forEach(function(input) {
+                    input.classList.remove('modified');
+                });
+            });
+        });
+    
+        document.querySelectorAll('#updateProductModal .form-control').forEach(function(input) {
+            input.addEventListener('input', function() {
+                this.classList.add('modified');
             });
         });
     });
 
-    document.querySelectorAll('#updateProductModal .form-control').forEach(function(input) {
-        input.addEventListener('input', function() {
-            this.classList.add('modified');
-        });
-    });
 </script>
 <?php
 $content = ob_get_clean();
