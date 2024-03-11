@@ -7,6 +7,7 @@ class Model
 
     public function __construct()
     {
-        $this->db = new Database();
+        // Fiz dessa forma para que aproveitasse sessões criadas anteriormente
+        $this->db = Database::getInstance();
     }
 }

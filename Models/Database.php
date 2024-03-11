@@ -1,19 +1,29 @@
 <?php
 class Database
 {
-    private $host = "localhost";
-    private $username = "root";
-    private $password = "";
-    private $dbname = "webapp";
+    private static $host = "localhost";
+    private static $username = "root";
+    private static $password = "";
+    private static $dbname = "webapp";
     private $conn;
+    private static $instance = null;
 
     public function __construct()
     {
-        $this->conn = new mysqli($this->host, $this->username, $this->password, $this->dbname);
+        $this->conn = new mysqli(self::$host, self::$username, self::$password, self::$dbname);
 
         if ($this->conn->connect_error) {
             die("Erro de conexão com o banco de dados: " . $this->conn->connect_error);
         }
+    }
+
+    public static function getInstance()
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 
     public function query($sql)
