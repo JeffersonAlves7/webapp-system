@@ -9,10 +9,10 @@ require "Components/Header.php";
     <h1><?php echo $pageTitle ?></h1>
 
     <div class="d-flex gap-3">
-        <button class="btn btn-custom active">Entrada</button>
-        <a href="/lancamento/saida">
-            <button class="btn btn-custom">Saída</button>
+        <a href="/lancamento/entrada">
+            <button class="btn btn-custom">Entrada</button>
         </a>
+        <button class="btn btn-custom active">Saída</button>
     </div>
 
     <?php
@@ -53,7 +53,7 @@ require "Components/Header.php";
     <div class="d-flex justify-content-center align-items-center">
         <div class="card border rounded shadow p-2" style="max-width: 600px; width: 100%;">
             <div class="card-header bg-transparent border-0">
-                <h5 class="card-title">Entrada</h5>
+                <h5 class="card-title">Saída</h5>
             </div>
             <div class="card-body">
                 <form method="post">
@@ -76,8 +76,23 @@ require "Components/Header.php";
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="inputLoteContainer" class="form-label">Lote Container</label>
-                                <input type="text" class="form-control" id="inputLoteContainer" name="lote_container" placeholder="Ex.: LT-001" required>
+                                <label for="inputEstoque" class="form-label">Estoque de Origem</label>
+                                <select class="form-select" id="inputEstoque" name="estoque_origem" required>
+                                    <option value="">Selecione um estoque</option>
+                                    <?php
+                                    if ($stocks->num_rows > 0) {
+                                        while ($stock = $stocks->fetch_assoc()) {
+                                            echo '<option value="' . $stock['ID'] . '">' . $stock['name'] . '</option>';
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="inputCliente" class="form-label">Cliente</label>
+                                <input type="text" class="form-control" id="inputCliente" name="cliente" placeholder="Nome do Cliente" required>
                             </div>
                         </div>
                     </div>
@@ -90,12 +105,10 @@ require "Components/Header.php";
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Enviar</button>
-
                 </form>
             </div>
         </div>
     </div>
-
 </div>
 
 <style>

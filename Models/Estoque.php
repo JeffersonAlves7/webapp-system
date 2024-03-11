@@ -5,7 +5,7 @@ class Estoque extends Model
 {
     public function getAll()
     {
-        $sql = "SELECT * FROM `stocks` ORDER BY id DESC";
+        $sql = "SELECT * FROM `stocks`";
         return $this->db->query($sql);
     }
 

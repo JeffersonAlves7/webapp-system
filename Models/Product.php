@@ -106,7 +106,7 @@ class Product extends Model
      */
     public function findAllByCodeOrEan($code_or_ean, $limit = 10)
     {
-        
+
         $sql = "SELECT * FROM 
             `products` 
         WHERE 

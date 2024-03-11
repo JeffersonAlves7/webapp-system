@@ -1,8 +1,16 @@
 <?php
-require_once "Models/Model.php";
+require_once "Models/Database.php";
 
-class Lancamento extends Model
+class Lancamento
 {
+    private $db;
+
+    public function __construct()
+    {
+        // Não extendi a classe Model por conta das transactions. Nesses casos é melhor abrir uma nova conexão.
+        $this->db = new Database();
+    }
+
     public function criarEntrada($product_ID, $quantidade, $lote_container, $stock_ID = null, $observacao = null)
     {
         $this->db->beginTransaction(); // Inicia a transação
@@ -51,8 +59,6 @@ class Lancamento extends Model
                     $row = $result->fetch_assoc();
                     $stock_ID = $row["ID"];
                 }
-
-                $this->db->query("INSERT INTO quantity_in_stock (`product_ID`, `stock_ID`) VALUES ($product_ID, $stock_ID)");
             }
 
             $result = $this->db->query(
@@ -81,5 +87,37 @@ class Lancamento extends Model
             $this->db->rollback(); // Reverte a transação em caso de erro
             throw $e; // Lança a exceção para cima
         }
+    }
+
+    public function criarSaida(
+        $product_ID,
+        $quantidade,
+        $stock_ID,
+        $nome_cliente,
+        $observacao
+    ) {
+        // $this->db->beginTransaction(); // Inicia a transação
+        $result = $this->db->query(
+            "SELECT * FROM `quantity_in_stock` 
+            WHERE `product_ID` = $product_ID AND `stock_ID` = $stock_ID"
+        );
+
+        if ($result->num_rows == 0) {
+            throw new Exception("Quantidade insuficiente do produto no estoque selecionado");
+        }
+
+        $row = $result->fetch_assoc();
+        if ($row["quantity"] < (int) $quantidade) {
+            throw new Exception("Quantidade insuficiente do produto no estoque selecionado");
+        }
+
+        // Alterando quantidade do produto no estoque
+        $this->db->query(
+            "UPDATE `quantity_in_stock` 
+            SET `quantity` = `quantity` - $quantidade 
+            WHERE `ID` = " . $row["ID"]
+        );
+
+        // Criando Transação do tipo Saída para esse produto e estoque
     }
 }
