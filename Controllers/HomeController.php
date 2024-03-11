@@ -68,7 +68,7 @@ class HomeController
             $where .= "AND chinese_description LIKE \"%" . htmlspecialchars($_GET["chinese_description"]) . "%\"";
         }
 
-        $products = $this->productModel->getAll($page, where:$where);
+        $products = $this->productModel->getAll($page, where: $where);
 
         require_once "Views/Home.php";
     }

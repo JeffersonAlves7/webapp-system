@@ -6,7 +6,7 @@ class User extends Model
     public function login($email, $password)
     {
         $result = $this->db->query("SELECT * FROM `users` WHERE `email` = \"$email\"");
-        
+
         if ($result) {
             if ($result->num_rows > 0) {
                 $user = $result->fetch_assoc();
