@@ -13,6 +13,9 @@ require "Components/Header.php";
         <a href="/lancamento/saida">
             <button class="btn btn-custom">Saída</button>
         </a>
+        <a href="/lancamento/transferencia">
+            <button class="btn btn-custom">Transferência</button>
+        </a>
     </div>
 
     <?php
@@ -69,7 +72,7 @@ require "Components/Header.php";
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="inputQuantidade" class="form-label">Quantidade</label>
-                                <input type="number" class="form-control" id="inputQuantidade" name="quantidade" placeholder="Quantidade" value="0" required min="0">
+                                <input type="number" class="form-control" id="inputQuantidade" name="quantidade" placeholder="0" required min="0">
                             </div>
                         </div>
                     </div>

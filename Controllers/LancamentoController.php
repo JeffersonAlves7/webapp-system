@@ -20,7 +20,13 @@ class LancamentoController
 
     public function entrada()
     {
-        $mensagem_erro = ""; // Inicializa a variável de mensagem de erro
+        // Verifica se há uma mensagem de erro na sessão
+        $mensagem_erro = isset($_SESSION['mensagem_erro']) ? $_SESSION['mensagem_erro'] : "";
+        unset($_SESSION['mensagem_erro']); // Remove a mensagem de erro da sessão
+
+        // Verifica se há uma variável de sucesso na sessão
+        $sucesso = isset($_SESSION['sucesso']) ? $_SESSION['sucesso'] : false;
+        unset($_SESSION['sucesso']); // Remove a variável de sucesso da sessão
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $produto_id = $_POST["produto_id"];
@@ -35,20 +41,29 @@ class LancamentoController
                     $lote_container,
                     $observacao
                 );
-                $sucesso = true;
+                $_SESSION['sucesso'] = true; // Define a variável de sucesso na sessão
+                header("Location: " . $_SERVER["REQUEST_URI"]);
+                exit();
             } catch (Exception $e) {
-                // Captura a exceção e define a mensagem de erro
-                $sucesso = false;
-                $mensagem_erro = $e->getMessage();
+                $_SESSION['mensagem_erro'] = $e->getMessage(); // Define a mensagem de erro na sessão
+                header("Location: " . $_SERVER["REQUEST_URI"]);
+                exit();
             }
         }
 
         require_once "Views/Lancamento/Entrada.php";
     }
 
+
     public function saida()
     {
-        $mensagem_erro = ""; // Inicializa a variável de mensagem de erro
+        // Verifica se há uma mensagem de erro na sessão
+        $mensagem_erro = isset($_SESSION['mensagem_erro']) ? $_SESSION['mensagem_erro'] : "";
+        unset($_SESSION['mensagem_erro']); // Remove a mensagem de erro da sessão
+
+        // Verifica se há uma variável de sucesso na sessão
+        $sucesso = isset($_SESSION['sucesso']) ? $_SESSION['sucesso'] : false;
+        unset($_SESSION['sucesso']); // Remove a variável de sucesso da sessão
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $produto_ID = $_POST["produto_id"];
@@ -65,15 +80,58 @@ class LancamentoController
                     $cliente,
                     $observacao
                 );
-                $sucesso = true;
+                $_SESSION['sucesso'] = true; // Define a variável de sucesso na sessão
+                header("Location: " . $_SERVER["REQUEST_URI"]);
+                exit();
             } catch (Exception $e) {
-                // Captura a exceção e define a mensagem de erro
-                $sucesso = false;
-                $mensagem_erro = $e->getMessage();
+                $_SESSION['mensagem_erro'] = $e->getMessage(); // Define a mensagem de erro na sessão
+                header("Location: " . $_SERVER["REQUEST_URI"]);
+                exit();
             }
         }
 
         $stocks = $this->estoqueModel->getAll();
         require_once "Views/Lancamento/Saida.php";
+    }
+
+    public function transferencia()
+    {
+        // Verifica se há uma mensagem de erro na sessão
+        $mensagem_erro = isset($_SESSION['mensagem_erro']) ? $_SESSION['mensagem_erro'] : "";
+        unset($_SESSION['mensagem_erro']); // Remove a mensagem de erro da sessão
+
+        // Verifica se há uma variável de sucesso na sessão
+        $sucesso = isset($_SESSION['sucesso']) ? $_SESSION['sucesso'] : false;
+        unset($_SESSION['sucesso']); // Remove a variável de sucesso da sessão
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $produto_ID = $_POST["produto_id"];
+            $quantidade = $_POST["quantidade"];
+            $estoque_origem = $_POST["estoque_origem"];
+            $estoque_destino = $_POST["estoque_destino"];
+            $localizacao = $_POST["localizacao"];
+            $observacao = $_POST["observacao"];
+
+            try {
+                $this->lancamentoModel->criarTransferencia(
+                    $produto_ID,
+                    $quantidade,
+                    $estoque_origem,
+                    $estoque_destino,
+                    $localizacao,
+                    $observacao
+                );
+                $_SESSION['sucesso'] = true; // Define a variável de sucesso na sessão
+                header("Location: " . $_SERVER["REQUEST_URI"]);
+                exit();
+            } catch (Exception $e) {
+                $_SESSION['mensagem_erro'] = $e->getMessage(); // Define a mensagem de erro na sessão
+                header("Location: " . $_SERVER["REQUEST_URI"]);
+                exit();
+            }
+        }
+
+        $stocks = $this->estoqueModel->getAll();
+        require_once "Views/Lancamento/Transferencia.php";
     }
 }

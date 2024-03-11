@@ -11,8 +11,13 @@ class Lancamento
         $this->db = new Database();
     }
 
-    public function criarEntrada($product_ID, $quantidade, $lote_container, $stock_ID = null, $observacao = null)
-    {
+    public function criarEntrada(
+        $product_ID,
+        $quantidade,
+        $lote_container,
+        $stock_ID = null,
+        $observacao = null
+    ) {
         $this->db->beginTransaction(); // Inicia a transação
 
         try {
@@ -119,5 +124,61 @@ class Lancamento
         );
 
         // Criando Transação do tipo Saída para esse produto e estoque
+    }
+
+    public function criarTransferencia(
+        $product_ID,
+        $quantidade,
+        $estoque_origem_ID,
+        $estoque_destino_ID,
+        $localizacao,
+        $observacao
+    ) {
+        // $this->db->beginTransaction(); // Inicia a transação
+        $result = $this->db->query(
+            "SELECT * FROM `quantity_in_stock` 
+            WHERE `product_ID` = $product_ID AND `stock_ID` = $estoque_origem_ID"
+        );
+
+        if ($result->num_rows == 0) {
+            throw new Exception("Quantidade insuficiente do produto no estoque selecionado");
+        }
+
+        $row = $result->fetch_assoc();
+        if ($row["quantity"] < (int) $quantidade) {
+            throw new Exception("Quantidade insuficiente do produto no estoque selecionado");
+        }
+
+        $estoque_origem_quantidade_ID = $row["ID"];
+
+        // Verificar se produto já tem registro no estoque destino
+        $result = $this->db->query(
+            "SELECT `ID`, `quantity` FROM `quantity_in_stock` 
+            WHERE `product_ID` = $product_ID AND `stock_ID` = $estoque_destino_ID"
+        );
+
+        // Se não existir, criar registro
+        if ($result->num_rows == 0) {
+            $this->db->query("INSERT INTO quantity_in_stock (`product_ID`, `stock_ID`, `quantity`) VALUES ($product_ID, $estoque_destino_ID, $quantidade)");
+        } else {
+            // Se existir, atualizar a quantidade
+            $row = $result->fetch_assoc();
+            $estoque_destino_quantidade_ID = $row["ID"];
+            $nova_quantidade = $row["quantity"] + $quantidade;
+            $this->db->query(
+                "UPDATE `quantity_in_stock` 
+            SET `quantity` = $nova_quantidade
+            WHERE `ID` = $estoque_destino_quantidade_ID"
+            );
+        }
+
+        // Alterando quantidade do produto no estoque
+        $this->db->query(
+            "UPDATE `quantity_in_stock` 
+            SET `quantity` = `quantity` - $quantidade 
+            WHERE `ID` = $estoque_origem_quantidade_ID"
+        );
+
+        // Criando Transação do tipo Transferência para esse produto e estoque
     }
 }
