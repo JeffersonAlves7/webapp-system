@@ -26,18 +26,33 @@ ob_start();
             if (isset($produto["description"])) {
                 $description = htmlspecialchars($produto["description"]);
                 echo "<p class='description'>" . $description . "</p>";
+            } else {
+                echo "<p>Nenhuma informação de descrição disponível.</p>";
             }
             ?>
         </div>
         <div class="tab-pane fade" id="estoque" role="tabpanel" aria-labelledby="estoque-tab">
             <?php if ($quantidade_em_estoque->num_rows > 0) { ?>
-                <div class="d-flex gap-3">
-                    <?php
-                    while ($dados = $quantidade_em_estoque->fetch_assoc()) {
-                        echo "<p>" . $dados["stock_name"] . ": " . $dados["quantity"] . "</p>";
-                    }
-                    ?>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nome do Estoque</th>
+                                <th>Quantidade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php while ($dados = $quantidade_em_estoque->fetch_assoc()) { ?>
+                                <tr>
+                                    <td><?php echo $dados["stock_name"]; ?></td>
+                                    <td><?php echo $dados["quantity"]; ?></td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
                 </div>
+            <?php } else { ?>
+                <p>Nenhuma informação de estoque disponível.</p>
             <?php } ?>
         </div>
         <div class="tab-pane fade" id="transacoes" role="tabpanel" aria-labelledby="transacoes-tab">
