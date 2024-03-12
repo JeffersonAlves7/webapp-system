@@ -181,4 +181,35 @@ class Lancamento
 
         // Criando Transação do tipo Transferência para esse produto e estoque
     }
+
+    public function criarDevolucao(
+        $product_ID,
+        $quantidade,
+        $estoque_destino_ID,
+        $cliente,
+        $observacao
+    ) {
+        // $this->db->beginTransaction(); // Inicia a transação
+        $result = $this->db->query(
+            "SELECT * FROM `quantity_in_stock` 
+            WHERE `product_ID` = $product_ID AND `stock_ID` = $estoque_destino_ID"
+        );
+
+        // Se não existir, criar registro
+        if ($result->num_rows == 0) {
+            $this->db->query("INSERT INTO quantity_in_stock (`product_ID`, `stock_ID`, `quantity`) VALUES ($product_ID, $estoque_destino_ID, $quantidade)");
+        } else {
+            // Se existir, atualizar a quantidade
+            $row = $result->fetch_assoc();
+            $estoque_destino_quantidade_ID = $row["ID"];
+            $nova_quantidade = $row["quantity"] + $quantidade;
+            $this->db->query(
+                "UPDATE `quantity_in_stock` 
+            SET `quantity` = $nova_quantidade
+            WHERE `ID` = $estoque_destino_quantidade_ID"
+            );
+        }
+
+        // Criando Transação do tipo Devolução para esse produto e estoque
+    }
 }

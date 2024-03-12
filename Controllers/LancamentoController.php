@@ -134,4 +134,43 @@ class LancamentoController
         $stocks = $this->estoqueModel->getAll();
         require_once "Views/Lancamento/Transferencia.php";
     }
+
+    public function devolucao()
+    {
+        // Verifica se há uma mensagem de erro na sessão
+        $mensagem_erro = isset($_SESSION['mensagem_erro']) ? $_SESSION['mensagem_erro'] : "";
+        unset($_SESSION['mensagem_erro']); // Remove a mensagem de erro da sessão
+
+        // Verifica se há uma variável de sucesso na sessão
+        $sucesso = isset($_SESSION['sucesso']) ? $_SESSION['sucesso'] : false;
+        unset($_SESSION['sucesso']); // Remove a variável de sucesso da sessão
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $produto_ID = $_POST["produto_id"];
+            $quantidade = $_POST["quantidade"];
+            $estoque_destino = $_POST["estoque_destino"];
+            $cliente = $_POST["cliente"];
+            $observacao = $_POST["observacao"];
+
+            try {
+                $this->lancamentoModel->criarDevolucao(
+                    $produto_ID,
+                    $quantidade,
+                    $estoque_destino,
+                    $cliente,
+                    $observacao
+                );
+                $_SESSION['sucesso'] = true; // Define a variável de sucesso na sessão
+                header("Location: " . $_SERVER["REQUEST_URI"]);
+                exit();
+            } catch (Exception $e) {
+                $_SESSION['mensagem_erro'] = $e->getMessage(); // Define a mensagem de erro na sessão
+                header("Location: " . $_SERVER["REQUEST_URI"]);
+                exit();
+            }
+        }
+
+        $stocks = $this->estoqueModel->getAll();
+        require_once "Views/Lancamento/Devolucao.php";
+    }
 }

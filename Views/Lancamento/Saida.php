@@ -16,6 +16,9 @@ require "Components/Header.php";
         <a href="/lancamento/transferencia">
             <button class="btn btn-custom">Transferência</button>
         </a>
+        <a href="/lancamento/devolucao">
+            <button class="btn btn-custom">Devolução</button>
+        </a>
     </div>
 
     <?php
@@ -53,7 +56,7 @@ require "Components/Header.php";
     }
     ?>
 
-    <div class="d-flex justify-content-center align-items-center">
+    <div class="d-flex justify-content-center align-items-center mt-3">
         <div class="card border rounded shadow p-2" style="max-width: 600px; width: 100%;">
             <div class="card-header bg-transparent border-0">
                 <h5 class="card-title">Saída</h5>

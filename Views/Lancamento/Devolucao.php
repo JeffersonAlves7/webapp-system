@@ -15,10 +15,10 @@ require "Components/Header.php";
         <a href="/lancamento/saida">
             <button class="btn btn-custom">Saída</button>
         </a>
-        <button class="btn btn-custom active">Transferência</button>
-        <a href="/lancamento/devolucao">
-            <button class="btn btn-custom">Devolução</button>
+        <a href="/lancamento/transferencia">
+            <button class="btn btn-custom">Transferência</button>
         </a>
+        <button class="btn btn-custom active">Devolução</button>
     </div>
 
     <?php
@@ -59,7 +59,7 @@ require "Components/Header.php";
     <div class="d-flex justify-content-center align-items-center mt-3">
         <div class="card border rounded shadow p-2" style="max-width: 600px; width: 100%;">
             <div class="card-header bg-transparent border-0">
-                <h5 class="card-title">Transferência</h5>
+                <h5 class="card-title">Devolução</h5>
             </div>
             <div class="card-body">
                 <form method="post">
@@ -82,21 +82,6 @@ require "Components/Header.php";
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="inputEstoqueOrigem" class="form-label">Estoque de Origem</label>
-                                <select class="form-select" id="inputEstoqueOrigem" name="estoque_origem" required>
-                                    <option value="">Selecione um estoque</option>
-                                    <?php
-                                    if ($stocks->num_rows > 0) {
-                                        while ($stock = $stocks->fetch_assoc()) {
-                                            echo '<option value="' . $stock['ID'] . '">' . $stock['name'] . '</option>';
-                                        }
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
                                 <label for="inputEstoqueDestino" class="form-label">Estoque de Destino</label>
                                 <select class="form-select" id="inputEstoqueDestino" name="estoque_destino" required>
                                     <option value="">Selecione um estoque</option>
@@ -112,12 +97,10 @@ require "Components/Header.php";
                                 </select>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="localizacao" class="form-label">Localização</label>
-                                <input type="text" class="form-control" name="localizacao" id="localizacao">
+                                <label for="inputCliente" class="form-label">Cliente</label>
+                                <input type="text" class="form-control" id="inputCliente" name="cliente" placeholder="Nome do Cliente" required>
                             </div>
                         </div>
                     </div>
