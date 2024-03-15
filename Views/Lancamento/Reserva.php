@@ -9,19 +9,17 @@ require "Components/Header.php";
     <h1><?php echo $pageTitle ?></h1>
 
     <div class="d-flex gap-3">
-        <a href="/lancamento/entrada">
-            <button class="btn btn-custom">Entrada</button>
-        </a>
+        <button class="btn btn-custom">Entrada</button>
         <a href="/lancamento/saida">
             <button class="btn btn-custom">Saída</button>
         </a>
-        <button class="btn btn-custom active">Transferência</button>
+        <a href="/lancamento/transferencia">
+            <button class="btn btn-custom">Transferência</button>
+        </a>
         <a href="/lancamento/devolucao">
             <button class="btn btn-custom">Devolução</button>
         </a>
-        <a href="/lancamento/reserva">
-            <button class="btn btn-custom">Reservas</button>
-        </a>
+        <button class="btn btn-custom active">Reservas</button>
     </div>
 
     <?php
@@ -62,14 +60,14 @@ require "Components/Header.php";
     <div class="d-flex justify-content-center align-items-center mt-3">
         <div class="card border rounded shadow p-2" style="max-width: 600px; width: 100%;">
             <div class="card-header bg-transparent border-0">
-                <h5 class="card-title">Transferência</h5>
+                <h5 class="card-title">Reserva</h5>
             </div>
             <div class="card-body">
                 <form method="post">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="inputProduto" class="form-label">Produto</label>
+                                <label for="inputProduto" class="form-label">Código ou EAN</label>
                                 <input type="text" class="form-control" id="inputProduto" name="produto" placeholder="Insira o código ou EAN" required>
                                 <input type="hidden" id="inputProdutoId" name="produto_id"> <!-- Campo oculto para armazenar o ID do produto -->
                                 <div id="productListContainer" class="product-list-container"></div> <!-- Container para exibir a lista de produtos -->
@@ -82,6 +80,7 @@ require "Components/Header.php";
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -100,29 +99,15 @@ require "Components/Header.php";
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="inputEstoqueDestino" class="form-label">Estoque de Destino</label>
-                                <select class="form-select" id="inputEstoqueDestino" name="estoque_destino" required>
-                                    <option value="">Selecione um estoque</option>
-                                    <?php
-                                    if ($stocks->num_rows > 0) {
-                                        $stocks->data_seek(0);
-
-                                        while ($stock = $stocks->fetch_assoc()) {
-                                            echo '<option value="' . $stock['ID'] . '">' . $stock['name'] . '</option>';
-                                        }
-                                    }
-                                    ?>
-                                </select>
+                                <label for="inputCliente" class="form-label">Destino/Cliente</label>
+                                <input type="text" class="form-control" id="inputCliente" name="cliente" placeholder="Nome do Cliente" required>
                             </div>
                         </div>
-                        
                     </div>
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="localizacao" class="form-label">Localização</label>
-                                <input type="text" class="form-control" name="localizacao" id="localizacao">
-                            </div>
+                            <label for="dataRetirada" class="form-label">Data de retirada</label>
+                            <input type="date" class="form-control" id="dataRetirada" name="dataRetirada" required>
                         </div>
                     </div>
                     <div class="row">
@@ -138,6 +123,7 @@ require "Components/Header.php";
             </div>
         </div>
     </div>
+
 </div>
 
 <style>
@@ -215,29 +201,6 @@ require "Components/Header.php";
                 .catch(error => {
                     console.error("Erro ao buscar produtos:", error);
                 });
-        });
-
-        // Função para verificar se os valores selecionados nos dois selects são diferentes
-        function verificarEstoquesDiferentes() {
-            var estoqueOrigem = document.getElementById('inputEstoqueOrigem').value;
-            var estoqueDestino = document.getElementById('inputEstoqueDestino').value;
-
-            if (estoqueOrigem === estoqueDestino) {
-                alert('Os estoques de origem e destino não podem ser iguais. Por favor, selecione estoques diferentes.');
-                return false;
-            }
-            return true;
-        }
-
-        // Adiciona um listener ao formulário para chamar a função antes de enviar
-        document.querySelector('form').addEventListener('submit', function(event) {
-            console.log("submit")
-            if (!verificarEstoquesDiferentes()) {
-                try {
-                    event.target.reset()
-                } catch {}
-                event.preventDefault(); // Impede o envio do formulário se os estoques forem iguais
-            }
         });
     });
 </script>

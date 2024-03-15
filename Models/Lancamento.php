@@ -94,6 +94,27 @@ class Lancamento
         }
     }
 
+    public function criarReserva(
+        $product_ID,
+        $stock_ID,
+        $quantity,
+        $client_name,
+        $rescue_date,
+        $observation
+    ) {
+        //cria registro na tabela reserva e altera quantidade na tabela stock
+        $sql = "INSERT into `reserves` (product_ID, stock_ID, quantity, client_name, rescue_date, observation) VALUES ($product_ID,
+                $stock_ID,
+                $quantity,
+                '$client_name',
+                '$rescue_date',
+                '$observation')";
+        $this->db->query($sql);
+        $this->db->query("UPDATE quantity_in_stock 
+            SET quantity_in_reserve = quantity_in_reserve + $quantity, quantity = quantity - $quantity 
+            WHERE stock_ID = $stock_ID AND product_ID = $product_ID");
+    }
+
     public function criarSaida(
         $product_ID,
         $quantidade,
