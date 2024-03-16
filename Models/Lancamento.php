@@ -123,6 +123,8 @@ class Lancamento
             $this->db->query("UPDATE quantity_in_stock 
                 SET quantity_in_reserve = quantity_in_reserve + $quantity, quantity = quantity - $quantity 
                 WHERE stock_ID = $stock_ID AND product_ID = $product_ID");
+
+            $this->createTransaction($product_ID, $stock_ID, null, "Reserva", $quantity, $observation);
         } else {
             throw new Exception("O produto não possuí quantidade suficiente para reserva em estoque!");
         }
