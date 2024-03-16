@@ -9,7 +9,9 @@ require "Components/Header.php";
     <h1><?php echo $pageTitle ?></h1>
 
     <div class="d-flex gap-3">
-        <button class="btn btn-custom">Entrada</button>
+        <a href="/lancamento/entrada">
+            <button class="btn btn-custom">Entrada</button>
+        </a>
         <a href="/lancamento/saida">
             <button class="btn btn-custom">Saída</button>
         </a>
