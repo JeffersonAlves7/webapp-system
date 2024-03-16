@@ -41,8 +41,25 @@ class Reserva extends Model
 
     public function delete($id)
     {
-        $sql = "DELETE FROM `reserves` WHERE `ID` = $id";
-        return $this->db->query($sql);
+        $results = $this->db->query("SELECT * FROM `reserves` WHERE `ID` = $id AND `confirmed` = 0");
+
+        if ($results->num_rows > 0) {
+            $reserve = $results->fetch_assoc();
+
+            $quantity = $reserve['quantity'];
+            $stock_ID = $reserve['stock_ID'];
+            $product_ID = $reserve['product_ID'];
+
+            $this->db->query("UPDATE quantity_in_stock 
+            SET quantity_in_reserve = quantity_in_reserve - $quantity, quantity = quantity + $quantity 
+            WHERE stock_ID = $stock_ID AND product_ID = $product_ID");
+
+            $sql = "DELETE FROM `reserves` WHERE `ID` = $id";
+
+            return $this->db->query($sql);
+        }
+
+        return false;
     }
 
     public function confirm($id)
