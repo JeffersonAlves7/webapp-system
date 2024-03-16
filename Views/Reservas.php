@@ -79,6 +79,21 @@ ob_start();
 
         <button type="submit" hidden></button>
     </form>
+
+    <div class="d-flex justify-content-between mt-3">
+        <form method="GET">
+            <input type="hidden" name="page" value="<?php echo ($_GET['page'] ?? 1) - 1; ?>">
+            <button class="btn btn-primary" <?php if (!isset($_GET["page"]) || intval($_GET["page"]) <= 1) {
+                                                echo "disabled";
+                                            } ?>>Voltar</button>
+        </form>
+        <form method="GET">
+            <input type="hidden" name="page" value="<?php echo ($_GET['page'] ?? 1) + 1; ?>">
+            <button class="btn btn-primary" <?php if (!isset($reserves) || !$reserves->num_rows > 0) {
+                                                echo "disabled";
+                                            } ?>>Próxima</button>
+        </form>
+    </div>
 </div>
 
 <!-- Modal para confirmar cancelamento da reserva -->
