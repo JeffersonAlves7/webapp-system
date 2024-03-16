@@ -87,6 +87,8 @@ class Lancamento
                 WHERE `ID` = " . $row["ID"]
             );
 
+            $this->createTransaction($product_ID, null, $stock_ID, "Entrada", $quantidade, $observacao);
+
             $this->db->commit(); // Confirma a transação
         } catch (Exception $e) {
             $this->db->rollback(); // Reverte a transação em caso de erro
@@ -124,6 +126,7 @@ class Lancamento
         );
 
         // Criando Transação do tipo Saída para esse produto e estoque
+        $this->createTransaction($product_ID, $stock_ID, null, "Saída", $quantidade, $observacao);
     }
 
     public function criarTransferencia(
@@ -180,10 +183,11 @@ class Lancamento
         );
 
         // Criando Transação do tipo Transferência para esse produto e estoque
+        $this->createTransaction($product_ID, $estoque_origem_ID, $estoque_destino_ID, "Transferência", $quantidade, $observacao);
     }
 
     public function criarDevolucao(
-        $product_ID,
+        $produto_ID,
         $quantidade,
         $estoque_destino_ID,
         $cliente,
@@ -192,12 +196,12 @@ class Lancamento
         // $this->db->beginTransaction(); // Inicia a transação
         $result = $this->db->query(
             "SELECT * FROM `quantity_in_stock` 
-            WHERE `product_ID` = $product_ID AND `stock_ID` = $estoque_destino_ID"
+            WHERE `product_ID` = $produto_ID AND `stock_ID` = $estoque_destino_ID"
         );
 
         // Se não existir, criar registro
         if ($result->num_rows == 0) {
-            $this->db->query("INSERT INTO quantity_in_stock (`product_ID`, `stock_ID`, `quantity`) VALUES ($product_ID, $estoque_destino_ID, $quantidade)");
+            $this->db->query("INSERT INTO quantity_in_stock (`product_ID`, `stock_ID`, `quantity`) VALUES ($produto_ID, $estoque_destino_ID, $quantidade)");
         } else {
             // Se existir, atualizar a quantidade
             $row = $result->fetch_assoc();
@@ -210,6 +214,36 @@ class Lancamento
             );
         }
 
-        // Criando Transação do tipo Devolução para esse produto e estoque
+        $this->createTransaction($produto_ID, null, $estoque_destino_ID, "Devolução", $quantidade, $observacao);
+    }
+
+    private function createTransaction($product_ID, $from_stock_ID, $to_stock_ID, $type_ID, $quantity, $observation = null)
+    {
+        // Check if the transaction type exists, if not, create it
+        $transaction_type_ID = $this->getTransactionTypeID($type_ID);
+
+        $from_stock = $from_stock_ID !== null ? $from_stock_ID : 'NULL';
+        $to_stock = $to_stock_ID !== null ? $to_stock_ID : 'NULL';
+
+        // Insert the transaction
+        $sql = "INSERT INTO `transactions` (`product_ID`, `from_stock_ID`, `to_stock_ID`, `type_ID`, `quantity`, `observation`) 
+            VALUES ($product_ID, $from_stock, $to_stock, $transaction_type_ID, $quantity, '" . $this->db->escapeString($observation) . "')";
+
+        return $this->db->query($sql);
+    }
+
+
+    private function getTransactionTypeID($transaction_type)
+    {
+        $transaction_type = $this->db->escapeString($transaction_type);
+        $result = $this->db->query("SELECT `ID` FROM `transaction_types` WHERE `type` = '$transaction_type'");
+
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc()["ID"];
+        } else {
+            // If the transaction type does not exist, create it
+            $this->db->query("INSERT INTO `transaction_types` (`type`) VALUES ('$transaction_type')");
+            return $this->db->get_con()->insert_id;
+        }
     }
 }
