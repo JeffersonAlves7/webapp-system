@@ -19,6 +19,9 @@ require "Components/Header.php";
             <button class="btn btn-custom">Transferência</button>
         </a>
         <button class="btn btn-custom active">Devolução</button>
+        <a href="/lancamento/reserva">
+            <button class="btn btn-custom">Reservas</button>
+        </a>
     </div>
 
     <?php

@@ -19,6 +19,9 @@ require "Components/Header.php";
         <a href="/lancamento/devolucao">
             <button class="btn btn-custom">Devolução</button>
         </a>
+        <a href="/lancamento/reserva">
+            <button class="btn btn-custom">Reservas</button>
+        </a>
     </div>
 
     <?php
@@ -97,7 +100,7 @@ require "Components/Header.php";
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="inputCliente" class="form-label">Cliente</label>
+                                <label for="inputCliente" class="form-label">Destino/Cliente</label>
                                 <input type="text" class="form-control" id="inputCliente" name="cliente" placeholder="Nome do Cliente" required>
                             </div>
                         </div>

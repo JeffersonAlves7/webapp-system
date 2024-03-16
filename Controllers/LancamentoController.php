@@ -173,4 +173,46 @@ class LancamentoController
         $stocks = $this->estoqueModel->getAll();
         require_once "Views/Lancamento/Devolucao.php";
     }
+
+    public function reserva()
+    {
+        // Verifica se há uma mensagem de erro na sessão
+        $mensagem_erro = isset($_SESSION['mensagem_erro']) ? $_SESSION['mensagem_erro'] : "";
+        unset($_SESSION['mensagem_erro']); // Remove a mensagem de erro da sessão
+
+        // Verifica se há uma variável de sucesso na sessão
+        $sucesso = isset($_SESSION['sucesso']) ? $_SESSION['sucesso'] : false;
+        unset($_SESSION['sucesso']); // Remove a variável de sucesso da sessão
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $product_ID = $_POST["produto_id"];
+            $quantity = $_POST["quantidade"];
+            $stock_ID = $_POST["estoque_origem"];
+            $client_name = $_POST["cliente"];
+            $observation = $_POST["observacao"];
+            $dataRetirada = new DateTime($_POST['dataRetirada']);
+            $dataRetiradaFormatada = $dataRetirada->format('Y-m-d H:i:s');
+
+            try {
+                $this->lancamentoModel->criarReserva(
+                    $product_ID,
+                    $stock_ID,
+                    $quantity,
+                    $client_name,
+                    $dataRetiradaFormatada,
+                    $observation
+                );
+                $_SESSION['sucesso'] = true; // Define a variável de sucesso na sessão
+                header("Location: " . $_SERVER["REQUEST_URI"]);
+                exit();
+            } catch (Exception $e) {
+                $_SESSION['mensagem_erro'] = $e->getMessage(); // Define a mensagem de erro na sessão
+                header("Location: " . $_SERVER["REQUEST_URI"]);
+                exit();
+            }
+        }
+
+        $stocks = $this->estoqueModel->getAll();
+        require_once "Views/Lancamento/Reserva.php";
+    }
 }

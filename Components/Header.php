@@ -36,7 +36,7 @@
       <li class="nav-item"><a class="nav-link <?php echo (isset($pageTitle) && $pageTitle === "Incluir Lançamento") ? 'active' : ''; ?>" href="/lancamento">Incluir Lançamento</a></li>
       <li class="nav-item"><a class="nav-link <?php echo (isset($pageTitle) && $pageTitle === "Embarques") ? 'active' : ''; ?>" href="#">Embarques</a></li>
       <li class="nav-item"><a class="nav-link <?php echo (isset($pageTitle) && $pageTitle === "Lista de produtos") ? 'active' : ''; ?>" href="#">Lista de produtos</a></li>
-      <li class="nav-item"><a class="nav-link <?php echo (isset($pageTitle) && $pageTitle === "Reservas") ? 'active' : ''; ?>" href="#">Reservas</a></li>
+      <li class="nav-item"><a class="nav-link <?php echo (isset($pageTitle) && $pageTitle === "Reservas") ? 'active' : ''; ?>" href="/reservas">Reservas</a></li>
     </ul>
   </nav>
 </aside>
