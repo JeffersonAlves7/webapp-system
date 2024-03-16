@@ -34,18 +34,17 @@ ob_start();
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0;">
                 <tr>
-                    <th colspan="1"><input type="search" class="form-control" name="code" placeholder="Filtrar por código" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
-                    <th colspan="2"><input type="search" class="form-control" name="container" placeholder="Filtrar por container de origem" value="<?php echo isset($_GET["container"]) ? $_GET["container"] : "" ?>"></th>
-                    <th colspan="2"><input type="search" class="form-control" name="importer" placeholder="Filtrar por importadora" value="<?php echo isset($_GET["importer"]) ? $_GET["importer"] : "" ?>"></th>
+                    <th colspan="2"><input type="search" class="form-control" name="code" placeholder="Filtrar por código" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
+                    <th colspan="2"><input type="search" class="form-control" name="client" placeholder="Filtrar por cliente" value="<?php echo isset($_GET["client"]) ? $_GET["client"] : "" ?>"></th>
+                    <th><button type="submit" class="btn btn-custom">Pesquisar</button></th>
                     <th colspan="3"></th>
                 </tr>
                 <tr>
                     <th>CÓDIGO</th>
                     <th>QUANTIDADE</th>
                     <th>ESTOQUE</th>
-                    <th>IMPORTADORA</th>
+                    <th>CLIENTE</th>
                     <th>DATA DA RESERVA</th>
-                    <th>OBSERVAÇÃO</th>
                     <th colspan="2">AÇÕES</th>
                 </tr>
             </thead>
@@ -57,7 +56,7 @@ ob_start();
                                 <td>{$row['code']}</td>
                                 <td>{$row['quantity']}</td>
                                 <td>{$row['origin_container']}</td>
-                                <td>{$row['importer']}</td>
+                                <td>{$row['client_name']}</td>
                                 <td>{$row['rescue_date']}</td>
                                 <td>";
                         echo strlen($row['observation']) > 20 ? substr($row['observation'], 0, 20) . ' ... <a href="#" onclick="showFullObservation(\'' . htmlspecialchars($row['observation']) . '\')">Ver mais</a>' : $row['observation'];
@@ -82,12 +81,16 @@ ob_start();
 
     <div class="d-flex justify-content-between mt-3">
         <form method="GET">
+            <input type="hidden" name="client" value="<?php echo isset($_GET["client"]) ? $_GET["client"] : "" ?>">
+            <input type="hidden" name="code" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>">
             <input type="hidden" name="page" value="<?php echo ($_GET['page'] ?? 1) - 1; ?>">
             <button class="btn btn-primary" <?php if (!isset($_GET["page"]) || intval($_GET["page"]) <= 1) {
                                                 echo "disabled";
                                             } ?>>Voltar</button>
         </form>
         <form method="GET">
+            <input type="hidden" name="client" value="<?php echo isset($_GET["client"]) ? $_GET["client"] : "" ?>">
+            <input type="hidden" name="code" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>">
             <input type="hidden" name="page" value="<?php echo ($_GET['page'] ?? 1) + 1; ?>">
             <button class="btn btn-primary" <?php if (!isset($reserves) || !$reserves->num_rows > 0) {
                                                 echo "disabled";
@@ -147,10 +150,6 @@ include "Components/Template.php";
 
 <!-- JavaScript para adicionar funcionalidade aos modais -->
 <script>
-    function showFullObservation(observation) {
-        alert(observation);
-    }
-
     document.addEventListener("DOMContentLoaded", function() {
         // Adiciona manipuladores de eventos para os botões de cancelamento
         document.querySelectorAll('.cancel-reserve').forEach(function(element) {

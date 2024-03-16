@@ -19,8 +19,7 @@ class Reserva extends Model
         $sql = "SELECT 
                 r.*,
                 p.code AS code,
-                s.name AS origin_container,
-                p.importer as importer
+                s.name AS origin_container
             FROM 
                 reserves AS r
             INNER JOIN 

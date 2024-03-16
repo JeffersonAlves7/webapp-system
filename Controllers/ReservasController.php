@@ -19,12 +19,20 @@ class ReservasController
         }
 
         $page = 1;
+        $where = "`confirmed` = 0 ";
+
         if (isset($_GET["page"])) {
             $page = $_GET["page"];
         }
+        if (isset($_GET["code"]) && $_GET["code"] != "") {
+            $where .= "AND p.`code` LIKE \"%" . htmlspecialchars($_GET["code"]) . "%\"";
+        }
+        if (isset($_GET["client"]) && $_GET["client"] != "") {
+            $where .= "AND `client_name` LIKE \"%" . htmlspecialchars($_GET["client"]) . "%\"";
+        }
 
         $stocks = $this->estoquesModel->getAll();
-        $reserves = $this->reservaModel->getAll($page, 50, "`confirmed` = 0");
+        $reserves = $this->reservaModel->getAll($page, 50, $where);
 
         include_once "Views/Reservas.php";
     }
