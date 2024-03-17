@@ -59,7 +59,6 @@ ob_start();
                                 <td>{$row['client_name']}</td>
                                 <td>{$row['rescue_date']}</td>
                                 <td>";
-                        echo strlen($row['observation']) > 20 ? substr($row['observation'], 0, 20) . ' ... <a href="#" onclick="showFullObservation(\'' . htmlspecialchars($row['observation']) . '\')">Ver mais</a>' : $row['observation'];
                         echo "</td>
                                 <td>
                                     <button type='button' class='btn btn-danger cancel-reserve' data-id='{$row['ID']}' data-bs-toggle='modal' data-bs-target='#cancelModal' class='btn-cancel'>Cancelar</button>
