@@ -109,7 +109,7 @@ class Product extends Model
 
     public function quantityInStockById($id)
     {
-        $sql = "SELECT qs.ID, s.name as stock_name, qs.quantity, qs.product_ID FROM `quantity_in_stock` qs 
+        $sql = "SELECT qs.*, s.name as stock_name FROM `quantity_in_stock` qs 
         INNER JOIN `stocks` s ON s.ID = qs.stock_ID
         WHERE qs.product_ID = $id";
 

@@ -1,17 +1,29 @@
 <?php
 require_once "Models/Product.php";
+require_once "Models/Transacao.php";
 
 class ProdutoController
 {
     public $productModel;
+    public $transacaoModel;
 
     public function __construct()
     {
         $this->productModel = new Product();
+        $this->transacaoModel = new Transacao();
     }
 
     public function index($id)
     {
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["_method"])) {
+            $method = $_POST["_method"];
+
+            switch ($method) {
+                case "delete":
+                    $this->transacaoModel->delete($_POST["ID"]);
+            }
+        }
+
         $result = $this->productModel->byId($id);
 
         // Se não encontrar deve voltar para a página iniial
@@ -21,7 +33,7 @@ class ProdutoController
 
         $produto = $result->fetch_assoc();
         $quantidade_em_estoque = $this->productModel->quantityInStockById($id);
-
+        $transacoes = $this->transacaoModel->getAllByProductId($id);
         require_once "Views/Produto.php";
     }
 
