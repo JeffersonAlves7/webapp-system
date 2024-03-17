@@ -8,7 +8,7 @@ require "Components/Header.php";
     <div class="d-flex align-items-center mb-3 gap-3">
         <h1><?php echo $pageTitle ?></h1>
 
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newStock"> Novo Estoque</button>
+        <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newStock"> Novo Estoque</button> -->
     </div>
 
     <!-- Estoques -->
@@ -78,7 +78,7 @@ require "Components/Header.php";
     </form>
 </div>
 
-<div class="modal fade" id="newStock" tabindex="-1" aria-labelledby="newStockLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="newStock" tabindex="-1" aria-labelledby="newStockLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -100,14 +100,14 @@ require "Components/Header.php";
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <script>
-    function confirmNewStock() {
-        if (confirm("Tem certeza de que deseja adicionar este novo estoque?")) {
-            document.getElementById("newStockForm").submit();
-        }
-    }
+    // function confirmNewStock() {
+    //     if (confirm("Tem certeza de que deseja adicionar este novo estoque?")) {
+    //         document.getElementById("newStockForm").submit();
+    //     }
+    // }
 </script>
 
 

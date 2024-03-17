@@ -13,11 +13,11 @@ class EstoquesController
 
     public function index()
     {
-        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["name"])) {
-            $name = $_POST["name"];
-            $this->estoquesModel->create($name);
-            header("location: /estoques");
-        }
+        // if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["name"])) {
+        //     $name = $_POST["name"];
+        //     $this->estoquesModel->create($name);
+        //     header("location: /estoques");
+        // }
 
         $stocks = $this->estoquesModel->getAll();
         include_once "Views/Estoques.php";
