@@ -47,7 +47,7 @@ class ReservasController
 
         echo "Reserve cancelada com sucesso!";
         $this->reservaModel->delete($ID);
-        header("Refresh: 2; url=/reservas");
+        header("Refresh: 1; url=/reservas");
     }
 
     public function confirmar()
@@ -60,6 +60,6 @@ class ReservasController
 
         echo "Reserve confirmada com sucesso!";
         $this->reservaModel->confirm($ID);
-        header("Refresh: 2; url=/reservas");
+        header("Refresh: 1; url=/reservas");
     }
 }
