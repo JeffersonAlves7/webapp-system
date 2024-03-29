@@ -32,6 +32,7 @@
     <ul class="nav flex-column flex-sm-row">
       <li class="nav-item"><a class="nav-link <?php echo (isset($pageTitle) && $pageTitle === "Home") ? 'active' : ''; ?>" href="/">Produtos</a></li>
       <li class="nav-item"><a class="nav-link <?php echo (isset($pageTitle) && $pageTitle === "Estoques") ? 'active' : ''; ?>" href="/estoques">Estoques</a></li>
+      <li class="nav-item"><a class="nav-link <?php echo (isset($pageTitle) && $pageTitle === "Containers") ? 'active' : ''; ?>" href="/containers">Containers</a></li>
       <li class="nav-item"><a class="nav-link <?php echo (isset($pageTitle) && $pageTitle === "Relatórios") ? 'active' : ''; ?>" href="#">Relatórios</a></li>
       <li class="nav-item"><a class="nav-link <?php echo (isset($pageTitle) && $pageTitle === "Incluir Lançamento") ? 'active' : ''; ?>" href="/lancamento">Incluir Lançamento</a></li>
       <li class="nav-item"><a class="nav-link <?php echo (isset($pageTitle) && $pageTitle === "Embarques") ? 'active' : ''; ?>" href="#">Embarques</a></li>
