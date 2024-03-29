@@ -59,4 +59,9 @@ class Container extends Model
             `container_ID` = $container_ID AND 
             `product_ID` = $product_ID");
     }
+
+    public function delete($container_ID)
+    {
+        return $this->db->query("DELETE FROM `lote_container` WHERE `ID` = $container_ID");
+    }
 }

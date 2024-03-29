@@ -15,6 +15,7 @@ require "Components/Header.php";
                     <th><i class="bi bi-info-circle"></i></th>
                     <th><i class="bi bi-tag"></i> Código</th>
                     <th><i class="bi bi-calendar-date"></i> Data</th>
+                    <th><i class='bi bi-trash'></i></th>
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +30,13 @@ require "Components/Header.php";
                             </td>
                             <td><?php echo $row['name'] ?></td>
                             <td><?php echo $row['created_at'] ?></td>
+                            <td>
+                                <a href="/containers/deletar/<?php echo $row['ID'] ?>">
+                                    <button type='button' class='btn'>
+                                        <i class='bi bi-trash text-danger'></i>
+                                    </button>
+                                </a>
+                            </td>
                         </tr>
                     <?php }
                 } else { ?>

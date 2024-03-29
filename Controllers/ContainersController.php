@@ -41,7 +41,7 @@ class ContainersController
 
     public function deletarProduto()
     {
-        $redirect = "";
+        $redirect = "/";
 
         if (isset($_GET["redirect"])) {
             $redirect = htmlspecialchars($_GET["redirect"]);
@@ -58,5 +58,12 @@ class ContainersController
         }
 
         header("Refresh: 1; URL = $redirect");
+    }
+
+    public function deletar($id)
+    {
+        $this->containerModel->delete($id);
+        echo "Container apagado com sucesso!";
+        header("Refresh: 1; URL = /containers");
     }
 }
