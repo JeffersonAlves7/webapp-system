@@ -215,4 +215,53 @@ class LancamentoController
         $stocks = $this->estoqueModel->getAll();
         require_once "Views/Lancamento/Reserva.php";
     }
+
+    public function conferirTransferencias()
+    {
+        // Verifica se há uma mensagem de erro na sessão
+        $mensagem_erro = isset($_SESSION['mensagem_erro']) ? $_SESSION['mensagem_erro'] : "";
+        unset($_SESSION['mensagem_erro']); // Remove a mensagem de erro da sessão
+
+        // Verifica se há uma variável de sucesso na sessão
+        $sucesso = isset($_SESSION['sucesso']) ? $_SESSION['sucesso'] : false;
+        unset($_SESSION['sucesso']); // Remove a variável de sucesso da sessão
+
+        $transferencias = $this->lancamentoModel->getTransferenciasPendentes();
+        require_once "Views/Lancamento/ConferirTransferencias.php";
+    }
+
+    public function confirmarTransferencias()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            try {
+                $transferencias = json_decode($_POST["transference-ids"]);
+                $this->lancamentoModel->confirmarTransferencias($transferencias);
+                $_SESSION['sucesso'] = true;
+            } catch (Exception $e) {
+                $_SESSION['mensagem_erro'] = $e->getMessage();
+            }
+        }
+
+        header("Location: /lancamento/conferirTransferencias");
+        exit();
+    }
+
+    public function cancelarTransferencias()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            try {
+                $transferencias = json_decode($_POST["transference-ids"]);
+                $this->lancamentoModel->cancelarTransferencias($transferencias);
+                $_SESSION['sucesso'] = true;
+                header("Location: /lancamento/conferirTransferencias");
+                exit();
+            } catch (Exception $e) {
+                $_SESSION['mensagem_erro'] = $e->getMessage();
+                header("Location: /lancamento/conferirTransferencias");
+                exit();
+            }
+        }
+
+        header("Location: /lancamento/conferirTransferencias");
+    }
 }

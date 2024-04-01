@@ -171,53 +171,119 @@ class Lancamento
         $localizacao,
         $observacao
     ) {
-        // $this->db->beginTransaction(); // Inicia a transação
-        $result = $this->db->query(
-            "SELECT * FROM `quantity_in_stock` 
-            WHERE `product_ID` = $product_ID AND `stock_ID` = $estoque_origem_ID"
-        );
+        $this->db->query("INSERT INTO `transferences` (`product_ID`, `quantity`, `from_stock_ID`, `to_stock_ID`, `location`, `observation`) 
+            VALUES ($product_ID, $quantidade, $estoque_origem_ID, $estoque_destino_ID, '$localizacao', '$observacao')");
+    }
 
-        if ($result->num_rows == 0) {
-            throw new Exception("Quantidade insuficiente do produto no estoque selecionado");
+    public function confirmarTransferencias(
+        $transference_IDs
+    ) {
+        $this->db->beginTransaction(); // Inicia a transação
+        try {
+            $transference_IDs_str = implode(",", $transference_IDs);
+
+            $result = $this->db->query("SELECT `transferences`.*, `products`.`code`, `from_stock`.`name` as `from_stock_name` FROM `transferences` 
+            INNER JOIN `products` ON `transferences`.`product_ID` = `products`.`ID`
+            LEFT JOIN `stocks` AS `from_stock` ON `transferences`.`from_stock_ID` = `from_stock`.`ID`
+            WHERE `transferences`.`ID` IN ($transference_IDs_str)");
+
+            if ($result->num_rows != count($transference_IDs)) {
+                throw new Exception("Algum dos IDs de transferência não é válido");
+            }
+
+            // Confirmar cada transferência
+            while ($row = $result->fetch_assoc()) {
+                $product_code = $row["code"];
+                $product_ID = $row["product_ID"];
+                $quantity = $row["quantity"];
+                $from_stock_ID = $row["from_stock_ID"];
+                $to_stock_ID = $row["to_stock_ID"];
+                $from_stock_name = $row["from_stock_name"];
+                // $location = $row["location"];
+                $observation = $row["observation"];
+
+                $result = $this->db->query(
+                    "SELECT * FROM `quantity_in_stock` 
+                    WHERE `product_ID` = $product_ID AND `stock_ID` = $from_stock_ID"
+                );
+
+                $row = $result->fetch_assoc();
+                if ($row == null || $row["quantity"] < (int) $quantity) {
+                    throw new Exception("Quantidade insuficiente do produto de ID '$product_ID' e Código '$product_code' no estoque '$from_stock_name'");
+                }
+
+                $estoque_origem_quantidade_ID = $row["ID"];
+
+                // Verificar se produto já tem registro no estoque destino
+                $result = $this->db->query(
+                    "SELECT `ID`, `quantity` FROM `quantity_in_stock` 
+                    WHERE `product_ID` = $product_ID AND `stock_ID` = $to_stock_ID"
+                );
+
+                // Se não existir, criar registro
+                if ($result->num_rows == 0) {
+                    $this->db->query("INSERT INTO quantity_in_stock (`product_ID`, `stock_ID`, `quantity`) VALUES ($product_ID, $to_stock_ID, $quantity)");
+                } else {
+                    // Se existir, atualizar a quantidade
+                    $row = $result->fetch_assoc();
+                    $estoque_destino_quantidade_ID = $row["ID"];
+                    $nova_quantidade = $row["quantity"] + $quantity;
+                    $this->db->query(
+                        "UPDATE `quantity_in_stock` 
+                        SET `quantity` = $nova_quantidade
+                        WHERE `ID` = $estoque_destino_quantidade_ID"
+                    );
+                }
+
+                // Alterando quantidade do produto no estoque origem
+                $this->db->query(
+                    "UPDATE `quantity_in_stock` 
+                    SET `quantity` = `quantity` - $quantity 
+                    WHERE `ID` = $estoque_origem_quantidade_ID"
+                );
+
+                // Criando Transação do tipo Transferência para esse produto e estoque
+                $this->createTransaction($product_ID, $from_stock_ID, $to_stock_ID, "Transferência", $quantity, $observation);
+
+                // Confirmar transferência
+                $this->db->query("UPDATE `transferences` SET `confirmed` = 1 WHERE `ID` = " . $row["ID"]);
+            }
+        } catch (Exception $e) {
+            $this->db->rollback(); // Reverte a transação em caso de erro
+            throw $e; // Lança a exceção para cima
         }
 
-        $row = $result->fetch_assoc();
-        if ($row["quantity"] < (int) $quantidade) {
-            throw new Exception("Quantidade insuficiente do produto no estoque selecionado");
+        $this->db->commit(); // Confirma a transação
+    }
+
+    public function cancelarTransferencias($transference_IDs)
+    {
+        $transference_IDs_str = implode(",", $transference_IDs);
+
+        $result = $this->db->query("SELECT * FROM `transferences` WHERE `ID` IN ($transference_IDs_str)");
+
+        if ($result->num_rows != count($transference_IDs)) {
+            throw new Exception("Algum dos IDs de transferência não é válido");
         }
 
-        $estoque_origem_quantidade_ID = $row["ID"];
+        // Cancelar cada transferencia - remover da tabela
+        $this->db->query("DELETE FROM `transferences` WHERE `ID` IN ($transference_IDs_str)");
+    }
 
-        // Verificar se produto já tem registro no estoque destino
-        $result = $this->db->query(
-            "SELECT `ID`, `quantity` FROM `quantity_in_stock` 
-            WHERE `product_ID` = $product_ID AND `stock_ID` = $estoque_destino_ID"
-        );
+    public function getTransferenciasPendentes()
+    {
+        $result = $this->db->query("SELECT `transferences`.*, `products`.`code`, `from_stock`.`name` as `from_stock_name`, `to_stock`.`name` as `to_stock_name` FROM `transferences` 
+        INNER JOIN `products` ON `transferences`.`product_ID` = `products`.`ID`
+        LEFT JOIN `stocks` AS `from_stock` ON `transferences`.`from_stock_ID` = `from_stock`.`ID`
+        LEFT JOIN `stocks` AS `to_stock` ON `transferences`.`to_stock_ID` = `to_stock`.`ID`
+        WHERE `confirmed` = 0");
 
-        // Se não existir, criar registro
-        if ($result->num_rows == 0) {
-            $this->db->query("INSERT INTO quantity_in_stock (`product_ID`, `stock_ID`, `quantity`) VALUES ($product_ID, $estoque_destino_ID, $quantidade)");
-        } else {
-            // Se existir, atualizar a quantidade
-            $row = $result->fetch_assoc();
-            $estoque_destino_quantidade_ID = $row["ID"];
-            $nova_quantidade = $row["quantity"] + $quantidade;
-            $this->db->query(
-                "UPDATE `quantity_in_stock` 
-            SET `quantity` = $nova_quantidade
-            WHERE `ID` = $estoque_destino_quantidade_ID"
-            );
+        $transferences = [];
+        while ($row = $result->fetch_assoc()) {
+            $transferences[] = $row;
         }
 
-        // Alterando quantidade do produto no estoque
-        $this->db->query(
-            "UPDATE `quantity_in_stock` 
-            SET `quantity` = `quantity` - $quantidade 
-            WHERE `ID` = $estoque_origem_quantidade_ID"
-        );
-
-        // Criando Transação do tipo Transferência para esse produto e estoque
-        $this->createTransaction($product_ID, $estoque_origem_ID, $estoque_destino_ID, "Transferência", $quantidade, $observacao);
+        return $transferences;
     }
 
     public function criarDevolucao(

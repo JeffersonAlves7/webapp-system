@@ -55,9 +55,7 @@ require "Components/Header.php";
                 errorAlert.remove();
             }, 5000);
         </script>
-    <?php
-    }
-    ?>
+    <?php } ?>
 
     <div class="d-flex justify-content-center align-items-center mt-3">
         <div class="card border rounded shadow p-2" style="max-width: 600px; width: 100%;">

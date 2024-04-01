@@ -62,7 +62,11 @@ require "Components/Header.php";
     <div class="d-flex justify-content-center align-items-center mt-3">
         <div class="card border rounded shadow p-2" style="max-width: 600px; width: 100%;">
             <div class="card-header bg-transparent border-0">
-                <h5 class="card-title">Transferência</h5>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title">Transferência</h5>
+
+                    <a class="nav-link" href="/lancamento/conferirTransferencias">Conferir transferências</a>
+                </div>
             </div>
             <div class="card-body">
                 <form method="post">
@@ -115,7 +119,7 @@ require "Components/Header.php";
                                 </select>
                             </div>
                         </div>
-                        
+
                     </div>
                     <div class="row">
                         <div class="col-md-6">
