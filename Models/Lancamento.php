@@ -192,15 +192,15 @@ class Lancamento
             }
 
             // Confirmar cada transferência
-            while ($row = $result->fetch_assoc()) {
-                $product_code = $row["code"];
-                $product_ID = $row["product_ID"];
-                $quantity = $row["quantity"];
-                $from_stock_ID = $row["from_stock_ID"];
-                $to_stock_ID = $row["to_stock_ID"];
-                $from_stock_name = $row["from_stock_name"];
-                // $location = $row["location"];
-                $observation = $row["observation"];
+            while ($transference = $result->fetch_assoc()) {
+                $product_code = $transference["code"];
+                $product_ID = $transference["product_ID"];
+                $quantity = $transference["quantity"];
+                $from_stock_ID = $transference["from_stock_ID"];
+                $to_stock_ID = $transference["to_stock_ID"];
+                $from_stock_name = $transference["from_stock_name"];
+                // $location = $transference["location"];
+                $observation = $transference["observation"];
 
                 $result = $this->db->query(
                     "SELECT * FROM `quantity_in_stock` 
@@ -242,11 +242,8 @@ class Lancamento
                     WHERE `ID` = $estoque_origem_quantidade_ID"
                 );
 
-                // Criando Transação do tipo Transferência para esse produto e estoque
                 $this->createTransaction($product_ID, $from_stock_ID, $to_stock_ID, "Transferência", $quantity, $observation);
-
-                // Confirmar transferência
-                $this->db->query("UPDATE `transferences` SET `confirmed` = 1 WHERE `ID` = " . $row["ID"]);
+                $this->db->query("UPDATE `transferences` SET `confirmed` = 1 WHERE `ID` = " . $transference["ID"]);
             }
         } catch (Exception $e) {
             $this->db->rollback(); // Reverte a transação em caso de erro
@@ -331,7 +328,6 @@ class Lancamento
 
         return $this->db->query($sql);
     }
-
 
     private function getTransactionTypeID($transaction_type)
     {

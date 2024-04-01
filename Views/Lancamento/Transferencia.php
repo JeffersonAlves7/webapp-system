@@ -40,9 +40,7 @@ require "Components/Header.php";
                 successAlert.remove();
             }, 5000);
         </script>
-    <?php
-    } elseif (!empty($mensagem_erro)) { // Verifica se a mensagem de erro não está vazia
-    ?>
+    <?php } elseif (!empty($mensagem_erro)) { ?>
         <div id="errorAlert" class="alert alert-danger alert-dismissible fade show fixed-bottom mx-auto my-3" role="alert" style="max-width: 600px;">
             <strong>Erro!</strong> <?php echo $mensagem_erro; ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -55,17 +53,14 @@ require "Components/Header.php";
                 errorAlert.remove();
             }, 5000);
         </script>
-    <?php
-    }
-    ?>
+    <?php } ?>
 
     <div class="d-flex justify-content-center align-items-center mt-3">
         <div class="card border rounded shadow p-2" style="max-width: 600px; width: 100%;">
             <div class="card-header bg-transparent border-0">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="card-title">Transferência</h5>
-
-                    <a class="nav-link" href="/lancamento/conferirTransferencias">Conferir transferências</a>
+                    <a class="nav-link" href="/historico/transferencias">Histórico de transferências</a>
                 </div>
             </div>
             <div class="card-body">
@@ -86,6 +81,7 @@ require "Components/Header.php";
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -119,8 +115,8 @@ require "Components/Header.php";
                                 </select>
                             </div>
                         </div>
-
                     </div>
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -129,6 +125,7 @@ require "Components/Header.php";
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
@@ -137,7 +134,11 @@ require "Components/Header.php";
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Enviar</button>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="submit" class="btn btn-custom">Enviar</button>
+                        <a class="nav-link" href="/lancamento/conferirTransferencias">Conferir transferências</a>
+                    </div>
                 </form>
             </div>
         </div>
