@@ -12,6 +12,8 @@ ob_start();
     <div class="d-flex gap-3">
         <form method="get">
             <button type="submit" class="btn btn-custom <?php echo isset($_GET["estoque"]) ? "" : "active" ?>">Geral</button>
+            <input type="hidden" name="client" value="<?php echo isset($_GET["client"]) ? $_GET["client"] : "" ?>">
+            <input type="hidden" name="code" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>">
         </form>
 
         <?php
@@ -20,17 +22,22 @@ ob_start();
                 $name = $estoque["name"];
                 $ID = $estoque["ID"];
                 $active = (isset($_GET["estoque"]) && $_GET["estoque"] == "$ID" ? "active" : "");
-
-                echo "<form method='get'>
-                    <input type='hidden' name='estoque' value='$ID'/>
-                    <button type='submit' class='btn btn-custom $active'>$name</button>
-                </form>";
+        ?>
+                <form method='get'>
+                    <input type='hidden' name='estoque' value='<?= $ID ?>' />
+                    <button type='submit' class='btn btn-custom <?= $active ?>'><?= $name ?></button>
+                    <input type="hidden" name="client" value="<?php echo isset($_GET["client"]) ? $_GET["client"] : "" ?>">
+                    <input type="hidden" name="code" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>">
+                </form>
+        <?php
             }
         }
         ?>
     </div>
 
     <form method="get" class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+        <input type="hidden" name="estoque" value="<?php echo isset($_GET["estoque"]) ? $_GET["estoque"] : "" ?>">
+
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0;">
                 <tr>
@@ -52,24 +59,28 @@ ob_start();
                 <?php
                 if (isset($reserves) && $reserves->num_rows > 0) {
                     while ($row = $reserves->fetch_assoc()) {
-                        echo "<tr>
-                                <td>{$row['code']}</td>
-                                <td>{$row['quantity']}</td>
-                                <td>{$row['origin_container']}</td>
-                                <td>{$row['client_name']}</td>
-                                <td>{$row['rescue_date']}</td>
-                                <td>";
-                        echo "</td>
-                                <td>
-                                    <button type='button' class='btn btn-danger cancel-reserve' data-id='{$row['ID']}' data-bs-toggle='modal' data-bs-target='#cancelModal' class='btn-cancel'>Cancelar</button>
-                                </td>
-                                <td>
-                                    <button type='button' class='btn btn-success confirm-reserve' data-id='{$row['ID']}' data-bs-toggle='modal' data-bs-target='#confirmModal' class='btn-confirm'>Confirmar</button>
-                                </td>
-                            </tr>";
+                ?>
+                        <tr>
+                            <td><?= $row['code'] ?></td>
+                            <td><?= $row['quantity'] ?></td>
+                            <td><?= $row['origin_container'] ?></td>
+                            <td><?= $row['client_name'] ?></td>
+                            <td><?= $row['rescue_date'] ?></td>
+                            <td>
+                                <button type='button' class='btn btn-danger cancel-reserve' data-id='<?= $row['ID'] ?>' data-bs-toggle='modal' data-bs-target='#cancelModal'>Cancelar</button>
+                            </td>
+                            <td>
+                                <button type='button' class='btn btn-success confirm-reserve' data-id='<?= $row['ID'] ?>' data-bs-toggle='modal' data-bs-target='#confirmModal'>Confirmar</button>
+                            </td>
+                        </tr>
+                    <?php
                     }
                 } else {
-                    echo "<tr><td colspan='7'>Nenhuma reserva encontrada.</td></tr>";
+                    ?>
+                    <tr>
+                        <td colspan='7'>Nenhuma reserva encontrada.</td>
+                    </tr>
+                <?php
                 }
                 ?>
             </tbody>
@@ -80,6 +91,7 @@ ob_start();
 
     <div class="d-flex justify-content-between mt-3">
         <form method="GET">
+            <input type="hidden" name="estoque" value="<?php echo isset($_GET["estoque"]) ? $_GET["estoque"] : "" ?>">
             <input type="hidden" name="client" value="<?php echo isset($_GET["client"]) ? $_GET["client"] : "" ?>">
             <input type="hidden" name="code" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>">
             <input type="hidden" name="page" value="<?php echo ($_GET['page'] ?? 1) - 1; ?>">
@@ -87,7 +99,9 @@ ob_start();
                                                 echo "disabled";
                                             } ?>>Voltar</button>
         </form>
+
         <form method="GET">
+            <input type="hidden" name="estoque" value="<?php echo isset($_GET["estoque"]) ? $_GET["estoque"] : "" ?>">
             <input type="hidden" name="client" value="<?php echo isset($_GET["client"]) ? $_GET["client"] : "" ?>">
             <input type="hidden" name="code" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>">
             <input type="hidden" name="page" value="<?php echo ($_GET['page'] ?? 1) + 1; ?>">
