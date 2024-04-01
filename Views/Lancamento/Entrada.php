@@ -6,7 +6,7 @@ require "Components/Header.php";
 ?>
 
 <div class="container position-relative">
-    <h1><?php echo $pageTitle ?></h1>
+    <h1 class="mt-4 mb-3"><?php echo $pageTitle ?></h1>
 
     <div class="d-flex gap-3">
         <button class="btn btn-custom active">Entrada</button>

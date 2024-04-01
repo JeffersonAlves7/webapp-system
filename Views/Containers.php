@@ -5,7 +5,7 @@ ob_start();
 require "Components/Header.php";
 ?>
 <div class="container">
-    <h1><?php echo $pageTitle ?></h1>
+    <h1 class="mt-4 mb-3"><?php echo $pageTitle ?></h1>
 
     <!-- Tabela -->
     <form method="get" class="table-responsive" style="max-height: 400px; overflow-y: auto;">

@@ -5,11 +5,7 @@ ob_start();
 require "Components/Header.php";
 ?>
 <div class="container">
-    <div class="d-flex align-items-center mb-3 gap-3">
-        <h1><?php echo $pageTitle ?></h1>
-
-        <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newStock"> Novo Estoque</button> -->
-    </div>
+    <h1 class="mt-4 mb-3"> <?php echo $pageTitle ?></h1>
 
     <!-- Estoques -->
     <div class="d-flex gap-3">
