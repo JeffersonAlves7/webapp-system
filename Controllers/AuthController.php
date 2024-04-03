@@ -12,11 +12,6 @@ class AuthController
 
     public function login()
     {
-        if (isset($_SESSION["username"]) && isset($_SESSION["email"])) {
-            header("location: /");
-            exit(0);
-        }
-
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $email = $_POST["email"];
             $password = $_POST["password"];
@@ -24,8 +19,16 @@ class AuthController
             $user = $this->userModel->login($email, $password);
 
             if ($user) {
-                $_SESSION["username"] = $user["username"];
-                $_SESSION["email"] = $user["email"];
+                // Gerar token de sessão único
+                $sessionToken = bin2hex(random_bytes(32)); // Gera um token de 256 bits
+
+                // Associar token de sessão ao usuário no banco de dados
+                $this->userModel->updateSessionToken($user["id"], $sessionToken);
+
+                // Definir o token de sessão como cookie
+                setcookie("session_token", $sessionToken, time() + (86400 * 30), "/"); // expira em 30 dias
+
+                // Redirecionar para a página inicial
                 header("location: /");
                 exit(0);
             }
@@ -33,6 +36,7 @@ class AuthController
 
         require_once "Views/Login.php";
     }
+
 
     public function register()
     {

@@ -39,8 +39,8 @@ class User extends Model
         )");
     }
 
-    public function getUserByEmail($email)
+    public function updateSessionToken($user_ID, $session_token)
     {
-        // Implemente a lógica para buscar um usuário pelo email no banco de dados e retornar suas informações
+        $this->db->query("UPDATE `users` SET `session_token` = \"$session_token\" WHERE `ID` = $user_ID");
     }
 }
