@@ -32,11 +32,6 @@ class Lancamento
 
                 // Pegando o ID do container após a criação
                 $containerID = $this->db->get_con()->insert_id;
-
-                // Criando registro após a criação do container
-                $sql = "INSERT INTO `products_in_container` (`container_ID`, `product_ID`, `quantity`) 
-                        VALUES ($containerID, $product_ID, $quantidade)";
-                $this->db->query($sql);
             } else {
                 $row = $result->fetch_assoc();
                 $containerID = $row["ID"];
@@ -45,14 +40,15 @@ class Lancamento
                         `container_ID` = $containerID AND `product_ID` = $product_ID";
                 $result = $this->db->query($sql);
 
-                if ($result->num_rows == 0) {
-                    $sql = "INSERT INTO `products_in_container` (`container_ID`, `product_ID`, `quantity`) 
-                            VALUES ($containerID, $product_ID, $quantidade)";
-                    $this->db->query($sql);
-                } else {
+                if ($result->num_rows != 0) {
                     throw new Exception("O produto já está no container.");
                 }
             }
+
+            // Criando registro após a criação do container
+            $sql = "INSERT INTO `products_in_container` (`container_ID`, `product_ID`, `quantity`, `arrival_date`) 
+                    VALUES ($containerID, $product_ID, $quantidade, NOW())";
+            $this->db->query($sql);
 
             if (!$stock_ID) {
                 $result = $this->db->query("SELECT `ID` FROM stocks WHERE `name` = 'Galpão'");

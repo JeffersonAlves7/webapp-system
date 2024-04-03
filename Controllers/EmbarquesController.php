@@ -1,7 +1,7 @@
 <?php
 require_once "Models/Container.php";
 
-class ContainersController
+class EmbarquesController
 {
     private $containerModel;
 
@@ -21,7 +21,7 @@ class ContainersController
 
         $containers = $this->containerModel->getAll($page, where: $where);
 
-        include_once "Views/Containers.php";
+        include_once "Views/Containers/index.php";
     }
 
     public function produtos($container_ID)
@@ -34,9 +34,9 @@ class ContainersController
 
         $where = "1 = 1 ";
 
-        $result_container = $this->containerModel->byId($container_ID);
+        // $result_container = $this->containerModel->byId($container_ID);
         $products_in_container = $this->containerModel->produtosById($container_ID, $page, where: $where);
-        include_once "Views/ProdutosNoContainer.php";
+        include_once "Views/Containers/Produtos.php";
     }
 
     public function deletarProduto()

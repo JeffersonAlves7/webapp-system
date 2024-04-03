@@ -3,34 +3,40 @@ body {
   padding: 0;
   font-family: Arial, sans-serif;
   display: grid;
+  box-sizing: border-box;
   grid-template-areas:
     "header"
+    "aside"
     "main";
   grid-template-rows: 70px auto;
 }
 
-body > header {
+
+/* Header */
+body>header {
   background-color: var(--secondary-color);
   grid-area: header;
+  max-width: 100vw;
 }
 
-body > header nav {
+body>header nav {
   background-color: var(--secondary-color);
   padding: 0;
   height: 100%;
 }
 
-body > header nav > div {
+body>header nav>div {
   background-color: var(--secondary-color);
   height: 100%;
 }
 
-body > header h1 {
+body>header h1 {
   font-size: 2rem;
 }
 
-body > aside {
-  width: 100%;
+body>aside {
+  max-width: 100vw;
+  grid-area: aside;
   background-color: var(--tertiary-color);
 }
 
@@ -46,7 +52,22 @@ body > aside {
   color: var(--text-hover-color);
 }
 
-body > div {
+header .nav-link {
+  color: #0e5e2d;
+}
+
+header .nav-link:hover {
+  color: #1e2dcf;
+}
+
+body>div {
+  max-width: 100vw;
+  grid-area: main;
+}
+
+body>div,
+body>main {
+  padding: 10px;
   min-height: 100vh;
 }
 
@@ -58,12 +79,20 @@ body > div {
       "aside main";
   }
 
-  body > aside {
+  body>aside {
+    grid-area: aside;
     min-height: 100vh;
     max-width: 200px;
   }
 
-  body > header {
+  body>header {
+    grid-area: header;
     grid-column: span 2;
+  }
+
+  body>div,
+  body>main {
+    grid-area: main;
+    max-width: calc(100vw - 220px);
   }
 }

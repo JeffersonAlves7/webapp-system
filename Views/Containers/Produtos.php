@@ -1,0 +1,122 @@
+<?php
+$pageTitle = "Embarques";
+ob_start();
+
+require "Components/Header.php";
+?>
+<main>
+    <h1 class="mb-3"><?php echo $pageTitle ?> - Produtos</h1>
+    <div style="min-width: 300px; overflow: auto; max-width: 100vw">
+        <table class="table table-striped" style="min-width:max-content">
+            <thead class="thead-dark" style="position: sticky; top: 0;">
+                <tr>
+                    <th>Código</th>
+                    <th>Importadora</th>
+                    <th>Quantidade Esperada</th>
+                    <th>Quantidade Entregue</th>
+                    <th>Status</th>
+                    <th>Data de Embarque</th>
+                    <th>Previsão de Chegada</th>
+                    <th>Dias para Chegar</th>
+                    <th>Data de Chegada</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                if (isset($products_in_container) && count($products_in_container) > 0) {
+                    foreach ($products_in_container as $row) { ?>
+                        <tr>
+                            <td><?= $row['code'] ?></td>
+                            <td><?= $row['importer'] ?></td>
+                            <td>
+                                <p class="text-center">
+                                    <?= $row['quantity_expected'] ? $row['quantity_expected'] : '-' ?>
+                                </p>
+                            </td>
+                            <td>
+                                <p class="text-center">
+                                    <?= $row['in_stock'] ?  $row['quantity'] : '-' ?>
+                                </p>
+                            </td>
+                            <td>
+                                <p class="text-center">
+                                    <?= $row['in_stock'] ? 'Em Estoque' : 'Em Trânsito' ?>
+                                </p>
+                            </td>
+                            <td>
+                                <p class="text-center">
+                                    <?= $row['departure_date'] ? $row['departure_date'] : '-' ?>
+                                </p>
+                            </td>
+                            <td>
+                                <p class="text-center">
+                                    <?= $row['departure_date'] ? date('Y-m-d', strtotime($row['departure_date'] . ' + 30 days')) : '-' ?>
+                                </p>
+                            </td>
+                            <td>
+                                <p class="text-center">
+                                    <?php
+                                    if ($row['in_stock'] && !$row['arrival_date']) {
+                                        echo "Chegou no prazo.";
+                                    } else {
+                                        $expected_arrival_date = new DateTime(date('Y-m-d', strtotime($row['departure_date'] . ' + 30 days')));
+                                        $days_late = (new DateTime())->diff($expected_arrival_date)->days;
+
+                                        if ($row['arrival_date']) {
+                                            if ($days_late > 0) {
+                                                echo "Chegou dia " . $row['arrival_date'] . " " . $days_late . " dias atrasado.";
+                                            } else {
+                                                echo "Chegou dia " . $row['arrival_date'] . " " . abs($days_late) . " dias adiantado.";
+                                            }
+                                        } else {
+                                            if ($days_late == 0) {
+                                                echo "<span class='text-warning'>Previsto para chegar hoje!</span>";
+                                            } else if ($days_late > 0) {
+                                                echo "<span class='text-danger'>" . $days_late . " dias atrasado!</span>";
+                                            } else {
+                                                echo "<span class='text-success'>Previsto para chegar em " . abs($days_late) . " dias!</span>";
+                                            }
+                                        }
+                                    }
+                                    ?>
+                                </p>
+                            </td>
+                            <td><?= $row['arrival_date'] ?></td>
+                            <td>
+                                <form method="post" class="deleteProductForm" id="<?= "formProduct" . $row['product_ID'] ?>">
+                                    <input type="hidden" name="product_ID" value="<?= $row['product_ID'] ?>">
+                                    <input type="hidden" name="container_ID" value="<?= $row['container_ID'] ?>">
+                                    <button type='submit' class='btn'>
+                                        <i class='bi bi-trash text-danger'></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php }
+                } else { ?>
+                    <tr>
+                        <td colspan='5'>Nenhum produto encontrado neste container.</td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<script>
+    window.onload = () => {
+        // Obtém a URL atual
+        var currentUrl = window.location.href;
+
+        // Adiciona a URL atual como parâmetro query
+        var formAction = "/embarques/deletarProduto?redirect=" + encodeURIComponent(currentUrl);
+
+        // Define a ação do formulário
+        document.querySelectorAll('.deleteProductForm').forEach((e) => e.setAttribute('action', formAction));
+    }
+</script>
+
+<?php
+$content = ob_get_clean();
+include "Components/Template.php";
+?>
