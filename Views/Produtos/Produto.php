@@ -1,12 +1,12 @@
 <?php
-$pageTitle = "Home";
+$pageTitle = "Produtos";
 ob_start();
 ?>
 
 <?php require "Components/Header.php" ?>
 
 <div class="container">
-    <h1 class="mt-4 mb-3"><?php echo $produto["code"] ?></h1>
+    <h1 class="mt-4 mb-3"><?= $produto["code"] ?></h1>
 
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -24,15 +24,14 @@ ob_start();
         <div class="tab-pane fade show active" id="descricao" role="tabpanel" aria-labelledby="descricao-tab">
             <?php
             if (isset($produto["description"])) {
-                $description = htmlspecialchars($produto["description"]);
-                echo "<p class='description'>" . $description . "</p>";
+                echo "<p class='description'>" . htmlspecialchars($produto["description"]) . "</p>";
             } else {
                 echo "<p>Nenhuma informação de descrição disponível.</p>";
             }
             ?>
         </div>
         <div class="tab-pane fade" id="estoque" role="tabpanel" aria-labelledby="estoque-tab">
-            <?php if ($quantidade_em_estoque->num_rows > 0) { ?>
+            <?php if ($quantidade_em_estoque->num_rows > 0) : ?>
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -43,22 +42,22 @@ ob_start();
                             </tr>
                         </thead>
                         <tbody>
-                            <?php while ($dados = $quantidade_em_estoque->fetch_assoc()) { ?>
+                            <?php while ($dados = $quantidade_em_estoque->fetch_assoc()) : ?>
                                 <tr>
-                                    <td><?php echo $dados["stock_name"]; ?></td>
-                                    <td><?php echo $dados["quantity"]; ?></td>
-                                    <td><?php echo $dados["quantity_in_reserve"]; ?></td>
+                                    <td><?= $dados["stock_name"]; ?></td>
+                                    <td><?= $dados["quantity"]; ?></td>
+                                    <td><?= $dados["quantity_in_reserve"]; ?></td>
                                 </tr>
-                            <?php } ?>
+                            <?php endwhile; ?>
                         </tbody>
                     </table>
                 </div>
-            <?php } else { ?>
+            <?php else : ?>
                 <p>Nenhuma informação de estoque disponível.</p>
-            <?php } ?>
+            <?php endif ?>
         </div>
         <div class="tab-pane fade" id="transacoes" role="tabpanel" aria-labelledby="transacoes-tab">
-            <?php if ($transacoes->num_rows > 0) { ?>
+            <?php if ($transacoes->num_rows > 0) : ?>
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -73,25 +72,25 @@ ob_start();
                             </tr>
                         </thead>
                         <tbody>
-                            <?php while ($transacao = $transacoes->fetch_assoc()) { ?>
+                            <?php while ($transacao = $transacoes->fetch_assoc()) : ?>
                                 <tr>
-                                    <td><?php echo $transacao["type"]; ?></td>
-                                    <td><?php echo $transacao["quantity"]; ?></td>
-                                    <td><?php echo $transacao["from_stock"]; ?></td>
-                                    <td><?php echo $transacao["to_stock"]; ?></td>
-                                    <td><?php echo $transacao["observation"]; ?></td>
-                                    <td><?php echo $transacao["updated_at"]; ?></td>
+                                    <td><?= $transacao["type"]; ?></td>
+                                    <td><?= $transacao["quantity"]; ?></td>
+                                    <td><?= $transacao["from_stock"]; ?></td>
+                                    <td><?= $transacao["to_stock"]; ?></td>
+                                    <td><?= $transacao["observation"]; ?></td>
+                                    <td><?= $transacao["updated_at"]; ?></td>
                                     <td>
-                                        <button type='button' class='btn btn-danger delete-transaction' data-id='<?php echo $transacao["ID"] ?>' data-bs-toggle='modal' data-bs-target='#cancelModal' class='btn-cancel'>Apagar</button>
+                                        <button type='button' class='btn btn-danger delete-transaction' data-id='<?= $transacao["ID"] ?>' data-bs-toggle='modal' data-bs-target='#cancelModal' class='btn-cancel'>Apagar</button>
                                     </td>
                                 </tr>
-                            <?php } ?>
+                            <?php endwhile; ?>
                         </tbody>
                     </table>
                 </div>
-            <?php } else { ?>
+            <?php else : ?>
                 <p>Nenhuma transação encontrada.</p>
-            <?php } ?>
+            <?php endif; ?>
         </div>
     </div>
 </div>

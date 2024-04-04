@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "Home";
+$pageTitle = "Produtos";
 ob_start();
 ?>
 
@@ -40,63 +40,58 @@ ob_start();
                     <th colspan="3"><input type="search" class="form-control" name="chinese_description" placeholder="Filtrar por descrição em Chinês" value="<?php echo isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>"></th>
                 </tr>
             </thead>
+
+            <?php
+            function generateDescription($description)
+            {
+                if (!isset($description)) {
+                    return '';
+                }
+
+                $shortDescription = substr($description, 0, 30);
+                if (strlen($description) > 30) {
+                    $shortDescription .= '... <a href="#" class="toggle-description" data-full-description="' . htmlspecialchars($description) . '">Ver mais</a>';
+                }
+
+                return $shortDescription;
+            }
+
+            $productsExist = isset($products) && $products->num_rows > 0;
+            ?>
+
             <tbody>
-                <?php
-                if (isset($products) && $products->num_rows > 0) {
-                    while ($row = $products->fetch_assoc()) {
-                        echo "
+                <?php if ($productsExist) : ?>
+                    <?php while ($row = $products->fetch_assoc()) : ?>
                         <tr>
                             <td>
-                                <a href='/produto/index/" . $row["ID"] . "' title='Ver mais'>
+                                <a href='/produtos/byId/<?= htmlspecialchars($row["ID"]) ?>' title='Ver mais'>
                                     <i class='bi bi-zoom-in'></i>
                                 </a>
                             </td>
-                            <td><i class='bi bi-tag'></i> " . $row["code"] . "</td>
-                            <td><i class='bi bi-barcode'></i> " . $row["ean"] . "</td>
-                            <td><i class='bi bi-shop'></i> " . $row["importer"] . "</td>
-                            <td>" . (
-                            isset($row["description"]) ?
-                            (substr($row["description"], 0, 30) . (strlen($row["description"]) > 30 ?
-                                '... <a href="#" class="toggle-description" data-full-description="' . htmlspecialchars($row["description"]) . '">Ver mais</a>' :
-                                '')
-                            ) :
-                            ''
-                        ) . "</td>
-                            <td>" . (
-                            isset($row["chinese_description"]) ?
-                            (
-                                substr($row["chinese_description"], 0, 30) . (strlen($row["chinese_description"]) > 30 ?
-                                    ' <a href="#" class="toggle-description" data-full-description="' . htmlspecialchars($row["chinese_description"]) . '">Ver mais</a>' :
-                                    ''
-                                )
-                            ) :
-                            ''
-                        ) . "</td>
+                            <td><i class='bi bi-tag'></i> <?= htmlspecialchars($row["code"]) ?></td>
+                            <td><i class='bi bi-barcode'></i> <?= htmlspecialchars($row["ean"]) ?></td>
+                            <td><i class='bi bi-shop'></i> <?= htmlspecialchars($row["importer"]) ?></td>
+                            <td><?= generateDescription($row["description"]) ?></td>
+                            <td><?= generateDescription($row["chinese_description"]) ?></td>
                             <td>
-                                <button type='button' class='btn btn-edit' data-bs-toggle='modal' data-bs-target='#updateProductModal' 
-                                    data-id='" . $row["ID"] . "' 
-                                    data-code='" . $row["code"] . "' 
-                                    data-ean='" . $row["ean"] . "' 
-                                    data-importer='" . $row["importer"] . "' 
-                                    data-description='" . $row["description"] . "' 
-                                    data-chinese-description='" . $row["chinese_description"] . "'>
+                                <button type='button' class='btn btn-edit' data-bs-toggle='modal' data-bs-target='#updateProductModal' data-id='<?= htmlspecialchars($row["ID"]) ?>' data-code='<?= htmlspecialchars($row["code"]) ?>' data-ean='<?= htmlspecialchars($row["ean"]) ?>' data-importer='<?= htmlspecialchars($row["importer"]) ?>' data-description='<?= htmlspecialchars($row["description"]) ?>' data-chinese-description='<?= htmlspecialchars($row["chinese_description"]) ?>'>
                                     <i class='bi bi-pencil-square text-primary'></i>
                                 </button>
                             </td>
                             <td>
-                                <a href='/produto/delete/" . $row["ID"] . "' title='Apagar'>
+                                <a href='/produto/delete/<?= htmlspecialchars($row["ID"]) ?>' title='Apagar'>
                                     <button type='button' class='btn'>
                                         <i class='bi bi-trash text-danger'></i>
                                     </button>
                                 </a>
                             </td>
                         </tr>
-                        ";
-                    }
-                } else {
-                    echo "<tr><td colspan='8'>Nenhum produto encontrado.</td></tr>";
-                }
-                ?>
+                    <?php endwhile; ?>
+                <?php else : ?>
+                    <tr>
+                        <td colspan='8'>Nenhum produto encontrado.</td>
+                    </tr>
+                <?php endif; ?>
             </tbody>
         </table>
         <button type="submit" hidden></button>
@@ -237,27 +232,26 @@ ob_start();
                 var importer = this.getAttribute('data-importer');
                 var description = this.getAttribute('data-description');
                 var chineseDescription = this.getAttribute('data-chinese-description');
-    
+
                 document.getElementById('productId').value = productId;
                 document.getElementById('update-code').value = code;
                 document.getElementById('update-ean').value = ean;
                 document.getElementById('update-importer').value = importer;
                 document.getElementById('update-description').value = description;
                 document.getElementById('update-chineseDescription').value = chineseDescription;
-    
+
                 document.querySelectorAll('.form-control').forEach(function(input) {
                     input.classList.remove('modified');
                 });
             });
         });
-    
+
         document.querySelectorAll('#updateProductModal .form-control').forEach(function(input) {
             input.addEventListener('input', function() {
                 this.classList.add('modified');
             });
         });
     });
-
 </script>
 <?php
 $content = ob_get_clean();
