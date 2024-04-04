@@ -122,7 +122,7 @@ require "Components/Header.php";
                 return;
             }
 
-            fetch(`/produto/findAllByCodeOrEan?search=${search}`)
+            fetch(`/produtos/findAllByCodeOrEan?search=${search}`)
                 .then(response => response.json())
                 .then(data => {
                     const products = data.products;

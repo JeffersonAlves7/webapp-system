@@ -46,8 +46,8 @@ class Lancamento
             }
 
             // Criando registro após a criação do container
-            $sql = "INSERT INTO `products_in_container` (`container_ID`, `product_ID`, `quantity`, `arrival_date`) 
-                    VALUES ($containerID, $product_ID, $quantidade, NOW())";
+            $sql = "INSERT INTO `products_in_container` (`container_ID`, `product_ID`, `quantity`, `quantity_expected`, `arrival_date`) 
+                    VALUES ($containerID, $product_ID, $quantidade, $quantidade, NOW())";
             $this->db->query($sql);
 
             if (!$stock_ID) {
