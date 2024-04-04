@@ -1,21 +1,18 @@
 <?php
+require_once "Controllers/_Controller.php";
 require_once "Models/Product.php";
 require_once "Models/Transacao.php";
 
-class ProdutosController
+class ProdutosController extends _Controller
 {
     public $productModel;
     public $transacaoModel;
 
     public function __construct()
     {
+        parent::__construct();
         $this->productModel = new Product();
         $this->transacaoModel = new Transacao();
-
-        if (!isset($_SESSION["username"])) {
-            header("location: auth/login");
-            exit(0);
-        }
     }
 
     public function index()

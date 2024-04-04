@@ -1,14 +1,16 @@
 <?php
 require_once "Models/Estoque.php";
 require_once "Models/Reserva.php";
+require_once "Controllers/_Controller.php";
 
-class ReservasController
+class ReservasController extends _Controller
 {
     private $estoquesModel = null;
     private $reservaModel = null;
 
     public function __construct()
     {
+        parent::__construct();
         $this->estoquesModel = new Estoque();
         $this->reservaModel = new Reserva();
     }

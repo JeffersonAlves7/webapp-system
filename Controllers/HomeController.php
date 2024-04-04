@@ -1,13 +1,15 @@
 <?php
 
 require_once "Models/Estoque.php";
+require_once "Controllers/_Controller.php";
 
-class HomeController
+class HomeController extends _Controller
 {
     private $estoquesModel;
 
     public function __construct()
     {
+        parent::__construct();
         $this->estoquesModel = new Estoque();
     }
 

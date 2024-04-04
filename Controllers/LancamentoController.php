@@ -1,14 +1,16 @@
 <?php
 require_once "Models/Lancamento.php";
 require_once "Models/Estoque.php";
+require_once "Controllers/_Controller.php";
 
-class LancamentoController
+class LancamentoController extends _Controller
 {
     public $lancamentoModel;
     public $estoqueModel;
 
     public function __construct()
     {
+        parent::__construct();
         $this->lancamentoModel = new Lancamento();
         $this->estoqueModel = new Estoque();
     }

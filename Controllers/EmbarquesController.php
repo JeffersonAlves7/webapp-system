@@ -1,12 +1,14 @@
 <?php
 require_once "Models/Container.php";
+require_once "Controllers/_Controller.php";
 
-class EmbarquesController
+class EmbarquesController extends _Controller
 {
     private $containerModel;
 
     public function __construct()
     {
+        parent::__construct();
         $this->containerModel = new Container();
     }
 
