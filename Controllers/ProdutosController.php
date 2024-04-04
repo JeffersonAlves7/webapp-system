@@ -11,41 +11,104 @@ class ProdutosController
     {
         $this->productModel = new Product();
         $this->transacaoModel = new Transacao();
-    }
 
-    public function index()
-    {
         if (!isset($_SESSION["username"])) {
             header("location: auth/login");
             exit(0);
         }
+    }
+
+    public function index()
+    {
+        $mensagem_erro = isset($_SESSION['mensagem_erro']) ? $_SESSION['mensagem_erro'] : "";
+        unset($_SESSION['mensagem_erro']);
+
+        $sucesso = isset($_SESSION['sucesso']) ? $_SESSION['sucesso'] : false;
+        unset($_SESSION['sucesso']);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["_method"])) {
+            $redirect_to = isset($_SESSION['redirect_to']) ? $_SESSION['redirect_to'] : "/produtos";
+
             if ($_POST["_method"] == "put") {
-                $id = $_POST["id"];
+                try {
+                    if (!isset($_POST["id"])) {
+                        throw new Exception("ID não informado");
+                    }
+                    if (!isset($_POST["code"])) {
+                        throw new Exception("Código não informado");
+                    }
+                    if (!isset($_POST["ean"])) {
+                        throw new Exception("EAN não informado");
+                    }
+                    if (!isset($_POST["importer"])) {
+                        throw new Exception("Importador não informado");
+                    }
 
-                $code = $_POST["code"];
-                $ean = $_POST["ean"];
-                $importer = $_POST["importer"];
-                $description = $_POST["description"];
-                $chinese_description = $_POST["chinese_description"];
+                    $id = $_POST["id"];
 
-                $this->productModel->update(
-                    $id,
-                    $code,
-                    $ean,
-                    $importer,
-                    $description,
-                    $chinese_description
-                );
+                    $code = $_POST["code"];
+                    $ean = $_POST["ean"];
+                    $importer = $_POST["importer"];
+                    $description = $_POST["description"];
+                    $chinese_description = $_POST["chinese_description"];
+
+                    $this->productModel->update(
+                        $id,
+                        $code,
+                        $ean,
+                        $importer,
+                        $description,
+                        $chinese_description
+                    );
+
+                    $_SESSION['sucesso'] = true;
+                    header("location: " . $redirect_to);
+                } catch (Exception $e) {
+                    $_SESSION['mensagem_erro'] = $e->getMessage();
+                    header("location: " . $redirect_to);
+                    exit(0);
+                }
             } else if ($_POST["_method"] == "post") {
-                $code = $_POST["code"];
-                $ean = $_POST["ean"];
-                $importer = $_POST["importer"];
-                $description = $_POST["description"];
-                $chinese_description = $_POST["chinese_description"];
+                try {
+                    if (!isset($_POST["code"])) {
+                        throw new Exception("Código não informado");
+                    }
+                    if (!isset($_POST["ean"])) {
+                        throw new Exception("EAN não informado");
+                    }
+                    if (!isset($_POST["importer"])) {
+                        throw new Exception("Importador não informado");
+                    }
 
-                $this->productModel->create($code, $ean, $importer, $description, $chinese_description);
+                    $code = $_POST["code"];
+                    $ean = $_POST["ean"];
+                    $importer = $_POST["importer"];
+                    $description = $_POST["description"];
+                    $chinese_description = $_POST["chinese_description"];
+
+                    $this->productModel->create($code, $ean, $importer, $description, $chinese_description);
+                    $_SESSION['sucesso'] = true;
+                    header("location: " . $redirect_to);
+                } catch (Exception $e) {
+                    $_SESSION['mensagem_erro'] = $e->getMessage();
+                    header("location: " . $redirect_to);
+                    exit(0);
+                }
+            } else if ($_POST["_method"] == "delete") {
+                try {
+                    if (!isset($_POST["ID"])) {
+                        throw new Exception("ID não informado");
+                    }
+
+                    $id = $_POST["ID"];
+                    $this->productModel->delete($id);
+                    $_SESSION['sucesso'] = true;
+                    header("location: " . $redirect_to);
+                } catch (Exception $e) {
+                    $_SESSION['mensagem_erro'] = $e->getMessage();
+                    header("location: " . $redirect_to);
+                    exit(0);
+                }
             }
         }
 
@@ -78,13 +141,24 @@ class ProdutosController
 
     public function byId($id)
     {
+        $redirect_to = isset($_SESSION['redirect_to']) ? $_SESSION['redirect_to'] : "/produtos";
+
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["_method"])) {
             $method = $_POST["_method"];
 
             switch ($method) {
                 case "delete":
-                    $this->transacaoModel->delete($_POST["ID"]);
+                    try {
+                        $this->transacaoModel->delete($_POST["ID"]);
+                        $_SESSION['sucesso'] = true;
+                    } catch (Exception $e) {
+                        $_SESSION['mensagem_erro'] = $e->getMessage();
+                    }
+                    break;
             }
+
+            header("location: " . $redirect_to);
+            exit(0);
         }
 
         $result = $this->productModel->byId($id);
@@ -98,19 +172,6 @@ class ProdutosController
         $quantidade_em_estoque = $this->productModel->quantityInStockById($id);
         $transacoes = $this->transacaoModel->getAllByProductId($id);
         require_once "Views/Produtos/Produto.php";
-    }
-
-    public function delete($id)
-    {
-        if (!isset($_SESSION["username"])) {
-            header("location: auth/login");
-            exit(0);
-        }
-
-        $this->productModel->delete($id);
-
-        header("location: /");
-        exit(0);
     }
 
     public function findAllByCodeOrEan()

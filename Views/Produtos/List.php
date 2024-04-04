@@ -5,7 +5,7 @@ ob_start();
 
 <?php require "Components/Header.php" ?>
 
-<div class="container">
+<main>
     <h1 class="mt-4 mb-3">Produtos</h1>
 
     <div class="d-flex justify-content-end mb-3">
@@ -79,11 +79,9 @@ ob_start();
                                 </button>
                             </td>
                             <td>
-                                <a href='/produto/delete/<?= htmlspecialchars($row["ID"]) ?>' title='Apagar'>
-                                    <button type='button' class='btn'>
-                                        <i class='bi bi-trash text-danger'></i>
-                                    </button>
-                                </a>
+                                <button type='button' class='btn btn-delete' data-bs-toggle='modal' data-bs-target='#deleteProductModal' data-id='<?= htmlspecialchars($row["ID"]) ?>'>
+                                    <i class='bi bi-trash text-danger'></i>
+                                </button>
                             </td>
                         </tr>
                     <?php endwhile; ?>
@@ -121,7 +119,9 @@ ob_start();
                                             } ?>>Próxima</button>
         </form>
     </div>
-</div>
+</main>
+
+<?php require "Components/StatusMessage.php" ?>
 
 <div class="modal fade" id="newProductModal" tabindex="-1" aria-labelledby="newProductModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -214,6 +214,28 @@ ob_start();
     </div>
 </div>
 
+<div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteProductLabel">Apagar produto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="cancelForm" method="post">
+                <input type="hidden" name="_method" value="delete">
+                <div class="modal-body">
+                    <input type="hidden" name="ID" id="deleteProductId" value="">
+                    <p>Tem certeza de que deseja apagar este produto?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger" id="confirmCancelBtn">Confirmar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         document.querySelectorAll('.toggle-description').forEach(function(element) {
@@ -249,6 +271,13 @@ ob_start();
         document.querySelectorAll('#updateProductModal .form-control').forEach(function(input) {
             input.addEventListener('input', function() {
                 this.classList.add('modified');
+            });
+        });
+
+        document.querySelectorAll('.btn-delete').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var productId = this.getAttribute('data-id');
+                document.getElementById('deleteProductId').value = productId;
             });
         });
     });

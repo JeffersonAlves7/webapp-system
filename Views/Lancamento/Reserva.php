@@ -5,7 +5,7 @@ ob_start();
 require "Components/Header.php";
 ?>
 
-<div class="container position-relative">
+<main class="container position-relative">
     <h1 class="mt-4 mb-3"><?php echo $pageTitle ?></h1>
 
     <div class="d-flex gap-3">
@@ -124,7 +124,7 @@ require "Components/Header.php";
         </div>
     </div>
 
-</div>
+</main>
 
 <style>
     .product-list-container {
@@ -159,7 +159,6 @@ require "Components/Header.php";
         border: 1px solid #007bff;
     }
 </style>
-
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
