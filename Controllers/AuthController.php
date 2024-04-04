@@ -57,10 +57,11 @@ class AuthController
 
     public function logout()
     {
-        unset($_SESSION["username"]);
+        session_destroy();
 
         echo 'You have cleaned session';
         header('Refresh: 1; URL = login');
+        exit(0);
     }
 
     public function info()

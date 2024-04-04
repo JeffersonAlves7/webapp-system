@@ -11,30 +11,29 @@ body {
   grid-template-rows: 70px auto;
 }
 
-
 /* Header */
-body>header {
+body > header {
   background-color: var(--secondary-color);
   grid-area: header;
   max-width: 100vw;
 }
 
-body>header nav {
+body > header nav {
   background-color: var(--secondary-color);
   padding: 0;
   height: 100%;
 }
 
-body>header nav>div {
+body > header nav > div {
   background-color: var(--secondary-color);
   height: 100%;
 }
 
-body>header h1 {
+body > header h1 {
   font-size: 2rem;
 }
 
-body>aside {
+body > aside {
   max-width: 100vw;
   grid-area: aside;
   background-color: var(--tertiary-color);
@@ -53,14 +52,14 @@ body>aside {
 }
 
 header .nav-link {
-  color: #0e5e2d;
+  color: #000000;
 }
 
 header .nav-link:hover {
-  color: #1e2dcf;
+  color: blue;
 }
 
-body>main {
+body > main {
   max-width: 100vw;
   grid-area: main;
   padding: 10px;
@@ -75,18 +74,18 @@ body>main {
       "aside main";
   }
 
-  body>aside {
+  body > aside {
     grid-area: aside;
     min-height: 100vh;
     max-width: 200px;
   }
 
-  body>header {
+  body > header {
     grid-area: header;
     grid-column: span 2;
   }
 
-  body>main {
+  body > main {
     grid-area: main;
     max-width: calc(100vw - 220px);
   }
