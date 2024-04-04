@@ -4,7 +4,7 @@ ob_start();
 
 require "Components/Header.php";
 ?>
-<div class="container">
+<main>
     <h1 class="mt-4 mb-3"><?= $pageTitle ?></h1>
 
     <!-- Tabela -->
@@ -53,7 +53,7 @@ require "Components/Header.php";
         </table>
         <button type="submit" hidden></button>
     </form>
-</div>
+</main>
 
 <?php
 $content = ob_get_clean();

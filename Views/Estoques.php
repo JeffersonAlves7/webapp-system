@@ -4,13 +4,13 @@ ob_start();
 
 require "Components/Header.php";
 ?>
-<div class="container">
-    <h1 class="mt-4 mb-3"> <?php echo $pageTitle ?></h1>
+<main>
+    <h1 class="mt-4 mb-3"> <?= $pageTitle ?></h1>
 
     <!-- Estoques -->
     <div class="d-flex gap-3">
         <form method="get">
-            <button type="submit" class="btn btn-custom <?php echo isset($_GET["estoque"]) ? "" : "active" ?>">Geral</button>
+            <button type="submit" class="btn btn-custom <?= isset($_GET["estoque"]) ? "" : "active" ?>">Geral</button>
         </form>
 
         <?php
@@ -37,9 +37,9 @@ require "Components/Header.php";
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0;">
                 <tr>
-                    <th colspan="3"><input type="search" class="form-control" name="code" placeholder="Filtrar por código" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
-                    <th colspan="3"><input type="search" class="form-control" name="container" placeholder="Filtrar por container de origem" value="<?php echo isset($_GET["importer"]) ? $_GET["importer"] : "" ?>"></th>
-                    <th colspan="3"><input type="search" class="form-control" name="importer" placeholder="Filtrar por importadora" value="<?php echo isset($_GET["importer"]) ? $_GET["importer"] : "" ?>"></th>
+                    <th colspan="3"><input type="search" class="form-control" name="code" placeholder="Filtrar por código" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
+                    <th colspan="3"><input type="search" class="form-control" name="container" placeholder="Filtrar por container de origem" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>"></th>
+                    <th colspan="3"><input type="search" class="form-control" name="importer" placeholder="Filtrar por importadora" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>"></th>
                     <th></th>
                 </tr>
                 <tr>
@@ -72,7 +72,7 @@ require "Components/Header.php";
         </table>
         <button type="submit" hidden></button>
     </form>
-</div>
+</main>
 
 <!-- <div class="modal fade" id="newStock" tabindex="-1" aria-labelledby="newStockLabel" aria-hidden="true">
     <div class="modal-dialog">

@@ -5,7 +5,7 @@ ob_start();
 require "Components/Header.php";
 ?>
 <main>
-    <h1 class="mb-3"><?php echo $pageTitle ?> - Produtos</h1>
+    <h1 class="mb-3"><?= $pageTitle ?> - Produtos</h1>
     <div style="min-width: 300px; overflow: auto; max-width: 100vw">
         <table class="table table-striped" style="min-width:max-content">
             <thead class="thead-dark" style="position: sticky; top: 0;">

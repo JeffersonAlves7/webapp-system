@@ -5,7 +5,7 @@ ob_start();
 require "Components/Header.php";
 ?>
 
-<div class="container position-relative">
+<main class="container position-relative">
     <div class="d-flex gap-4 align-items-center">
         <button id="go-back" class="btn btn-custom">
             <i class="bi bi-arrow-left"></i>
@@ -14,38 +14,7 @@ require "Components/Header.php";
         <h1 class="mt-4 mb-3">Conferir transferências</h1>
     </div>
 
-    <?php
-    // Verifica se a variável $sucesso está definida e é true
-    if (isset($sucesso) && $sucesso) {
-    ?>
-        <div id="successAlert" class="alert alert-success alert-dismissible fade show fixed-bottom mx-auto my-3" role="alert" style="max-width: 600px;">
-            <strong>Sucesso!</strong> ao realizar a ação
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        <script>
-            // Fecha o alerta de sucesso automaticamente após 5 segundos
-            setTimeout(function() {
-                var successAlert = document.getElementById('successAlert');
-                successAlert.remove();
-            }, 5000);
-        </script>
-    <?php
-    } elseif (!empty($mensagem_erro)) { // Verifica se a mensagem de erro não está vazia
-    ?>
-        <div id="errorAlert" class="alert alert-danger alert-dismissible fade show fixed-bottom mx-auto my-3" role="alert" style="max-width: 600px;">
-            <strong>Erro!</strong> <?php echo $mensagem_erro; ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        <script>
-            // Fecha o alerta de erro automaticamente após 5 segundos
-            setTimeout(function() {
-                var errorAlert = document.getElementById('errorAlert');
-                errorAlert.remove();
-            }, 5000);
-        </script>
-    <?php } ?>
+    <?php require "Components/StatusMessage.php" ?>
 
     <table class="table table-striped">
         <thead class="thead-dark" style="position: sticky; top: 0;">
@@ -91,12 +60,7 @@ require "Components/Header.php";
             </form>
         </div>
     <?php endif; ?>
-</div>
-
-<?php
-$content = ob_get_clean();
-include "Components/Template.php";
-?>
+</main>
 
 <script>
     window.addEventListener('load', (event) => {
@@ -156,3 +120,8 @@ include "Components/Template.php";
         });
     });
 </script>
+
+<?php
+$content = ob_get_clean();
+include "Components/Template.php";
+?>

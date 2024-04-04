@@ -33,11 +33,11 @@ ob_start();
                 </tr>
                 <tr>
                     <th></th>
-                    <th><input type="search" class="form-control" name="code" placeholder="Filtrar por código" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
-                    <th><input type="search" class="form-control" name="ean" placeholder="Filtrar por EAN" value="<?php echo isset($_GET["ean"]) ? $_GET["ean"] : "" ?>"></th>
-                    <th><input type="search" class="form-control" name="importer" placeholder="Filtrar por importadora" value="<?php echo isset($_GET["importer"]) ? $_GET["importer"] : "" ?>"></th>
-                    <th><input type="search" class="form-control" name="description" placeholder="Filtrar por descrição" value="<?php echo isset($_GET["description"]) ? $_GET["description"] : "" ?>"></th>
-                    <th colspan="3"><input type="search" class="form-control" name="chinese_description" placeholder="Filtrar por descrição em Chinês" value="<?php echo isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>"></th>
+                    <th><input type="search" class="form-control" name="code" placeholder="Filtrar por código" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
+                    <th><input type="search" class="form-control" name="ean" placeholder="Filtrar por EAN" value="<?= isset($_GET["ean"]) ? $_GET["ean"] : "" ?>"></th>
+                    <th><input type="search" class="form-control" name="importer" placeholder="Filtrar por importadora" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>"></th>
+                    <th><input type="search" class="form-control" name="description" placeholder="Filtrar por descrição" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>"></th>
+                    <th colspan="3"><input type="search" class="form-control" name="chinese_description" placeholder="Filtrar por descrição em Chinês" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>"></th>
                 </tr>
             </thead>
 
@@ -97,23 +97,23 @@ ob_start();
 
     <div class="d-flex justify-content-between mt-3">
         <form method="GET">
-            <input type="hidden" name="code" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>">
-            <input type="hidden" name="ean" value="<?php echo isset($_GET["ean"]) ? $_GET["ean"] : "" ?>">
-            <input type="hidden" name="importer" value="<?php echo isset($_GET["importer"]) ? $_GET["importer"] : "" ?>">
-            <input type="hidden" name="description" value="<?php echo isset($_GET["description"]) ? $_GET["description"] : "" ?>">
-            <input type="hidden" name="chinese_description" value="<?php echo isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>">
-            <input type="hidden" name="page" value="<?php echo ($_GET['page'] ?? 1) - 1; ?>">
+            <input type="hidden" name="code" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
+            <input type="hidden" name="ean" value="<?= isset($_GET["ean"]) ? $_GET["ean"] : "" ?>">
+            <input type="hidden" name="importer" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>">
+            <input type="hidden" name="description" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>">
+            <input type="hidden" name="chinese_description" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>">
+            <input type="hidden" name="page" value="<?= ($_GET['page'] ?? 1) - 1; ?>">
             <button class="btn btn-primary" <?php if (!isset($_GET["page"]) || intval($_GET["page"]) <= 1) {
                                                 echo "disabled";
                                             } ?>>Voltar</button>
         </form>
         <form method="GET">
-            <input type="hidden" name="code" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>">
-            <input type="hidden" name="ean" value="<?php echo isset($_GET["ean"]) ? $_GET["ean"] : "" ?>">
-            <input type="hidden" name="importer" value="<?php echo isset($_GET["importer"]) ? $_GET["importer"] : "" ?>">
-            <input type="hidden" name="description" value="<?php echo isset($_GET["description"]) ? $_GET["description"] : "" ?>">
-            <input type="hidden" name="chinese_description" value="<?php echo isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>">
-            <input type="hidden" name="page" value="<?php echo ($_GET['page'] ?? 1) + 1; ?>">
+            <input type="hidden" name="code" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
+            <input type="hidden" name="ean" value="<?= isset($_GET["ean"]) ? $_GET["ean"] : "" ?>">
+            <input type="hidden" name="importer" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>">
+            <input type="hidden" name="description" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>">
+            <input type="hidden" name="chinese_description" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>">
+            <input type="hidden" name="page" value="<?= ($_GET['page'] ?? 1) + 1; ?>">
             <button class="btn btn-primary" <?php if (!isset($products) || !$products->num_rows > 0) {
                                                 echo "disabled";
                                             } ?>>Próxima</button>

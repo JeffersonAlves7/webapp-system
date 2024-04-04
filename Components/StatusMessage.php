@@ -17,7 +17,7 @@ if (isset($sucesso) && $sucesso) {
 } elseif (!empty($mensagem_erro)) { // Verifica se a mensagem de erro não está vazia
 ?>
     <div id="errorAlert" class="alert alert-danger alert-dismissible fade show fixed-bottom mx-auto my-3" role="alert" style="max-width: 600px;">
-        <strong>Erro!</strong> <?php echo $mensagem_erro; ?>
+        <strong>Erro!</strong> <?= $mensagem_erro; ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 

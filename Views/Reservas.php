@@ -5,15 +5,15 @@ ob_start();
 
 <?php require "Components/Header.php" ?>
 
-<div class="container">
-    <h1 class="mt-4 mb-3"><?php echo $pageTitle ?></h1>
+<main>
+    <h1 class="mt-4 mb-3"><?= $pageTitle ?></h1>
 
     <!-- Estoques -->
     <div class="d-flex gap-3">
         <form method="get">
-            <button type="submit" class="btn btn-custom <?php echo isset($_GET["estoque"]) ? "" : "active" ?>">Geral</button>
-            <input type="hidden" name="client" value="<?php echo isset($_GET["client"]) ? $_GET["client"] : "" ?>">
-            <input type="hidden" name="code" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>">
+            <button type="submit" class="btn btn-custom <?= isset($_GET["estoque"]) ? "" : "active" ?>">Geral</button>
+            <input type="hidden" name="client" value="<?= isset($_GET["client"]) ? $_GET["client"] : "" ?>">
+            <input type="hidden" name="code" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
         </form>
 
         <?php
@@ -26,8 +26,8 @@ ob_start();
                 <form method='get'>
                     <input type='hidden' name='estoque' value='<?= $ID ?>' />
                     <button type='submit' class='btn btn-custom <?= $active ?>'><?= $name ?></button>
-                    <input type="hidden" name="client" value="<?php echo isset($_GET["client"]) ? $_GET["client"] : "" ?>">
-                    <input type="hidden" name="code" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>">
+                    <input type="hidden" name="client" value="<?= isset($_GET["client"]) ? $_GET["client"] : "" ?>">
+                    <input type="hidden" name="code" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
                 </form>
         <?php
             }
@@ -36,13 +36,13 @@ ob_start();
     </div>
 
     <form method="get" class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-        <input type="hidden" name="estoque" value="<?php echo isset($_GET["estoque"]) ? $_GET["estoque"] : "" ?>">
+        <input type="hidden" name="estoque" value="<?= isset($_GET["estoque"]) ? $_GET["estoque"] : "" ?>">
 
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0;">
                 <tr>
-                    <th colspan="2"><input type="search" class="form-control" name="code" placeholder="Filtrar por código" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
-                    <th colspan="2"><input type="search" class="form-control" name="client" placeholder="Filtrar por cliente" value="<?php echo isset($_GET["client"]) ? $_GET["client"] : "" ?>"></th>
+                    <th colspan="2"><input type="search" class="form-control" name="code" placeholder="Filtrar por código" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
+                    <th colspan="2"><input type="search" class="form-control" name="client" placeholder="Filtrar por cliente" value="<?= isset($_GET["client"]) ? $_GET["client"] : "" ?>"></th>
                     <th><button type="submit" class="btn btn-custom">Pesquisar</button></th>
                     <th colspan="3"></th>
                 </tr>
@@ -91,26 +91,26 @@ ob_start();
 
     <div class="d-flex justify-content-between mt-3">
         <form method="GET">
-            <input type="hidden" name="estoque" value="<?php echo isset($_GET["estoque"]) ? $_GET["estoque"] : "" ?>">
-            <input type="hidden" name="client" value="<?php echo isset($_GET["client"]) ? $_GET["client"] : "" ?>">
-            <input type="hidden" name="code" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>">
-            <input type="hidden" name="page" value="<?php echo ($_GET['page'] ?? 1) - 1; ?>">
+            <input type="hidden" name="estoque" value="<?= isset($_GET["estoque"]) ? $_GET["estoque"] : "" ?>">
+            <input type="hidden" name="client" value="<?= isset($_GET["client"]) ? $_GET["client"] : "" ?>">
+            <input type="hidden" name="code" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
+            <input type="hidden" name="page" value="<?= ($_GET['page'] ?? 1) - 1; ?>">
             <button class="btn btn-primary" <?php if (!isset($_GET["page"]) || intval($_GET["page"]) <= 1) {
                                                 echo "disabled";
                                             } ?>>Voltar</button>
         </form>
 
         <form method="GET">
-            <input type="hidden" name="estoque" value="<?php echo isset($_GET["estoque"]) ? $_GET["estoque"] : "" ?>">
-            <input type="hidden" name="client" value="<?php echo isset($_GET["client"]) ? $_GET["client"] : "" ?>">
-            <input type="hidden" name="code" value="<?php echo isset($_GET["code"]) ? $_GET["code"] : "" ?>">
-            <input type="hidden" name="page" value="<?php echo ($_GET['page'] ?? 1) + 1; ?>">
+            <input type="hidden" name="estoque" value="<?= isset($_GET["estoque"]) ? $_GET["estoque"] : "" ?>">
+            <input type="hidden" name="client" value="<?= isset($_GET["client"]) ? $_GET["client"] : "" ?>">
+            <input type="hidden" name="code" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
+            <input type="hidden" name="page" value="<?= ($_GET['page'] ?? 1) + 1; ?>">
             <button class="btn btn-primary" <?php if (!isset($reserves) || !$reserves->num_rows > 0) {
                                                 echo "disabled";
                                             } ?>>Próxima</button>
         </form>
     </div>
-</div>
+</main>
 
 <!-- Modal para confirmar cancelamento da reserva -->
 <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">

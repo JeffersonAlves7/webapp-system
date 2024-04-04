@@ -5,8 +5,8 @@ ob_start();
 require "Components/Header.php";
 ?>
 
-<div class="container position-relative">
-    <h1 class="mt-4 mb-3"><?php echo $pageTitle ?></h1>
+<main class="container position-relative">
+    <h1 class="mt-4 mb-3"><?= $pageTitle ?></h1>
 
     <div class="d-flex gap-3">
         <button class="btn btn-custom active">Entrada</button>
@@ -24,40 +24,7 @@ require "Components/Header.php";
         </a>
     </div>
 
-    <?php
-    // Verifica se a variável $sucesso está definida e é true
-    if (isset($sucesso) && $sucesso) {
-    ?>
-        <div id="successAlert" class="alert alert-success alert-dismissible fade show fixed-bottom mx-auto my-3" role="alert" style="max-width: 600px;">
-            <strong>Sucesso!</strong> As informações foram inseridas com sucesso!
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        <script>
-            // Fecha o alerta de sucesso automaticamente após 5 segundos
-            setTimeout(function() {
-                var successAlert = document.getElementById('successAlert');
-                successAlert.remove();
-            }, 5000);
-        </script>
-    <?php
-    } elseif (!empty($mensagem_erro)) { // Verifica se a mensagem de erro não está vazia
-    ?>
-        <div id="errorAlert" class="alert alert-danger alert-dismissible fade show fixed-bottom mx-auto my-3" role="alert" style="max-width: 600px;">
-            <strong>Erro!</strong> <?php echo $mensagem_erro; ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        <script>
-            // Fecha o alerta de erro automaticamente após 5 segundos
-            setTimeout(function() {
-                var errorAlert = document.getElementById('errorAlert');
-                errorAlert.remove();
-            }, 5000);
-        </script>
-    <?php
-    }
-    ?>
+    <?php require "Components/StatusMessage.php" ?>
 
     <div class="d-flex justify-content-center align-items-center mt-3">
         <div class="card border rounded shadow p-2" style="max-width: 600px; width: 100%;">
@@ -105,7 +72,7 @@ require "Components/Header.php";
         </div>
     </div>
 
-</div>
+</main>
 
 <style>
     .product-list-container {
@@ -140,7 +107,6 @@ require "Components/Header.php";
         border: 1px solid #007bff;
     }
 </style>
-
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {

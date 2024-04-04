@@ -4,8 +4,8 @@ ob_start();
 
 require "Components/Header.php";
 ?>
-<div class="container">
-    <h1><?php echo $pageTitle ?> - Produtos no Container</h1>
+<main>
+    <h1><?= $pageTitle ?> - Produtos no Container</h1>
 
     <!-- Tabela -->
     <!-- <form method="get" id="products-form" style="max-height: 400px; overflow-y: auto;">
@@ -75,7 +75,7 @@ require "Components/Header.php";
             </tbody>
         </table>
     </div>
-</div>
+</main>
 
 <script>
 
