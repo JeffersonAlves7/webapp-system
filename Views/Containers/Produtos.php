@@ -56,7 +56,7 @@ require "Components/Header.php";
                             <td>
                                 <p class="text-center">
                                     <?php
-                                    if ($row['in_stock'] && !$row['arrival_date']) {
+                                    if ($row['in_stock'] && !$row['departure_date']) {
                                         echo "Chegou no prazo.";
                                     } else {
                                         $expected_arrival_date = new DateTime(date('Y-m-d', strtotime($row['departure_date'] . ' + 30 days')));
