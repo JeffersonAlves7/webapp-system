@@ -6,7 +6,7 @@ require "Components/Header.php";
 ?>
 <main>
     <h1 class="mb-3"><?= $pageTitle ?> - Produtos</h1>
-    <div style="min-width: 300px; overflow: auto; max-width: 100vw">
+    <div class="table-responsive">
         <table class="table table-striped" style="min-width:max-content">
             <thead class="thead-dark" style="position: sticky; top: 0;">
                 <tr>
@@ -100,6 +100,11 @@ require "Components/Header.php";
                 <?php } ?>
             </tbody>
         </table>
+    </div>
+
+    <div class="d-flex justify-content-between gap-2">
+        <a href="/embarques" class="btn btn-primary">Voltar</a>
+        <a href="/embarques/conferir/<?= $container_ID ?>" class="btn btn-primary">Conferir embarque</a>
     </div>
 </main>
 

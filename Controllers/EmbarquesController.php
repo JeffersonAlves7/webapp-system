@@ -41,6 +41,21 @@ class EmbarquesController extends _Controller
         include_once "Views/Containers/Produtos.php";
     }
 
+    public function conferir($container_ID)
+    {
+        $page = 1;
+
+        if (isset($_GET["page"])) {
+            $page = (int) $_GET["page"];
+        }
+
+        $where = "1 = 1 ";
+
+        $products_in_container = $this->containerModel->produtosById($container_ID, $page, where: $where);
+        
+        include_once "Views/Containers/Conferir.php";
+    }
+
     public function deletarProduto()
     {
         $redirect = "/";
