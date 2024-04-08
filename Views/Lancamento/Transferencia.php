@@ -150,70 +150,29 @@ require "Components/Header.php";
     }
 </style>
 
+<script src="/public/lancamento.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const inputProduto = document.getElementById("inputProduto");
-        const inputProdutoId = document.getElementById("inputProdutoId");
-        const productListContainer = document.getElementById("productListContainer");
+    // Função para verificar se os valores selecionados nos dois selects são diferentes
+    function verificarEstoquesDiferentes() {
+        var estoqueOrigem = document.getElementById('inputEstoqueOrigem').value;
+        var estoqueDestino = document.getElementById('inputEstoqueDestino').value;
 
-        inputProduto.addEventListener("input", function() {
-            const search = inputProduto.value.trim();
-
-            if (search.length === 0) {
-                productListContainer.innerHTML = ""; // Limpa o conteúdo
-                return;
-            }
-
-            fetch(`/produtos/findAllByCodeOrEan?search=${search}`)
-                .then(response => response.json())
-                .then(data => {
-                    const products = data.products;
-                    const productListHTML = products.map(product => {
-                        return `<div>
-                            <button type="button" class="btn btn-outline-primary product-button" data-id="${product.ID}" data-code="${product.code}">
-                                ${product.code} ${product.importer}
-                            </button>
-                        </div>`;
-                    }).join("");
-
-                    productListContainer.innerHTML = productListHTML;
-
-                    // Adiciona o evento de clique aos botões
-                    document.querySelectorAll(".product-button").forEach(button => {
-                        button.addEventListener("click", function() {
-                            inputProduto.value = this.getAttribute("data-code"); // Define o valor visualmente no input
-                            inputProdutoId.value = this.getAttribute("data-id"); // Define o ID do produto nos dados do input oculto
-                            productListContainer.innerHTML = "";
-                        });
-                    });
-                })
-                .catch(error => {
-                    console.error("Erro ao buscar produtos:", error);
-                });
-        });
-
-        // Função para verificar se os valores selecionados nos dois selects são diferentes
-        function verificarEstoquesDiferentes() {
-            var estoqueOrigem = document.getElementById('inputEstoqueOrigem').value;
-            var estoqueDestino = document.getElementById('inputEstoqueDestino').value;
-
-            if (estoqueOrigem === estoqueDestino) {
-                alert('Os estoques de origem e destino não podem ser iguais. Por favor, selecione estoques diferentes.');
-                return false;
-            }
-            return true;
+        if (estoqueOrigem === estoqueDestino) {
+            alert('Os estoques de origem e destino não podem ser iguais. Por favor, selecione estoques diferentes.');
+            return false;
         }
+        return true;
+    }
 
-        // Adiciona um listener ao formulário para chamar a função antes de enviar
-        document.querySelector('form').addEventListener('submit', function(event) {
-            console.log("submit")
-            if (!verificarEstoquesDiferentes()) {
-                try {
-                    event.target.reset()
-                } catch {}
-                event.preventDefault(); // Impede o envio do formulário se os estoques forem iguais
-            }
-        });
+    // Adiciona um listener ao formulário para chamar a função antes de enviar
+    document.querySelector('form').addEventListener('submit', function(event) {
+        console.log("submit")
+        if (!verificarEstoquesDiferentes()) {
+            try {
+                event.target.reset()
+            } catch {}
+            event.preventDefault(); // Impede o envio do formulário se os estoques forem iguais
+        }
     });
 </script>
 
