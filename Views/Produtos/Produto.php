@@ -59,20 +59,20 @@ ob_start();
         </table>
     </div>
 
-    <?php if ($transacoes->num_rows > 0) : ?>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Tipo</th>
-                        <th>Quantidade</th>
-                        <th>Estoque Origem</th>
-                        <th>Estoque Destino</th>
-                        <th>Observação</th>
-                        <th>Data</th>
-                        <th></th>
-                    </tr>
-                </thead>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Quantidade</th>
+                    <th>Estoque Origem</th>
+                    <th>Estoque Destino</th>
+                    <th>Observação</th>
+                    <th>Data</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <?php if ($transacoes->num_rows > 0) : ?>
                 <tbody>
                     <?php while ($transacao = $transacoes->fetch_assoc()) : ?>
                         <tr>
@@ -88,11 +88,13 @@ ob_start();
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
-            </table>
-        </div>
-    <?php else : ?>
-        <p>Nenhuma transação encontrada.</p>
-    <?php endif; ?>
+            <?php else : ?>
+                <tbody>
+                    <td colspan="7">Nenhuma transação encontrada.</td>
+                </tbody>
+            <?php endif; ?>
+        </table>
+    </div>
 </main>
 
 <?php require "Components/StatusMessage.php" ?>
