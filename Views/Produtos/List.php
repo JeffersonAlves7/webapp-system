@@ -48,8 +48,10 @@ ob_start();
                     return '';
                 }
 
-                $shortDescription = substr($description, 0, 30);
-                if (strlen($description) > 30) {
+                $size = 25;
+
+                $shortDescription = substr($description, 0, $size);
+                if (strlen($description) > $size) {
                     $shortDescription .= '... <a href="#" class="toggle-description" data-full-description="' . htmlspecialchars($description) . '">Ver mais</a>';
                 }
 
@@ -238,14 +240,6 @@ ob_start();
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll('.toggle-description').forEach(function(element) {
-            element.addEventListener('click', function(event) {
-                event.preventDefault();
-                var fullDescription = this.getAttribute('data-full-description');
-                alert(fullDescription);
-            });
-        });
-
         document.querySelectorAll('.btn-edit').forEach(function(button) {
             button.addEventListener('click', function() {
                 var productId = this.getAttribute('data-id');

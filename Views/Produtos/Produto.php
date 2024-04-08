@@ -24,9 +24,11 @@ ob_start();
         if (!isset($description)) {
             return '';
         }
-        $len = 20;
-        $shortDescription = substr($description, 0, $len);
-        if (strlen($description) > $len) {
+
+        $size = 15;
+
+        $shortDescription = substr($description, 0, $size);
+        if (strlen($description) > $size) {
             $shortDescription .= '... <a href="#" class="toggle-description" data-full-description="' . htmlspecialchars($description) . '">Ver mais</a>';
         }
 
@@ -118,23 +120,12 @@ ob_start();
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll('.toggle-description').forEach(function(element) {
-            element.addEventListener('click', function(event) {
-                event.preventDefault();
-                var fullDescription = this.getAttribute('data-full-description');
-                alert(fullDescription);
-            });
+    document.querySelectorAll('.delete-transaction').forEach(function(element) {
+        element.addEventListener('click', function() {
+            var reserveID = this.getAttribute('data-id');
+            document.getElementById('deleteTransactionId').value = reserveID;
         });
-
-        // Adiciona manipuladores de eventos para os botões de cancelamento
-        document.querySelectorAll('.delete-transaction').forEach(function(element) {
-            element.addEventListener('click', function() {
-                var reserveID = this.getAttribute('data-id');
-                document.getElementById('deleteTransactionId').value = reserveID;
-            });
-        });
-    })
+    });
 </script>
 
 <?php
