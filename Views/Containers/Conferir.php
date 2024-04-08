@@ -34,18 +34,15 @@ require "Components/Header.php";
                                 </p>
                             </td>
                             <td>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" value="0" min="0" max="<?= $row['quantity_expected'] ?>" name="quantity_received" required>
-                                    <div class="input-group-append">
-                                        <button class="btn btn-outline-secondary fill-button" title="Preencher com a quantidade esperada" data-id="<?= $row['ID'] ?>">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
-                                                <path fill-rule="evenodd" d="M8 3.5a.5.5 0 0 1 .5.5v2.793l1.354-1.353a.5.5 0 0 1 .708.708l-2.147 2.146a.5.5 0 0 1-.708 0L5.94 6.646a.5.5 0 0 1 .708-.708L7.5 6.793V4a.5.5 0 0 1 .5-.5z" />
-                                                <path fill-rule="evenodd" d="M8 4.5a.5.5 0 0 0-.5.5V7.207l-1.354-1.353a.5.5 0 0 0-.708.708l2.147 2.146a.5.5 0 0 0 .708 0l2.147-2.146a.5.5 0 0 0-.708-.708L8.5 7.207V5a.5.5 0 0 0-.5-.5z" />
-                                            </svg>
-                                        </button>
-                                    </div>
+                                <div class="d-flex" style="width: 150px;">
+                                    <input type="number" class="form-control" placeholder="0" min="0" max="<?= $row['quantity_expected'] ?>" name="quantity_received" required>
+                                    <button class="btn btn-outline-secondary fill-button" title="Preencher com a quantidade esperada" data-id="<?= $row['ID'] ?>">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M8 3.5a.5.5 0 0 1 .5.5v2.793l1.354-1.353a.5.5 0 0 1 .708.708l-2.147 2.146a.5.5 0 0 1-.708 0L5.94 6.646a.5.5 0 0 1 .708-.708L7.5 6.793V4a.5.5 0 0 1 .5-.5z" />
+                                            <path fill-rule="evenodd" d="M8 4.5a.5.5 0 0 0-.5.5V7.207l-1.354-1.353a.5.5 0 0 0-.708.708l2.147 2.146a.5.5 0 0 0 .708 0l2.147-2.146a.5.5 0 0 0-.708-.708L8.5 7.207V5a.5.5 0 0 0-.5-.5z" />
+                                        </svg>
+                                    </button>
                                 </div>
-
                             </td>
                             <td>
                             </td>
