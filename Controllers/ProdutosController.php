@@ -160,6 +160,12 @@ class ProdutosController extends _Controller
 
         $result = $this->productModel->byId($id);
 
+        $page = 1;
+
+        if (isset($_GET['page'])) {
+            $page = $_GET['page'];
+        }
+
         // Se não encontrar deve voltar para a página iniial
         if ($result->num_rows == 0) {
             header("Location: /");
@@ -167,7 +173,7 @@ class ProdutosController extends _Controller
 
         $produto = $result->fetch_assoc();
         $quantidade_em_estoque = $this->productModel->quantityInStockById($id);
-        $transacoes = $this->transacaoModel->getAllByProductId($id);
+        $transacoes = $this->transacaoModel->getAllByProductId($id, $page);
         require_once "Views/Produtos/Produto.php";
     }
 

@@ -4,8 +4,19 @@ require_once "Models/Model.php";
 
 class Transacao extends Model
 {
-    public function getAllByProductId($id)
+    private $MAX_LIMIT = 50;
+
+    public function getAllByProductId($id, $page = 1, $limit = 20)
     {
+        if ($page <= 0) {
+            $page = 1;
+        }
+
+        if ($limit > $this->MAX_LIMIT) {
+            $limit = $this->MAX_LIMIT;
+        }
+
+        $offset = ($page - 1) * $limit;
         $sql = "SELECT 
             t.ID, 
             t.quantity, 
@@ -18,9 +29,13 @@ class Transacao extends Model
         INNER JOIN transaction_types tt ON t.type_ID = tt.ID
         LEFT JOIN stocks sf ON t.from_stock_ID = sf.ID
         LEFT JOIN stocks st ON t.to_stock_ID = st.ID
-        WHERE product_ID = $id ORDER BY created_at DESC";
+        WHERE product_ID = $id ORDER BY created_at DESC
+        LIMIT 
+            $limit OFFSET $offset";
 
-        return $this->db->query($sql);
+        $result = $this->db->query($sql);
+
+        return $result;
     }
 
     public function delete($id)
@@ -28,7 +43,7 @@ class Transacao extends Model
         $result =  $this->db->query("SELECT * FROM `transactions` t 
             INNER JOIN `transaction_types` tt ON t.`type_ID` = tt.ID
             WHERE t.`ID` = $id");
-            
+
         if ($result->num_rows > 0) {
             $transaction = $result->fetch_assoc();
             $type = $transaction["type"];
