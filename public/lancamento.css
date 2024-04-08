@@ -1,0 +1,32 @@
+.product-list-container {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  max-height: 250px;
+  /* Defina a altura máxima que desejar */
+  overflow-y: auto;
+  /* Adiciona uma barra de rolagem vertical caso os botões ultrapassem a altura máxima */
+  max-width: 300px;
+  z-index: 9999;
+  /* Garante que os botões estejam na frente do conteúdo */
+}
+
+.product-button {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  text-align: left;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.product-button:hover {
+  background-color: #f0f0f0;
+  color: black;
+}
+
+.product-button.selected {
+  border: 1px solid #007bff;
+}

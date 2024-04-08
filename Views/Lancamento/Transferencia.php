@@ -1,10 +1,10 @@
 <?php
+$extraHeadContent = '<link rel="stylesheet" href="/public/lancamento.css">';
 $pageTitle = "Incluir Lançamento";
 ob_start();
 
 require "Components/Header.php";
 ?>
-
 <main class="container position-relative">
     <h1 class="mt-4 mb-3"><?= $pageTitle ?></h1>
 
@@ -41,7 +41,7 @@ require "Components/Header.php";
                             <div class="mb-3">
                                 <label for="inputProduto" class="form-label">Produto</label>
                                 <input type="text" class="form-control" id="inputProduto" name="produto" placeholder="Insira o código ou EAN" required>
-                                <input type="hidden" id="inputProdutoId" name="produto_id"> <!-- Campo oculto para armazenar o ID do produto -->
+                                <input type="hidden" id="inputProdutoId" name="produto_id" required readonly>
                                 <div id="productListContainer" class="product-list-container"></div> <!-- Container para exibir a lista de produtos -->
                             </div>
                         </div>
@@ -116,41 +116,8 @@ require "Components/Header.php";
     </div>
 </main>
 
-<style>
-    .product-list-container {
-        position: absolute;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        max-height: 200px;
-        /* Defina a altura máxima que desejar */
-        overflow-y: auto;
-        /* Adiciona uma barra de rolagem vertical caso os botões ultrapassem a altura máxima */
-        width: max-content;
-        z-index: 9999;
-        /* Garante que os botões estejam na frente do conteúdo */
-    }
-
-    .product-button {
-        display: block;
-        width: 100%;
-        padding: 8px;
-        text-align: left;
-        border: none;
-        background-color: transparent;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .product-button:hover {
-        background-color: #f0f0f0;
-    }
-
-    .product-button.selected {
-        border: 1px solid #007bff;
-    }
-</style>
-
 <script src="/public/lancamento.js"></script>
+
 <script>
     // Função para verificar se os valores selecionados nos dois selects são diferentes
     function verificarEstoquesDiferentes() {

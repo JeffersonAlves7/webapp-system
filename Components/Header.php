@@ -3,7 +3,7 @@
 <header>
   <nav class="navbar navbar-expand-md p-0">
     <div id="logoArea">
-      <a class="navbar-brand p-0 m-0" href="#">ATTUS SYSTEM</a>
+      <a class="navbar-brand p-0 m-0" href="/">ATTUS SYSTEM</a>
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
