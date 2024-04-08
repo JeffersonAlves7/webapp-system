@@ -6,7 +6,13 @@ require "Components/Header.php";
 ?>
 
 <main>
-    <h1 class="mt-4 mb-3"><?= $pageTitle ?> - Transferências</h1>
+    <div class="d-flex gap-4 align-items-center">
+        <button id="go-back" class="btn btn-custom">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+
+        <h1 class="mt-4 mb-3"><?= $pageTitle ?> - Transferências</h1>
+    </div>
 
     <table class="table table-striped">
         <thead class="thead-dark" style="position: sticky; top: 0;">
