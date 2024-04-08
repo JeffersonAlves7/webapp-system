@@ -42,6 +42,7 @@ require "Components/Header.php";
                         <label for="selecionar-todos">Selecionar</label>
                     </th>
                     <th>Produto</th>
+                    <th>Importadora</th>
                     <th>Descrição</th>
                     <th>Quantidade</th>
                     <th>Origem</th>
@@ -54,6 +55,7 @@ require "Components/Header.php";
                     <tr id=<?= "row-" . $transferencia['ID'] ?>>
                         <td><input type="checkbox" name="is-checked" value="<?= $transferencia["ID"] ?>"></td>
                         <td><?= $transferencia["code"] ?></td>
+                        <td><?= $transferencia["importer"] ?></td>
                         <td><?= generateDescription($transferencia["description"]) ?></td>
                         <td><?= $transferencia["quantity"] ?></td>
                         <td>
@@ -75,7 +77,7 @@ require "Components/Header.php";
 
                 <?php if (empty($transferencias)) : ?>
                     <tr>
-                        <td colspan="6" class="text-center">Nenhuma transferência pendente</td>
+                        <td colspan="8" class="text-center">Nenhuma transferência pendente</td>
                     </tr>
                 <?php endif; ?>
             </tbody>

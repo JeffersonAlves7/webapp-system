@@ -267,7 +267,7 @@ class Lancamento
 
     public function getTransferenciasPendentes()
     {
-        $result = $this->db->query("SELECT `transferences`.*, `products`.`code`, `products`.`description`, `from_stock`.`name` as `from_stock_name`, `to_stock`.`name` as `to_stock_name` FROM `transferences` 
+        $result = $this->db->query("SELECT `transferences`.*, `products`.`code`, `products`.`importer`, `products`.`description`, `from_stock`.`name` as `from_stock_name`, `to_stock`.`name` as `to_stock_name` FROM `transferences` 
         INNER JOIN `products` ON `transferences`.`product_ID` = `products`.`ID`
         LEFT JOIN `stocks` AS `from_stock` ON `transferences`.`from_stock_ID` = `from_stock`.`ID`
         LEFT JOIN `stocks` AS `to_stock` ON `transferences`.`to_stock_ID` = `to_stock`.`ID`
