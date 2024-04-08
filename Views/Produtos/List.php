@@ -76,7 +76,7 @@ ob_start();
                             <td><?= generateDescription($row["description"]) ?></td>
                             <td><?= generateDescription($row["chinese_description"]) ?></td>
                             <td>
-                                <button type='button' class='btn btn-edit' data-bs-toggle='modal' data-bs-target='#updateProductModal' data-id='<?= htmlspecialchars($row["ID"]) ?>' data-code='<?= htmlspecialchars($row["code"]) ?>' data-ean='<?= htmlspecialchars($row["ean"]) ?>' data-importer='<?= htmlspecialchars($row["importer"]) ?>' data-description='<?= htmlspecialchars($row["description"]) ?>' data-chinese-description='<?= htmlspecialchars($row["chinese_description"]) ?>'>
+                                <button type='button' class='btn btn-edit' data-bs-toggle='modal' data-bs-target='#updateProductModal' data-id='<?= htmlspecialchars($row["ID"]) ?>' data-code='<?= htmlspecialchars($row["code"]) ?>' data-ean='<?= $row["ean"] ? htmlspecialchars($row["ean"]) : '' ?>' data-importer='<?= htmlspecialchars($row["importer"]) ?>' data-description='<?= $row["description"] ? htmlspecialchars($row["description"]) : '' ?>' data-chinese-description='<?= $row["chinese_description"] ? htmlspecialchars($row["chinese_description"]) : '' ?>'>
                                     <i class='bi bi-pencil-square text-primary'></i>
                                 </button>
                             </td>
