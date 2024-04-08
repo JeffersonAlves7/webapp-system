@@ -236,7 +236,7 @@ class LancamentoController extends _Controller
     {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             try {
-                $transferencias = json_decode($_POST["transference-ids"]);
+                $transferencias = json_decode($_POST["transferences"]);
                 $this->lancamentoModel->confirmarTransferencias($transferencias);
                 $_SESSION['sucesso'] = true;
             } catch (Exception $e) {

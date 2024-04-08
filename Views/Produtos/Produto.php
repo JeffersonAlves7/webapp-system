@@ -109,22 +109,18 @@ ob_start();
     $isNextDisabled = !isset($transacoes) || !$transacoes->num_rows > 0;
     ?>
 
-    <div class="d-flex justify-content-center align-items-center gap-2 flex-wraps">
-        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 300px;">
-            <form method="GET" class="d-flex align-items-center">
-                <input type="hidden" name="page" value="<?= $prevPage ?>">
-                <button class="btn btn-primary" <?= isButtonDisabled($isPrevDisabled) ?>>Voltar</button>
-            </form>
+    <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 300px; margin: 0 auto;">
+        <form method="GET" class="d-flex align-items-center">
+            <input type="hidden" name="page" value="<?= $prevPage ?>">
+            <button class="btn btn-primary" <?= isButtonDisabled($isPrevDisabled) ?>>Voltar</button>
+        </form>
 
-            <span class="text-center">Página <?= $currentPage ?></span>
+        <span class="text-center">Página <?= $currentPage ?></span>
 
-            <form method="GET">
-                <input type="hidden" name="page" value="<?= $nextPage ?>">
-                <button class="btn btn-primary" <?= isButtonDisabled($isNextDisabled) ?>>Próxima</button>
-            </form>
-        </div>
-
-        <a href="/embarques/conferir/<?= $container_ID ?>">Conferir embarque</a>
+        <form method="GET">
+            <input type="hidden" name="page" value="<?= $nextPage ?>">
+            <button class="btn btn-primary" <?= isButtonDisabled($isNextDisabled) ?>>Próxima</button>
+        </form>
     </div>
 </main>
 

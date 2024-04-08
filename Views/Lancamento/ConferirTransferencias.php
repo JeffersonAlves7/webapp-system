@@ -14,10 +14,8 @@ require "Components/Header.php";
         <h1 class="mt-4 mb-3">Conferir transferências</h1>
     </div>
 
-    <?php require "Components/StatusMessage.php" ?>
+    <?php require "Components/StatusMessage.php";
 
-
-    <?php
     function generateDescription($description)
     {
         if (!isset($description)) {
@@ -34,7 +32,6 @@ require "Components/Header.php";
         return $shortDescription;
     }
     ?>
-
 
     <div class="table-responsive">
         <table class="table table-striped">
@@ -155,11 +152,11 @@ require "Components/Header.php";
 
             const input = document.createElement('input');
             input.type = 'hidden';
-            input.name = 'transference-ids';
+            input.name = 'transferences';
             input.value = JSON.stringify(selectedIds);
             confirmForm.appendChild(input);
 
-            // confirmForm.submit();
+            confirmForm.submit();
         });
 
         const cancelForm = document.getElementById('form-cancel');

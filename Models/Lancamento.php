@@ -174,9 +174,11 @@ class Lancamento
     public function confirmarTransferencias(
         $transference_IDs
     ) {
-        $this->db->beginTransaction(); // Inicia a transação
+        $this->db->beginTransaction();
         try {
-            $transference_IDs_str = implode(",", $transference_IDs);
+            $transference_IDs_str = implode(",", array_map(function ($transference) {
+                return $transference->id;
+            }, $transference_IDs));
 
             $result = $this->db->query("SELECT `transferences`.*, `products`.`code`, `from_stock`.`name` as `from_stock_name` FROM `transferences` 
             INNER JOIN `products` ON `transferences`.`product_ID` = `products`.`ID`
@@ -187,11 +189,10 @@ class Lancamento
                 throw new Exception("Algum dos IDs de transferência não é válido");
             }
 
-            // Confirmar cada transferência
             while ($transference = $result->fetch_assoc()) {
                 $product_code = $transference["code"];
                 $product_ID = $transference["product_ID"];
-                $quantity = $transference["quantity"];
+                $quantity = $transference_IDs[array_search($transference["ID"], array_column($transference_IDs, 'id'))]->quantity;
                 $from_stock_ID = $transference["from_stock_ID"];
                 $to_stock_ID = $transference["to_stock_ID"];
                 $from_stock_name = $transference["from_stock_name"];
@@ -204,6 +205,7 @@ class Lancamento
                 );
 
                 $row = $result->fetch_assoc();
+
                 if ($row == null || $row["quantity"] < (int) $quantity) {
                     throw new Exception("Quantidade insuficiente do produto de ID '$product_ID' e Código '$product_code' no estoque '$from_stock_name'");
                 }

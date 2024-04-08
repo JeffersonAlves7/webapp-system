@@ -82,6 +82,6 @@ class EmbarquesController extends _Controller
     {
         $this->containerModel->delete($id);
         echo "Container apagado com sucesso!";
-        header("Refresh: 1; URL = /containers");
+        header("Refresh: 1; URL = /embarques");
     }
 }
