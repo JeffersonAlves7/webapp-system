@@ -61,6 +61,13 @@ class Transacao extends Model
                     $this->db->query("UPDATE `quantity_in_stock` SET quantity = quantity + $quantity 
                     WHERE product_ID = $product_ID AND stock_ID = $from_stock_ID");
                     break;
+                case "Transferência":
+                    $this->db->query("UPDATE `quantity_in_stock` SET quantity = quantity + $quantity 
+                    WHERE product_ID = $product_ID AND stock_ID = $from_stock_ID");
+
+                    $this->db->query("UPDATE `quantity_in_stock` SET quantity = quantity - $quantity 
+                    WHERE product_ID = $product_ID AND stock_ID = $to_stock_ID");
+                    break;
                 default:
                     break;
             }
