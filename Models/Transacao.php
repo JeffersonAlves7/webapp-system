@@ -18,7 +18,7 @@ class Transacao extends Model
         INNER JOIN transaction_types tt ON t.type_ID = tt.ID
         LEFT JOIN stocks sf ON t.from_stock_ID = sf.ID
         LEFT JOIN stocks st ON t.to_stock_ID = st.ID
-        WHERE product_ID = 45 ORDER BY created_at DESC";
+        WHERE product_ID = $id ORDER BY created_at DESC";
 
         return $this->db->query($sql);
     }
