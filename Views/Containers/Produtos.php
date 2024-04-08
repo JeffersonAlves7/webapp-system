@@ -23,8 +23,8 @@ require "Components/Header.php";
             </thead>
             <tbody>
                 <?php
-                if (isset($products_in_container) && count($products_in_container) > 0) {
-                    foreach ($products_in_container as $row) { ?>
+                if (isset($products_in_container) && count($products_in_container) > 0) : ?>
+                    <?php foreach ($products_in_container as $row) : ?>
                         <tr>
                             <td><?= $row['code'] ?></td>
                             <td><?= $row['importer'] ?></td>
@@ -92,19 +92,45 @@ require "Components/Header.php";
                                 </form>
                             </td>
                         </tr>
-                    <?php }
-                } else { ?>
+                    <?php endforeach; ?>
+                <?php else : ?>
                     <tr>
-                        <td colspan='5'>Nenhum produto encontrado neste container.</td>
+                        <td colspan='9' class="text-center" style="padding: 1rem;">Nenhum produto encontrado neste container.</td>
                     </tr>
-                <?php } ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
 
-    <div class="d-flex justify-content-between gap-2">
-        <a href="/embarques" class="btn btn-primary">Voltar</a>
-        <a href="/embarques/conferir/<?= $container_ID ?>" class="btn btn-primary">Conferir embarque</a>
+    <?php
+    function isButtonDisabled($condition)
+    {
+        return $condition ? 'disabled' : '';
+    }
+
+    $currentPage = $_GET['page'] ?? 1;
+    $prevPage = $currentPage - 1;
+    $nextPage = $currentPage + 1;
+    $isPrevDisabled = !isset($_GET["page"]) || intval($_GET["page"]) <= 1;
+    $isNextDisabled = !isset($products_in_container) || !count($products_in_container) > 0;
+    ?>
+
+    <div class="d-flex justify-content-center align-items-center gap-2 flex-wraps">
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 300px;">
+            <form method="GET" class="d-flex align-items-center">
+                <input type="hidden" name="page" value="<?= $prevPage ?>">
+                <button class="btn btn-primary" <?= isButtonDisabled($isPrevDisabled) ?>>Voltar</button>
+            </form>
+
+            <span class="text-center">Página <?= $currentPage ?></span>
+
+            <form method="GET">
+                <input type="hidden" name="page" value="<?= $nextPage ?>">
+                <button class="btn btn-primary" <?= isButtonDisabled($isNextDisabled) ?>>Próxima</button>
+            </form>
+        </div>
+
+        <a href="/embarques/conferir/<?= $container_ID ?>">Conferir embarque</a>
     </div>
 </main>
 

@@ -50,6 +50,7 @@ class EmbarquesController extends _Controller
         }
 
         $where = "1 = 1 ";
+        $where .= " AND in_stock = 0";
 
         $products_in_container = $this->containerModel->produtosById($container_ID, $page, where: $where);
         
