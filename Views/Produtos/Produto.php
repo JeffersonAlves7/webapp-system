@@ -36,7 +36,12 @@ ob_start();
     }
     ?>
 
-    <h1 class="mt-4 mb-3"><?= $produto["code"] ?> - <?= generateDescription($produto['description']) ?></h1>
+    <div class="d-flex gap-4 align-items-center">
+        <button id="go-back" class="btn btn-custom">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        <h1 class="mt-4 mb-3"><?= $produto["code"] ?> - <?= generateDescription($produto['description']) ?></h1>
+    </div>
 
     <div class="" style="max-width: 500px;">
         <table>
@@ -67,6 +72,7 @@ ob_start();
                     <th>Quantidade</th>
                     <th>Estoque Origem</th>
                     <th>Estoque Destino</th>
+                    <th>Cliente</th>
                     <th>Observação</th>
                     <th>Data</th>
                     <th></th>
@@ -80,6 +86,7 @@ ob_start();
                             <td><?= $transacao["quantity"]; ?></td>
                             <td><?= $transacao["from_stock"]; ?></td>
                             <td><?= $transacao["to_stock"]; ?></td>
+                            <td><?= $transacao["client_name"]; ?></td>
                             <td><?= $transacao["observation"]; ?></td>
                             <td><?= $transacao["updated_at"]; ?></td>
                             <td>
