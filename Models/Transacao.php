@@ -24,6 +24,7 @@ class Transacao extends Model
             sf.name as from_stock, 
             st.name as to_stock, 
             t.observation, 
+            t.client_name,
             t.updated_at
         FROM `transactions` t
         INNER JOIN transaction_types tt ON t.type_ID = tt.ID
