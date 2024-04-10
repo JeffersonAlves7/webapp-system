@@ -74,26 +74,26 @@ require "Components/Header.php";
                 if (!isset($_GET["estoque"]) || !$_GET["estoque"] || $_GET["estoque"] == 1) {
                     echo "<tr>
                     <th>CÓDIGO </th>
+                    <th>QUANTIDADE</br> DE ENTRADA</th>
+                    <th>SALDO </br>ATUAL</th>
+                    <th>CONTAINER</br> DE ORIGEM </th>
                     <th>IMPORTADORA </th>
-                    <th>QUANTIDADE DE ENTRADA</th>
-                    <th>SALDO ATUAL </th>
-                    <th>CONTAINER DE ORIGEM </th>
-                    <th>DATA DE ENTRADA</th>
-                    <th>DIAS EM ESTOQUE</th>
+                    <th>DATA </br>DE ENTRADA</th>
+                    <th>DIAS </br>EM ESTOQUE</th>
                     <th>GIRO</th>
-                    <th>QUANTIDADE PARA ALERTA</th>
+                    <th>QUANTIDADE </br>PARA ALERTA</th>
                     <th>OBSERVAÇÃO</th>
                     </tr>";
                 } else {
                     echo "<tr>
                         <th>CÓDIGO </th>
+                        <th>QUANTIDADE</br> DE ENTRADA</th>
+                        <th>SALDO </br>ATUAL</th>
                         <th>IMPORTADORA </th>
-                        <th>QUANTIDADE DE ENTRADA</th>
-                        <th>SALDO ATUAL</th>
-                        <th>DATA DE ENTRADA</th>
-                        <th>DIAS EM ESTOQUE</th>
+                        <th>DATA </br>DE ENTRADA</th>
+                        <th>DIAS </br>EM ESTOQUE</th>
                         <th>GIRO</th>
-                        <th>QUANTIDADE PARA ALERTA</th>
+                        <th>QUANTIDADE </br>PARA ALERTA</th>
                         <th>OBSERVAÇÃO</th>
                     </tr>";
                 }
@@ -120,7 +120,6 @@ require "Components/Header.php";
                                     $codigo
                                 </a>
                             </td>
-                            <td>$importadora</td>
                             <td>$quantidade_entrada</td>";
 
                             // Adicionar background ao saldo, verde se for maior que o alerta, vermelho se for menor e amarelo se for igual
@@ -133,6 +132,7 @@ require "Components/Header.php";
                             }
 
                             echo "<td>$container</td>
+                            <td>$importadora</td>
                             <td>$data</td>
                             <td>$dias dia(s)</td>
                             <td>$giro%</td>
@@ -156,7 +156,6 @@ require "Components/Header.php";
                                     $codigo
                                 </a>
                             </td>
-                            <td>$importadora</td>
                             <td>$quantidade_entrada</td>";
 
                             if ($saldo > $alerta) {
@@ -167,7 +166,9 @@ require "Components/Header.php";
                                 echo "<td class='bg-warning'>$saldo</td>";
                             }
 
-                            echo "<td>$data</td>
+                            echo "
+                            <td>$importadora</td>
+                            <td>$data</td>
                             <td>$dias</td>
                             <td>$giro%</td>
                             <td>$alerta</td>
