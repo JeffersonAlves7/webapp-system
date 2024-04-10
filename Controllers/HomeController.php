@@ -20,8 +20,15 @@ class HomeController extends _Controller
         //     $this->estoquesModel->create($name);
         //     header("location: /estoques");
         // }
+        
+        $page = 1;
+
+        if (isset($_GET["page"])) {
+            $page = $_GET["page"];
+        }
 
         $stocks = $this->estoquesModel->getAll();
+        $produtos = $this->estoquesModel->getProductsByStock(1, $page);
         include_once "Views/Estoques.php";
     }
 

@@ -56,48 +56,75 @@ require "Components/Header.php";
                 </tr>
             </thead>
             <tbody>
-                <?php
-                if (isset($products) && $products->num_rows > 0) {
-                    while ($row = $products->fetch_assoc()) {
-                        echo "
-                        <tr>
-                        </tr>
-                        ";
+                <?php if (isset($produtos) && count($produtos) > 0) :
+                    foreach ($produtos as $produto) {
+                        $codigo = $produto["code"];
+                        $quantidade_entrada = $produto["entry_quantity"] ?? 0;
+                        $saldo = $produto["quantity"] ?? 0;
+                        $container = $produto["container"] ?? "";
+                        $importadora = $produto["importer"] ?? "";
+                        $data = $produto["entry_date"]  ?? "";
+                        $dias = $produto["days_in_stock"] ?? 0;
+                        $giro = $produto["giro"] ?? 0;
+                        $alerta = $produto["alerta"] ?? 0;
+                        $observacao = $produto["observation"] ?? "";
+
+                        echo "<tr>
+                            <td>$codigo</td>
+                            <td>$quantidade_entrada</td>";
+
+                        // Adicionar background ao saldo, verde se for maior que o alerta, vermelho se for menor e amarelo se for igual
+                        if ($saldo > $alerta) {
+                            echo "<td class='bg-success'>$saldo</td>";
+                        } elseif ($saldo < $alerta) {
+                            echo "<td class='bg-danger'>$saldo</td>";
+                        } else {
+                            echo "<td class='bg-warning'>$saldo</td>";
+                        }
+                        
+
+                        echo "<td>$container</td>
+                            <td>$importadora</td>
+                            <td>$data</td>
+                            <td>$dias</td>
+                            <td>$giro%</td>
+                            <td>$alerta</td>
+                            <td>$observacao</td>
+                        </tr>";
                     }
-                } else {
-                    echo "<tr><td colspan='10'>Nenhum produto encontrado.</td></tr>";
-                }
-                ?>
+                endif; ?>
             </tbody>
         </table>
         <button type="submit" hidden></button>
     </form>
 </main>
 
-<!-- <div class="modal fade" id="newStock" tabindex="-1" aria-labelledby="newStockLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="newStockLabel">Novo Estoque</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="post" id="newStockForm">
-                    <input type="hidden" name="_method" value="post" />
-                    <div class="mb-3">
-                        <label for="stock-name" class="form-label">Nome do Estoque</label>
-                        <input type="text" name="name" class="form-control" id="stock-name" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                        <button type="button" class="btn btn-primary" onclick="confirmNewStock()">Salvar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div> -->
+<?php
+// <div class="modal fade" id="newStock" tabindex="-1" aria-labelledby="newStockLabel" aria-hidden="true">
+//     <div class="modal-dialog">
+//         <div class="modal-content">
+//             <div class="modal-header">
+//                 <h5 class="modal-title" id="newStockLabel">Novo Estoque</h5>
+//                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+//             </div>
+//             <div class="modal-body">
+//                 <form method="post" id="newStockForm">
+//                     <input type="hidden" name="_method" value="post" />
+//                     <div class="mb-3">
+//                         <label for="stock-name" class="form-label">Nome do Estoque</label>
+//                         <input type="text" name="name" class="form-control" id="stock-name" required>
+//                     </div>
+//                     <div class="modal-footer">
+//                         <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+//                         <button type="button" class="btn btn-primary" onclick="confirmNewStock()">Salvar</button>
+//                     </div>
+//                 </form>
+//             </div>
+//         </div>
+//     </div>
+// </div>
 
+?>
 <script>
     // function confirmNewStock() {
     //     if (confirm("Tem certeza de que deseja adicionar este novo estoque?")) {
