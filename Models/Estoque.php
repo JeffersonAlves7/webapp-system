@@ -33,8 +33,7 @@ class Estoque extends Model
 
         $offset = ($page - 1) * $limit;
 
-        $sql = "SELECT * FROM `products` LIMIT $limit OFFSET $offset";
-
+        $sql = "SELECT * FROM `products` ORDER BY `created_at` DESC LIMIT $limit OFFSET $offset";
         $produtos_result = $this->db->query($sql);
 
         $produtos = array();
