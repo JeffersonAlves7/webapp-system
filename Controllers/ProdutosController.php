@@ -138,7 +138,7 @@ class ProdutosController extends _Controller
 
     public function byId($id)
     {
-        $redirect_to = isset($_SESSION['redirect_to']) ? $_SESSION['redirect_to'] : "/produtos";
+        $redirect_to = isset($_SESSION['redirect_to']) ? $_SESSION['redirect_to'] : "/produtos/byId/$id";
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["_method"])) {
             $method = $_POST["_method"];
