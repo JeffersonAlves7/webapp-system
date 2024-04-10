@@ -10,7 +10,7 @@ require "Components/Header.php";
     <!-- Estoques -->
     <div class="d-flex gap-3">
         <form method="get">
-            <button type="submit" class="btn btn-custom <?= isset($_GET["estoque"]) ? "" : "active" ?>">Geral</button>
+            <button type="submit" class="btn btn-custom <?= isset($_GET["estoque"]) && $_GET["estoque"] != '' ? "" : "active" ?>">Geral</button>
         </form>
 
         <?php
@@ -29,22 +29,49 @@ require "Components/Header.php";
         ?>
     </div>
 
-    <!-- Filtros -->
+    <!-- Filtros - adicionar inputs aqui -->
+    <div style="max-width: 100%;overflow-x: auto;">
+        <form method="get" class="d-flex gap-3 mt-3 mb-3 flex-wrap" style="width: 1000px; ">
+            <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
+            <label>
+                Código:
+                <input type="search" class="form-control" name="code" placeholder="Ex.: BT-001" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
+            </label>
+            <label>
+                Importadora:
+                <input type="search" class="form-control" name="importer" placeholder="Ex.: ATTUS" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>">
+            </label>
+
+            <label>
+                Data de Entrada:
+                <input type="date" class="form-control" name="entry_date" value="<?= isset($_GET["entry_date"]) ? $_GET["entry_date"] : "" ?>">
+            </label>
+
+            <label>
+                Porcentagem para alerta
+                <div class="input-group" style="max-width: 200px;">
+                    <input type="number" max="100" min="1" placeholder="20" class="form-control" id="alerta" value="<?= isset($_GET["alerta"]) ? $_GET["alerta"] : 20 ?>">
+                    <span class="input-group-text" id="alerta-addon">%</span>
+                </div>
+            </label>
+
+
+            <div class="d-flex align-items-end gap-2">
+                <button type="submit" class="btn bg-quaternary">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
 
 
     <!-- Tabela -->
     <form method="get" class="table-responsive" style="max-height: 400px; overflow-y: auto;">
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0;">
-                <tr>
-                    <th colspan="3"><input type="search" class="form-control" name="code" placeholder="Filtrar por código" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
-                    <th colspan="3"><input type="search" class="form-control" name="container" placeholder="Filtrar por container de origem" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>"></th>
-                    <th colspan="3"><input type="search" class="form-control" name="importer" placeholder="Filtrar por importadora" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>"></th>
-                    <th></th>
-                </tr>
                 <?php
                 // Se o nome do estoque for Galpão
-                if (!isset($_GET["estoque"]) || $_GET["estoque"] == 1) {
+                if (!isset($_GET["estoque"]) || !$_GET["estoque"] || $_GET["estoque"] == 1) {
                     echo "<tr>
                     <th>CÓDIGO </th>
                     <th>IMPORTADORA </th>
@@ -75,7 +102,7 @@ require "Components/Header.php";
             <tbody>
                 <?php if (isset($produtos) && count($produtos) > 0) :
                     foreach ($produtos as $produto) {
-                        if (!isset($_GET["estoque"]) || $_GET["estoque"] == 1) {
+                        if (!isset($_GET["estoque"]) || !$_GET["estoque"] || $_GET["estoque"] == 1) {
                             $codigo = $produto["code"];
                             $quantidade_entrada = $produto["entry_quantity"] ?? 0;
                             $saldo = $produto["quantity"] ?? 0;
@@ -98,7 +125,7 @@ require "Components/Header.php";
 
                             // Adicionar background ao saldo, verde se for maior que o alerta, vermelho se for menor e amarelo se for igual
                             if ($saldo > $alerta) {
-                                echo "<td class='bg-success'>$saldo</td>";
+                                echo "<td class='bg-quaternary'>$saldo</td>";
                             } elseif ($saldo < $alerta) {
                                 echo "<td class='bg-danger'>$saldo</td>";
                             } else {
@@ -107,7 +134,7 @@ require "Components/Header.php";
 
                             echo "<td>$container</td>
                             <td>$data</td>
-                            <td>$dias</td>
+                            <td>$dias dia(s)</td>
                             <td>$giro%</td>
                             <td>$alerta</td>
                             <td>$observacao</td>
@@ -133,7 +160,7 @@ require "Components/Header.php";
                             <td>$quantidade_entrada</td>";
 
                             if ($saldo > $alerta) {
-                                echo "<td class='bg-success'>$saldo</td>";
+                                echo "<td class='bg-quaternary'>$saldo</td>";
                             } elseif ($saldo < $alerta) {
                                 echo "<td class='bg-danger'>$saldo</td>";
                             } else {
@@ -153,6 +180,39 @@ require "Components/Header.php";
         </table>
         <button type="submit" hidden></button>
     </form>
+
+    <?php
+    function isButtonDisabled($condition)
+    {
+        return $condition ? 'disabled' : '';
+    }
+
+    $currentPage = $_GET['page'] ?? 1;
+    $prevPage = $currentPage - 1;
+    $nextPage = $currentPage + 1;
+    $isPrevDisabled = !isset($_GET["page"]) || intval($_GET["page"]) <= 1;
+    $isNextDisabled = !isset($produtos) || !count($produtos) > 0;
+    ?>
+
+    <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
+        <form method="GET" class="d-flex align-items-center">
+            <input type="hidden" name="page" value="<?= $prevPage ?>">
+            <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
+            <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isPrevDisabled) ?> title="Voltar">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+        </form>
+
+        <span class="text-center">Página <?= $currentPage ?></span>
+
+        <form method="GET">
+            <input type="hidden" name="page" value="<?= $nextPage ?>">
+            <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
+            <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isNextDisabled) ?> title="Avançar">
+                <i class="bi bi-arrow-right"></i> 
+            </button>
+        </form>
+    </div>
 </main>
 
 <?php
