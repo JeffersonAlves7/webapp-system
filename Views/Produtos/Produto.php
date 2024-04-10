@@ -139,11 +139,13 @@ ob_start();
     $isNextDisabled = !isset($transacoes) || !$transacoes->num_rows > 0;
     ?>
 
-    <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 300px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
         <form method="GET" class="d-flex align-items-center">
             <input type="hidden" name="page" value="<?= $prevPage ?>">
             <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
-            <button class="btn btn-primary" <?= isButtonDisabled($isPrevDisabled) ?>>Voltar</button>
+            <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isPrevDisabled) ?> title="Voltar">
+                <i class="bi bi-arrow-left"></i>
+            </button>
         </form>
 
         <span class="text-center">Página <?= $currentPage ?></span>
@@ -151,7 +153,9 @@ ob_start();
         <form method="GET">
             <input type="hidden" name="page" value="<?= $nextPage ?>">
             <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
-            <button class="btn btn-primary" <?= isButtonDisabled($isNextDisabled) ?>>Próxima</button>
+            <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isNextDisabled) ?> title="Avançar">
+                <i class="bi bi-arrow-right"></i>
+            </button>
         </form>
     </div>
 </main>

@@ -97,28 +97,44 @@ ob_start();
         <button type="submit" hidden></button>
     </form>
 
-    <div class="d-flex justify-content-between mt-3">
-        <form method="GET">
+    <?php
+    function isButtonDisabled($condition)
+    {
+        return $condition ? 'disabled' : '';
+    }
+
+    $currentPage = $_GET['page'] ?? 1;
+    $prevPage = $currentPage - 1;
+    $nextPage = $currentPage + 1;
+    $isPrevDisabled = !isset($_GET["page"]) || intval($_GET["page"]) <= 1;
+    $isNextDisabled = !isset($products) || $products->num_rows <= 0;
+    ?>
+
+    <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
+        <form method="GET" class="d-flex align-items-center">
             <input type="hidden" name="code" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
             <input type="hidden" name="ean" value="<?= isset($_GET["ean"]) ? $_GET["ean"] : "" ?>">
             <input type="hidden" name="importer" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>">
             <input type="hidden" name="description" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>">
             <input type="hidden" name="chinese_description" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>">
-            <input type="hidden" name="page" value="<?= ($_GET['page'] ?? 1) - 1; ?>">
-            <button class="btn btn-primary" <?php if (!isset($_GET["page"]) || intval($_GET["page"]) <= 1) {
-                                                echo "disabled";
-                                            } ?>>Voltar</button>
+            <input type="hidden" name="page" value="<?= $prevPage ?>">
+            <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isPrevDisabled) ?> title="Voltar">
+                <i class="bi bi-arrow-left"></i>
+            </button>
         </form>
+
+        <span class="text-center">Página <?= $currentPage ?></span>
+
         <form method="GET">
             <input type="hidden" name="code" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
             <input type="hidden" name="ean" value="<?= isset($_GET["ean"]) ? $_GET["ean"] : "" ?>">
             <input type="hidden" name="importer" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>">
             <input type="hidden" name="description" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>">
             <input type="hidden" name="chinese_description" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>">
-            <input type="hidden" name="page" value="<?= ($_GET['page'] ?? 1) + 1; ?>">
-            <button class="btn btn-primary" <?php if (!isset($products) || !$products->num_rows > 0) {
-                                                echo "disabled";
-                                            } ?>>Próxima</button>
+            <input type="hidden" name="page" value="<?= $nextPage ?>">
+            <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isNextDisabled) ?> title="Avançar">
+                <i class="bi bi-arrow-right"></i>
+            </button>
         </form>
     </div>
 </main>
