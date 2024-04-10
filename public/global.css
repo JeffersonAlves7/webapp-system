@@ -2,6 +2,7 @@
   --primary-color: rgba(255, 255, 255, 1);
   --secondary-color: rgb(255, 159, 159);
   --tertiary-color: rgb(83, 77, 86);
+  --quaternary-color: rgb(104, 210, 147);
   --text-hover-color: rgb(104, 210, 147);
 
   --text-light: white;
@@ -16,6 +17,10 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
+}
+
+.bg-quaternary {
+  background-color: var(--quaternary-color) !important;
 }
 
 .btn-custom,
