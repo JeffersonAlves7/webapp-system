@@ -67,6 +67,10 @@ body > main {
     justify-content: center;
   }
 
+  body > main {
+    max-width: calc(100vw - 200px);
+  }
+
   #navbarSupportedContent {
     display: flex;
     flex-direction: column !important;
