@@ -53,12 +53,6 @@ class Estoque extends Model
                     $entrada = $entrada_result->fetch_assoc();
                     $quantidade_entrada = $entrada["quantity"];
                     $data_entrada = $entrada["arrival_date"];
-                    $dias_em_estoque = (strtotime(date("Y-m-d")) - strtotime($data_entrada)) / (60 * 60 * 24) - 1;
-                    $alerta = $quantidade_entrada * 0.2;
-                    $produto["alerta"] = $alerta;
-                    $produto["entry_quantity"] = $quantidade_entrada;
-                    $produto["entry_date"] = $data_entrada;
-                    $produto["days_in_stock"] = $dias_em_estoque;
 
                     // Pegar nome container de origem
                     $sql = "SELECT * FROM `lote_container` WHERE `ID` = " . $entrada["container_ID"];
@@ -77,18 +71,25 @@ class Estoque extends Model
 
                         $quantidade_entrada = $entrada["quantity"] + $quantidade_entrada;
                         $produto["entry_quantity"] = $quantidade_entrada;
+                        $data_entrada = $entrada["arrival_date"];
 
                         $sql = "SELECT * FROM `lote_container` WHERE `ID` = " . $entrada["container_ID"];
                         $container_result = $this->db->query($sql);
                         $container = $container_result->fetch_assoc();
                         $produto["container"] .= ', ' . $container["name"];
                     }
-                    
+
                     $giro = 0;
                     if ($quantidade_entrada > 0) {
                         $giro = ($quantidade_entrada - $quantidade_atual) / $quantidade_entrada * 100;
                     }
-                    $produto["giro"] = $giro;
+                    $produto["giro"] = round($giro, 2);
+                    $alerta = $quantidade_entrada * 0.2;
+                    $produto["alerta"] = $alerta;
+                    $produto["entry_quantity"] = $quantidade_entrada;
+                    $produto["entry_date"] = $data_entrada;
+                    $dias_em_estoque = (strtotime(date("Y-m-d")) - strtotime($data_entrada)) / (60 * 60 * 24) - 1;
+                    $produto["days_in_stock"] = $dias_em_estoque;
                 }
 
                 $produto["quantity"] = $quantidade_atual;
