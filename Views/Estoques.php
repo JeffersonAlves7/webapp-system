@@ -70,7 +70,11 @@ require "Components/Header.php";
                         $observacao = $produto["observation"] ?? "";
 
                         echo "<tr>
-                            <td>$codigo</td>
+                            <td>
+                                <a href='/produtos/byId/" . htmlspecialchars($produto["ID"]) . "' title='Ver mais'>
+                                    $codigo
+                                </a>
+                            </td>
                             <td>$quantidade_entrada</td>";
 
                         // Adicionar background ao saldo, verde se for maior que o alerta, vermelho se for menor e amarelo se for igual
@@ -81,7 +85,6 @@ require "Components/Header.php";
                         } else {
                             echo "<td class='bg-warning'>$saldo</td>";
                         }
-                        
 
                         echo "<td>$container</td>
                             <td>$importadora</td>
