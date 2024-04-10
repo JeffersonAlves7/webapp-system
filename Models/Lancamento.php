@@ -83,7 +83,7 @@ class Lancamento
                 WHERE `ID` = " . $row["ID"]
             );
 
-            $this->createTransaction($product_ID, null, $stock_ID, "Entrada", $quantidade, $observacao);
+            $this->createTransaction($product_ID, null, $stock_ID, "Entrada", $quantidade, observation: $observacao);
 
             $this->db->commit(); // Confirma a transação
         } catch (Exception $e) {
@@ -156,7 +156,7 @@ class Lancamento
         );
 
         // Criando Transação do tipo Saída para esse produto e estoque
-        $this->createTransaction($product_ID, $stock_ID, null, "Saída", $quantidade, $observacao);
+        $this->createTransaction($product_ID, $stock_ID, null, "Saída", $quantidade, $nome_cliente, $observacao);
     }
 
     public function criarTransferencia(
@@ -240,7 +240,7 @@ class Lancamento
                     WHERE `ID` = $estoque_origem_quantidade_ID"
                 );
 
-                $this->createTransaction($product_ID, $from_stock_ID, $to_stock_ID, "Transferência", $quantity, $observation);
+                $this->createTransaction($product_ID, $from_stock_ID, $to_stock_ID, "Transferência", $quantity, observation: $observation);
                 $this->db->query("UPDATE `transferences` SET `confirmed` = 1 WHERE `ID` = " . $transference["ID"]);
             }
         } catch (Exception $e) {
@@ -309,10 +309,10 @@ class Lancamento
             );
         }
 
-        $this->createTransaction($produto_ID, null, $estoque_destino_ID, "Devolução", $quantidade, $observacao);
+        $this->createTransaction($produto_ID, null, $estoque_destino_ID, "Devolução", $quantidade, $cliente, $observacao);
     }
 
-    private function createTransaction($product_ID, $from_stock_ID, $to_stock_ID, $type_ID, $quantity, $observation = null)
+    private function createTransaction($product_ID, $from_stock_ID, $to_stock_ID, $type_ID, $quantity, $client_name = null, $observation = null)
     {
         // Check if the transaction type exists, if not, create it
         $transaction_type_ID = $this->getTransactionTypeID($type_ID);
@@ -321,8 +321,8 @@ class Lancamento
         $to_stock = $to_stock_ID !== null ? $to_stock_ID : 'NULL';
 
         // Insert the transaction
-        $sql = "INSERT INTO `transactions` (`product_ID`, `from_stock_ID`, `to_stock_ID`, `type_ID`, `quantity`, `observation`) 
-            VALUES ($product_ID, $from_stock, $to_stock, $transaction_type_ID, $quantity, '" . $this->db->escapeString($observation) . "')";
+        $sql = "INSERT INTO `transactions` (`product_ID`, `from_stock_ID`, `to_stock_ID`, `type_ID`, `quantity`, `client_name`, `observation`) 
+            VALUES ($product_ID, $from_stock, $to_stock, $transaction_type_ID, $quantity, '" . $client_name ? $this->db->escapeString($client_name) : '' .  "', '" . $this->db->escapeString($observation) . "')";
 
         return $this->db->query($sql);
     }
