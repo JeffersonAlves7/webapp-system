@@ -125,7 +125,7 @@ require "Components/Header.php";
                     </button>
                 </form>
 
-                <span class="text-center">Página <?= $currentPage ?></span>
+                <span class="text-center">Página <?= $currentPage ?> de <?= $pageCount ?></span>
 
                 <form method="GET">
                     <input type="hidden" name="page" value="<?= $nextPage ?>">
