@@ -42,58 +42,111 @@ require "Components/Header.php";
                     <th colspan="3"><input type="search" class="form-control" name="importer" placeholder="Filtrar por importadora" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>"></th>
                     <th></th>
                 </tr>
-                <tr>
+                <?php
+                // Se o nome do estoque for Galpão
+                if (!isset($_GET["estoque"]) || $_GET["estoque"] == 1) {
+                    echo "<tr>
                     <th>CÓDIGO </th>
+                    <th>IMPORTADORA </th>
                     <th>QUANTIDADE DE ENTRADA</th>
                     <th>SALDO ATUAL </th>
                     <th>CONTAINER DE ORIGEM </th>
-                    <th>IMPORTADORA </th>
-                    <th>DATA DE ENTRADA </th>
-                    <th>DIAS EM ESTOQUE </th>
+                    <th>DATA DE ENTRADA</th>
+                    <th>DIAS EM ESTOQUE</th>
                     <th>GIRO</th>
-                    <th>QUANTIDADE PARA ALERTA </th>
+                    <th>QUANTIDADE PARA ALERTA</th>
                     <th>OBSERVAÇÃO</th>
-                </tr>
+                    </tr>";
+                } else {
+                    echo "<tr>
+                        <th>CÓDIGO </th>
+                        <th>IMPORTADORA </th>
+                        <th>QUANTIDADE DE ENTRADA</th>
+                        <th>SALDO ATUAL</th>
+                        <th>DATA DE ENTRADA</th>
+                        <th>DIAS EM ESTOQUE</th>
+                        <th>GIRO</th>
+                        <th>QUANTIDADE PARA ALERTA</th>
+                        <th>OBSERVAÇÃO</th>
+                    </tr>";
+                }
+                ?>
             </thead>
             <tbody>
                 <?php if (isset($produtos) && count($produtos) > 0) :
                     foreach ($produtos as $produto) {
-                        $codigo = $produto["code"];
-                        $quantidade_entrada = $produto["entry_quantity"] ?? 0;
-                        $saldo = $produto["quantity"] ?? 0;
-                        $container = $produto["container"] ?? "";
-                        $importadora = $produto["importer"] ?? "";
-                        $data = $produto["entry_date"]  ?? "";
-                        $dias = $produto["days_in_stock"] ?? 0;
-                        $giro = $produto["giro"] ?? 0;
-                        $alerta = $produto["alerta"] ?? 0;
-                        $observacao = $produto["observation"] ?? "";
+                        if (!isset($_GET["estoque"]) || $_GET["estoque"] == 1) {
+                            $codigo = $produto["code"];
+                            $quantidade_entrada = $produto["entry_quantity"] ?? 0;
+                            $saldo = $produto["quantity"] ?? 0;
+                            $container = $produto["container"] ?? "";
+                            $importadora = $produto["importer"] ?? "";
+                            $data = $produto["entry_date"]  ?? "";
+                            $dias = $produto["days_in_stock"] ?? 0;
+                            $giro = $produto["giro"] ?? 0;
+                            $alerta = $produto["alerta"] ?? 0;
+                            $observacao = $produto["observation"] ?? "";
 
-                        echo "<tr>
+                            echo "<tr>
                             <td>
                                 <a href='/produtos/byId/" . htmlspecialchars($produto["ID"]) . "' title='Ver mais'>
                                     $codigo
                                 </a>
                             </td>
+                            <td>$importadora</td>
                             <td>$quantidade_entrada</td>";
 
-                        // Adicionar background ao saldo, verde se for maior que o alerta, vermelho se for menor e amarelo se for igual
-                        if ($saldo > $alerta) {
-                            echo "<td class='bg-success'>$saldo</td>";
-                        } elseif ($saldo < $alerta) {
-                            echo "<td class='bg-danger'>$saldo</td>";
-                        } else {
-                            echo "<td class='bg-warning'>$saldo</td>";
-                        }
+                            // Adicionar background ao saldo, verde se for maior que o alerta, vermelho se for menor e amarelo se for igual
+                            if ($saldo > $alerta) {
+                                echo "<td class='bg-success'>$saldo</td>";
+                            } elseif ($saldo < $alerta) {
+                                echo "<td class='bg-danger'>$saldo</td>";
+                            } else {
+                                echo "<td class='bg-warning'>$saldo</td>";
+                            }
 
-                        echo "<td>$container</td>
-                            <td>$importadora</td>
+                            echo "<td>$container</td>
                             <td>$data</td>
                             <td>$dias</td>
                             <td>$giro%</td>
                             <td>$alerta</td>
                             <td>$observacao</td>
                         </tr>";
+                        } else {
+                            $codigo = $produto["code"];
+                            $quantidade_entrada = $produto["entry_quantity"] ?? 0;
+                            $saldo = $produto["quantity"] ?? 0;
+                            $importadora = $produto["importer"] ?? "";
+                            $data = $produto["entry_date"]  ?? "";
+                            $dias = $produto["days_in_stock"] ?? 0;
+                            $giro = $produto["giro"] ?? 0;
+                            $alerta = $produto["alerta"] ?? 0;
+                            $observacao = $produto["observation"] ?? "";
+
+                            echo "<tr>
+                            <td>
+                                <a href='/produtos/byId/" . htmlspecialchars($produto["ID"]) . "' title='Ver mais'>
+                                    $codigo
+                                </a>
+                            </td>
+                            <td>$importadora</td>
+                            <td>$quantidade_entrada</td>";
+
+                            if ($saldo > $alerta) {
+                                echo "<td class='bg-success'>$saldo</td>";
+                            } elseif ($saldo < $alerta) {
+                                echo "<td class='bg-danger'>$saldo</td>";
+                            } else {
+                                echo "<td class='bg-warning'>$saldo</td>";
+                            }
+
+                            echo "<td>$data</td>
+                            <td>$dias</td>
+                            <td>$giro%</td>
+                            <td>$alerta</td>
+                            <td>$observacao</td>
+                        </tr>";
+                        }
                     }
                 endif; ?>
             </tbody>
