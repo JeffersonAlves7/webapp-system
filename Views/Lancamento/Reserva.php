@@ -37,12 +37,18 @@ require "Components/Header.php";
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="inputProduto" class="form-label">Código ou EAN</label>
-                                <input type="text" class="form-control" id="inputProduto" name="produto" placeholder="Insira o código ou EAN" required>
-                                <input type="hidden" id="inputProdutoId" name="produto_id" required readonly> <!-- Campo oculto para armazenar o ID do produto -->
+                                <label for="inputProduto" class="form-label">Produto</label>
+                                <?php if (isset($_GET['product_ID']) && !empty($_GET['product_ID'])) : ?>
+                                    <input type="text" class="form-control" value="<?= $_GET['product_code'] . '-' . $_GET['product_importer'] ?>" id="inputProduto" name="produto" placeholder="Insira o código ou EAN" required>
+                                    <input type="hidden" id="inputProdutoId" name="produto_id" value="<?= $_GET['product_ID'] ?>" required readonly>
+                                <?php else : ?>
+                                    <input type="text" class="form-control" id="inputProduto" name="produto" placeholder="Insira o código ou EAN" required>
+                                    <input type="hidden" id="inputProdutoId" name="produto_id" required readonly>
+                                <?php endif; ?>
                                 <div id="productListContainer" class="product-list-container"></div> <!-- Container para exibir a lista de produtos -->
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="inputQuantidade" class="form-label">Quantidade</label>
@@ -74,12 +80,14 @@ require "Components/Header.php";
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-md-6">
                             <label for="dataRetirada" class="form-label">Data de retirada</label>
                             <input type="date" class="form-control" id="dataRetirada" name="dataRetirada" required>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
@@ -88,6 +96,7 @@ require "Components/Header.php";
                             </div>
                         </div>
                     </div>
+
                     <button type="submit" class="btn btn-primary">Enviar</button>
                 </form>
             </div>
