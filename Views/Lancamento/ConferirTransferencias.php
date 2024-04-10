@@ -45,6 +45,7 @@ require "Components/Header.php";
                     <th>Importadora</th>
                     <th>Descrição</th>
                     <th>Quantidade</th>
+                    <th>Conferido</th>
                     <th>Origem</th>
                     <th>Destino</th>
                     <th>Observação</th>
