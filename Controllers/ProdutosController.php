@@ -1,11 +1,13 @@
 <?php
 require_once "Controllers/_Controller.php";
+require_once "Models/Estoque.php";
 require_once "Models/Product.php";
 require_once "Models/Transacao.php";
 
 class ProdutosController extends _Controller
 {
     public $productModel;
+    public $estoquesModel;
     public $transacaoModel;
 
     public function __construct()
@@ -13,6 +15,7 @@ class ProdutosController extends _Controller
         parent::__construct();
         $this->productModel = new Product();
         $this->transacaoModel = new Transacao();
+        $this->estoquesModel = new Estoque();
     }
 
     public function index()
@@ -171,9 +174,18 @@ class ProdutosController extends _Controller
             header("Location: /");
         }
 
+
+        $stocks = $this->estoquesModel->getAll();
         $produto = $result->fetch_assoc();
         $quantidade_em_estoque = $this->productModel->quantityInStockById($id);
-        $transacoes = $this->transacaoModel->getAllByProductId($id, $page);
+
+        $where = "1 = 1 ";
+        if (isset($_GET["estoque"]) && $_GET["estoque"] != "") {
+            $estoque_ID = $_GET["estoque"];
+            $where .= "AND (from_stock_ID = $estoque_ID OR to_stock_ID = $estoque_ID)";
+        }
+
+        $transacoes = $this->transacaoModel->getAllByProductId($id, $page, $where);
         require_once "Views/Produtos/Produto.php";
     }
 

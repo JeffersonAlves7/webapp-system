@@ -64,6 +64,29 @@ ob_start();
         </table>
     </div>
 
+    <!-- Estoques -->
+    <div class="d-flex gap-3 mt-3 mb-3">
+        <form method="get">
+            <button type="submit" class="btn btn-custom <?= isset($_GET["estoque"]) && $_GET["estoque"] != '' ? "" : "active" ?>">Geral</button>
+        </form>
+
+        <?php
+        if (isset($stocks) && $stocks->num_rows > 0) {
+            while ($estoque = $stocks->fetch_assoc()) {
+                $name = $estoque["name"];
+                $ID = $estoque["ID"];
+                $active = (isset($_GET["estoque"]) && $_GET["estoque"] == "$ID" ? "active" : "");
+
+                echo "<form method='get'>
+                    <input type='hidden' name='estoque' value='$ID'/>
+                    <button type='submit' class='btn btn-custom $active'>$name</button>
+                </form>";
+            }
+        }
+        ?>
+    </div>
+
+
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
@@ -119,6 +142,7 @@ ob_start();
     <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 300px; margin: 0 auto;">
         <form method="GET" class="d-flex align-items-center">
             <input type="hidden" name="page" value="<?= $prevPage ?>">
+            <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
             <button class="btn btn-primary" <?= isButtonDisabled($isPrevDisabled) ?>>Voltar</button>
         </form>
 
@@ -126,6 +150,7 @@ ob_start();
 
         <form method="GET">
             <input type="hidden" name="page" value="<?= $nextPage ?>">
+            <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
             <button class="btn btn-primary" <?= isButtonDisabled($isNextDisabled) ?>>Próxima</button>
         </form>
     </div>
