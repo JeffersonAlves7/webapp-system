@@ -18,8 +18,12 @@ class Product extends Model
         $offset = ($page - 1) * $limit;
         $sql =  "SELECT * FROM products WHERE $where ORDER BY `ID` DESC LIMIT $limit OFFSET $offset";
         $products = $this->db->query($sql);
+        $pageCount = ceil($this->db->query("SELECT COUNT(*) as count FROM products WHERE $where")->fetch_assoc()["count"] / $limit);
 
-        return $products;
+        return array(
+            "products" => $products,
+            "pageCount" => $pageCount
+        );
     }
 
     public function create($code, $ean, $importer, $description, $chinese_description)

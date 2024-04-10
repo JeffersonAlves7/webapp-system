@@ -38,8 +38,12 @@ class Transacao extends Model
             $limit OFFSET $offset";
 
         $result = $this->db->query($sql);
+        $pageCount = ceil($this->db->query("SELECT COUNT(*) as count FROM transactions WHERE product_ID = $id AND $where")->fetch_assoc()["count"] / $limit);
 
-        return $result;
+        return array(
+            "transactions" => $result,
+            "pageCount" => $pageCount
+        );
     }
 
     public function delete($id)

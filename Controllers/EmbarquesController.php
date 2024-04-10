@@ -37,7 +37,9 @@ class EmbarquesController extends _Controller
         $where = "1 = 1 ";
 
         // $result_container = $this->containerModel->byId($container_ID);
-        $products_in_container = $this->containerModel->produtosById($container_ID, $page, where: $where);
+        $productsData = $this->containerModel->produtosById($container_ID, $page, where: $where);
+        $products = $productsData["products"];
+        $pageCount = $productsData["pageCount"];
         include_once "Views/Containers/Produtos.php";
     }
 

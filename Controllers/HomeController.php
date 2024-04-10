@@ -33,7 +33,10 @@ class HomeController extends _Controller
         }
 
         $stocks = $this->estoquesModel->getAll();
-        $produtos = $this->estoquesModel->getProductsByStock($estoque_ID, $page);
+        $productsData = $this->estoquesModel->getProductsByStock($estoque_ID, $page);
+        $produtos = $productsData["products"];
+        $pageCount = $productsData["pageCount"];
+
         include_once "Views/Estoques.php";
     }
 

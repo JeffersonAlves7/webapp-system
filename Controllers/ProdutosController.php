@@ -134,7 +134,9 @@ class ProdutosController extends _Controller
             $where .= "AND chinese_description LIKE \"%" . htmlspecialchars($_GET["chinese_description"]) . "%\"";
         }
 
-        $products = $this->productModel->getAll($page, where: $where);
+        $productResponse = $this->productModel->getAll($page, where: $where);
+        $products = $productResponse["products"];
+        $pageCount = $productResponse["pageCount"];
 
         require_once "Views/Produtos/List.php";
     }
@@ -185,7 +187,9 @@ class ProdutosController extends _Controller
             $where .= "AND (from_stock_ID = $estoque_ID OR to_stock_ID = $estoque_ID)";
         }
 
-        $transacoes = $this->transacaoModel->getAllByProductId($id, $page, $where);
+        $transacoesData = $this->transacaoModel->getAllByProductId($id, $page, $where);
+        $transacoes = $transacoesData["transactions"];
+        $pageCount = $transacoesData["pageCount"];
         require_once "Views/Produtos/Produto.php";
     }
 

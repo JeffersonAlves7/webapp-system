@@ -48,17 +48,14 @@ class Container extends Model
         INNER JOIN products p ON p.ID = pc.product_ID
         WHERE pc.`container_ID` = $container_ID AND $where
         ORDER BY `created_at` DESC LIMIT $limit OFFSET $offset";
-        $result = $this->db->query($sql);
+        $products = $this->db->query($sql);
 
-        $products = [];
+        $pageCount = ceil($this->db->query("SELECT COUNT(*) as count FROM products_in_container WHERE `container_ID` = $container_ID")->fetch_assoc()["count"] / $limit);
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $products[] = $row;
-            }
-        }
-
-        return $products;
+        return [
+            "products" => $products,
+            "pageCount" => $pageCount
+        ];
     }
 
     public function deleteProduct($container_ID, $product_ID)

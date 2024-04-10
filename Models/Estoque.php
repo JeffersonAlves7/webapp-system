@@ -36,10 +36,14 @@ class Estoque extends Model
         $produtos_result = $this->db->query($sql);
 
         $produtos = array();
+        $pageCount = ceil($this->db->query("SELECT COUNT(*) as count FROM `products`")->fetch_assoc()["count"] / $limit);
 
         // Pegar estoque dos produtos na tabela quantity_in_stock
         if ($produtos_result->num_rows == 0) {
-            return $produtos;
+            return array(
+                "products" => $produtos,
+                "pageCount" => $pageCount
+            );
         }
 
         while ($produto = $produtos_result->fetch_assoc()) {
@@ -121,6 +125,10 @@ class Estoque extends Model
             array_push($produtos, $produto);
         }
 
-        return $produtos;
+
+        return array(
+            "products" => $produtos,
+            "pageCount" => $pageCount
+        );
     }
 }
