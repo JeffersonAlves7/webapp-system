@@ -28,7 +28,7 @@ class HomeController extends _Controller
         }
 
         $estoque_ID = null;
-        if(isset($_GET["estoque"])) {
+        if(isset($_GET["estoque"]) && $_GET["estoque"] != "") {
             $estoque_ID = $_GET["estoque"];
         }
 

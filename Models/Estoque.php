@@ -20,9 +20,8 @@ class Estoque extends Model
 
     public function getProductsByStock($stock_ID = null, $page = 1, $limit = 10)
     {
-
         // Pegar nome do estoque
-        if ($stock_ID == null) {
+        if (!$stock_ID) {
             $stock_name = null;
         } else {
             $sql = "SELECT * FROM `stocks` WHERE `ID` = $stock_ID";
