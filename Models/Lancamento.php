@@ -322,7 +322,7 @@ class Lancamento
 
         // Insert the transaction
         $sql = "INSERT INTO `transactions` (`product_ID`, `from_stock_ID`, `to_stock_ID`, `type_ID`, `quantity`, `client_name`, `observation`) 
-            VALUES ($product_ID, $from_stock, $to_stock, $transaction_type_ID, $quantity, '" . $client_name ? $this->db->escapeString($client_name) : '' .  "', '" . $this->db->escapeString($observation) . "')";
+        VALUES ($product_ID, $from_stock, $to_stock, $transaction_type_ID, $quantity, '" . ($client_name ? $this->db->escapeString($client_name) : '') .  "', '" . $this->db->escapeString($observation) . "')";
 
         return $this->db->query($sql);
     }
