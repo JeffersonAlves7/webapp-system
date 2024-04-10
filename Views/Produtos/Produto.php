@@ -57,12 +57,23 @@ ob_start();
                     <td>Total Reservado: <?= $quantidade_reservada; ?></td>
                 </tr>
                 <tr>
-                    <td>Disponível para venda:</td>
-                    <td><?= $disponivel_para_venda; ?></td>
+                    <td>Disponível para venda: <?= $disponivel_para_venda; ?></td>
                 </tr>
             </tbody>
         </table>
     </div>
+    <!-- Adicionar lancamento -->
+    <form method="get" action="/lancamento" class="mt-3" id="form-lancamento">
+        <input type="hidden" name="product_ID" value="<?= $produto["ID"] ?>" />
+        <input type="hidden" name="product_code" value="<?= $produto["code"] ?>" />
+        <input type="hidden" name="product_importer" value="<?= $produto["importer"] ?>" />
+        <!-- Button submit com um icone de + e um texto aoo lado escrito "Incluir novo lancamento -->
+        <button type="submit" class="btn btn-custom">
+            <i class="bi bi-plus"></i>
+            Incluir novo lançamento
+        </button>
+    </form>
+    </td>
 
     <!-- Estoques -->
     <div class="d-flex gap-3 mt-3 mb-3">
@@ -186,11 +197,59 @@ ob_start();
     </div>
 </div>
 
+<div class="modal fade" id="lancamentoModal" tabindex="-1" aria-labelledby="lancamentoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="lancamentoModalLabel">Escolha o tipo de lançamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <button class="btn btn-custom lancamento-type" data-type="entrada">Entrada</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-custom lancamento-type" data-type="saida">Saída</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-custom lancamento-type" data-type="transferencia">Transferência</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-custom lancamento-type" data-type="devolucao">Devolução</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-custom lancamento-type" data-type="reserva">Reserva</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.querySelectorAll('.delete-transaction').forEach(function(element) {
         element.addEventListener('click', function() {
             var reserveID = this.getAttribute('data-id');
             document.getElementById('deleteTransactionId').value = reserveID;
+        });
+    });
+
+    document.getElementById('form-lancamento').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var form = event.target;
+        var productID = form.querySelector('input[name="product_ID"]').value;
+        var productCode = form.querySelector('input[name="product_code"]').value;
+        var productImporter = form.querySelector('input[name="product_importer"]').value;
+
+        var modal = new bootstrap.Modal(document.getElementById('lancamentoModal'));
+        modal.show();
+
+        document.getElementById('lancamentoModal').querySelectorAll('.lancamento-type').forEach(function(element) {
+            element.addEventListener('click', function() {
+                var type = this.getAttribute('data-type');
+                window.location.href = `/lancamento/${type}?product_ID=${productID}&product_code=${productCode}&product_importer=${productImporter}`;
+            });
         });
     });
 </script>
