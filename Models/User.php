@@ -5,42 +5,30 @@ class User extends Model
 {
     public function login($email, $password)
     {
-        $result = $this->db->query("SELECT * FROM `users` WHERE `email` = \"$email\"");
+        $sql = "SELECT * FROM `users` WHERE `email` = ?";
 
-        if ($result) {
-            if ($result->num_rows > 0) {
-                $user = $result->fetch_assoc();
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
 
-                if (password_verify($password, $user['password'])) {
-                    return $user;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            return false;
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+
+        if ($user && password_verify($password, $user["password"])) {
+            return $user;
         }
+
+        return null;
     }
 
-    public function register($username, $email, $password)
+    public function register($name, $email, $password)
     {
-        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+        $sql = "INSERT INTO `users` (`username`, `email`, `password`) VALUES (?, ?, ?)";
 
-        return $this->db->query("INSERT INTO `users` (
-            `username`,
-            `email`,
-            `password`
-        ) VALUES (
-            \"$username\",
-            \"$email\",
-            \"$password_hash\"
-        )");
-    }
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("sss", $name, $email, $password);
+        $stmt->execute();
 
-    public function getUserByEmail($email)
-    {
-        // Implemente a lógica para buscar um usuário pelo email no banco de dados e retornar suas informações
+        return $stmt->affected_rows > 0;
     }
 }

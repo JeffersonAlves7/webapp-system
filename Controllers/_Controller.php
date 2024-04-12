@@ -1,4 +1,5 @@
 <?php
+require_once "Managers/AuthManager.php";
 
 class _Controller
 {
@@ -8,14 +9,6 @@ class _Controller
             session_start();
         }
 
-        $this->verifySession();
-    }
-
-    private function verifySession()
-    {
-        if (!isset($_SESSION["username"]) && !isset($_SESSION["email"])) {
-            header("location: /auth/login");
-            exit(0);
-        }
+        AuthManager::checkLogin();
     }
 }

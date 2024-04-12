@@ -1,18 +1,18 @@
 <?php
-require_once "Models/User.php";
+require_once "Managers/AuthManager.php";
 
 class AuthController
 {
-    public $userModel;
+    private $authManager;
 
     public function __construct()
     {
-        $this->userModel = new User();
+        $this->authManager = new AuthManager();
     }
 
     public function login()
     {
-        if (isset($_SESSION["username"]) && isset($_SESSION["email"])) {
+        if (AuthManager::isLoggedIn()) {
             header("location: /");
             exit(0);
         }
@@ -21,11 +21,11 @@ class AuthController
             $email = $_POST["email"];
             $password = $_POST["password"];
 
-            $user = $this->userModel->login($email, $password);
 
+            $user = $this->authManager->login($email, $password);
+            print_r($user);
             if ($user) {
-                $_SESSION["username"] = $user["username"];
-                $_SESSION["email"] = $user["email"];
+                AuthManager::setUser($user["ID"], $user["email"], $user["username"]);
                 header("location: /");
                 exit(0);
             }
@@ -46,7 +46,7 @@ class AuthController
             $email = $_POST["email"];
             $password = $_POST["password"];
 
-            $this->userModel->register($username, $email, $password);
+            $this->authManager->register($username, $email, $password);
 
             header("location: /auth/login");
             exit(0);
@@ -57,7 +57,9 @@ class AuthController
 
     public function logout()
     {
-        session_destroy();
+        AuthManager::clearUser();
+        AuthManager::logout();
+        header("location: /");
 
         echo 'You have cleaned session';
         header('Refresh: 1; URL = login');
