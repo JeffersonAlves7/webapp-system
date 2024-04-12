@@ -103,15 +103,15 @@ require "Components/Header.php";
                 <?php if (isset($produtos) && count($produtos) > 0) :
                     foreach ($produtos as $produto) {
                         if (!isset($_GET["estoque"]) || !$_GET["estoque"] || $_GET["estoque"] == 1) {
-                            $codigo = $produto["code"];
-                            $quantidade_entrada = $produto["entry_quantity"] ?? 0;
-                            $saldo = $produto["quantity"] ?? 0;
-                            $container = $produto["container"] ?? "";
-                            $importadora = $produto["importer"] ?? "";
-                            $data = $produto["entry_date"]  ?? "";
-                            $dias = $produto["days_in_stock"] ?? 0;
+                            $codigo = $produto["codigo"];
+                            $quantidade_entrada = $produto["quantidade_entrada"] ?? 0;
+                            $saldo = $produto["saldo_atual"] ?? 0;
+                            $container = $produto["container_de_origem"] ?? "";
+                            $importadora = $produto["importadora"] ?? "";
+                            $data = $produto["data_de_entrada"]  ?? "";
+                            $dias = $produto["dias_em_estoque"] ?? 0;
                             $giro = $produto["giro"] ?? 0;
-                            $alerta = $produto["alerta"] ?? 0;
+                            $alerta = $produto["quantidade_para_alerta"] ?? 0;
                             $observacao = $produto["observation"] ?? "";
 
                             echo "<tr>
@@ -140,14 +140,14 @@ require "Components/Header.php";
                             <td>$observacao</td>
                         </tr>";
                         } else {
-                            $codigo = $produto["code"];
-                            $quantidade_entrada = $produto["entry_quantity"] ?? 0;
-                            $saldo = $produto["quantity"] ?? 0;
-                            $importadora = $produto["importer"] ?? "";
-                            $data = $produto["entry_date"]  ?? "";
-                            $dias = $produto["days_in_stock"] ?? 0;
+                            $codigo = $produto["codigo"];
+                            $quantidade_entrada = $produto["quantidade_entrada"] ?? 0;
+                            $saldo = $produto["saldo_atual"] ?? 0;
+                            $importadora = $produto["importadora"] ?? "";
+                            $data = $produto["data_de_entrada"]  ?? "";
+                            $dias = $produto["dias_em_estoque"] ?? 0;
                             $giro = $produto["giro"] ?? 0;
-                            $alerta = $produto["alerta"] ?? 0;
+                            $alerta = $produto["quantidade_para_alerta"] ?? 0;
                             $observacao = $produto["observation"] ?? "";
 
                             echo "<tr>
