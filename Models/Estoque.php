@@ -118,13 +118,14 @@ class Estoque extends Model
                     }
                 }
             }
-
             $produto["giro"] = 0;
-            if ($produto["quantidade_entrada"] > 0) {
+            if (isset($produto["quantidade_entrada"]) && $produto["quantidade_entrada"] > 0) {
                 $produto["giro"] = round(($produto["quantidade_entrada"] - $produto["saldo_atual"]) / $produto["quantidade_entrada"] * 100, 2);
             }
 
-            $produto["quantidade_para_alerta"] = $produto["quantidade_entrada"] * $alert;
+            if (isset($produto["quantidade_entrada"]) && $produto["quantidade_entrada"] > 0) {
+                $produto["quantidade_para_alerta"] = $produto["quantidade_entrada"] * $alert;
+            }
 
             $produtos[] = $produto;
         }
