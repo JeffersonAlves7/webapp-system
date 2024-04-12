@@ -35,22 +35,22 @@ require "Components/Header.php";
             <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
             <label>
                 Código:
-                <input type="search" class="form-control" name="code" placeholder="Ex.: BT-001" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
+                <input type="search" class="form-control" name="codigo" placeholder="Ex.: BT-001" id="input-codigo" value="<?= isset($_COOKIE["codigo"]) ? $_COOKIE["codigo"] : "" ?>">
             </label>
             <label>
                 Importadora:
-                <input type="search" class="form-control" name="importer" placeholder="Ex.: ATTUS" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>">
+                <input type="search" class="form-control" name="importadora" placeholder="Ex.: ATTUS" value="<?= isset($_GET["importadora"]) ? $_GET["importadora"] : "" ?>">
             </label>
 
             <label>
                 Data de Entrada:
-                <input type="date" class="form-control" name="entry_date" value="<?= isset($_GET["entry_date"]) ? $_GET["entry_date"] : "" ?>">
+                <input type="date" class="form-control" name="data_de_entrada" value="<?= isset($_GET["data_de_entrada"]) ? $_GET["data_de_entrada"] : "" ?>">
             </label>
 
             <label>
                 Porcentagem para alerta
                 <div class="input-group" style="max-width: 200px;">
-                    <input type="number" max="100" min="1" placeholder="20" class="form-control" id="alerta" value="<?= isset($_GET["alerta"]) ? $_GET["alerta"] : 20 ?>">
+                    <input type="number" max="100" min="1" placeholder="Ex.: 20" class="form-control" id="input-alerta" value="<?= isset($_COOKIE["alerta"]) ? $_COOKIE["alerta"] : 20 ?>" name="alerta" aria-describedby="alerta-addon">
                     <span class="input-group-text" id="alerta-addon">%</span>
                 </div>
             </label>
@@ -250,6 +250,30 @@ require "Components/Header.php";
     //         document.getElementById("newStockForm").submit();
     //     }
     // }
+
+    const inputAlerta = document.getElementById("input-alerta");
+    const inputCodigo = document.getElementById("input-codigo");
+
+    inputAlerta.addEventListener("input", () => {
+        document.cookie = `alerta=${inputAlerta.value}`;
+    });
+
+    inputCodigo.addEventListener("input", () => {
+        document.cookie = `codigo=${inputCodigo.value}`;
+    });
+
+    // Ao apagar o input, apaga o cookie
+    inputAlerta.addEventListener("change", () => {
+        if (inputAlerta.value === "") {
+            document.cookie = "alerta=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        }
+    });
+
+    inputCodigo.addEventListener("change", () => {
+        if (inputCodigo.value === "") {
+            document.cookie = "codigo=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        }
+    });
 </script>
 
 
