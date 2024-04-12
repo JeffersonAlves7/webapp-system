@@ -38,7 +38,7 @@ require "Components/Header.php";
                 <input type="search" class="form-control" name="codigo" placeholder="Ex.: BT-001" id="input-codigo" value="<?= isset($_COOKIE["codigo"]) ? $_COOKIE["codigo"] : "" ?>">
             </label>
 
-            <label for="importadora" class="form-label">
+            <label>
                 Importadora:
                 <select class="form-select" name="importadora" id="importadora">
                     <option value="">Selecione uma opção</option>
@@ -57,7 +57,7 @@ require "Components/Header.php";
             </label>
 
             <div class="d-flex align-items-end gap-2">
-                <button type="submit" class="btn bg-quaternary">
+                <button type="submit" class="btn bg-quaternary" title="Filtrar" style="height: 40px;width: 50px;">
                     <i class="bi bi-search"></i>
                 </button>
             </div>
