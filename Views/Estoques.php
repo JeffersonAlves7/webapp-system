@@ -55,7 +55,6 @@ require "Components/Header.php";
                 </div>
             </label>
 
-
             <div class="d-flex align-items-end gap-2">
                 <button type="submit" class="btn bg-quaternary">
                     <i class="bi bi-search"></i>
