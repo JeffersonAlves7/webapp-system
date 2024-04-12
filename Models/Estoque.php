@@ -18,7 +18,7 @@ class Estoque extends Model
         return $this->db->query($sql);
     }
 
-    public function getProductsByStock($stock_ID = null, $page = 1, $limit = 10, $alert = 0.2)
+    public function getProductsByStock($stock_ID = null, $page = 1, $limit = 10, $alert = 0.2, $where = "1")
     {
         $offset = ($page - 1) * $limit;
 
@@ -34,7 +34,7 @@ class Estoque extends Model
             FROM
                 `products` p
                 JOIN `quantity_in_stock` qis ON p.ID = qis.product_ID
-            WHERE 1 $stock_sql
+            WHERE $where $stock_sql 
             GROUP BY p.ID 
             ORDER BY p.created_at 
             DESC LIMIT ? OFFSET ?";
@@ -66,7 +66,6 @@ class Estoque extends Model
                 !isset($produto["quantidade_entrada"]) ||
                 $produto["quantidade_entrada"] < $produto["saldo_atual"]
             ) {
-
                 if (!$stock_ID || $stock_ID == 1) {
                     $sql_entrada = "SELECT
                         pic.quantity as quantidade_entrada, 
@@ -79,7 +78,7 @@ class Estoque extends Model
                     WHERE
                         pic.in_stock = 1
                         AND pic.product_ID =  $produto[ID]
-                    ORDER BY pic.created_at DESC
+                    ORDER BY pic.arrival_date DESC
                     LIMIT 1 OFFSET $entrada_offset;";
                 } else {
                     $sql_entrada = "SELECT
@@ -108,10 +107,16 @@ class Estoque extends Model
                 }
 
                 foreach ($entrada as $key => $value) {
-                    $produto[$key] = $value;
+                    if (isset($produto[$key])) {
+                        if ($key == "container_de_origem" || $key == "estoque_de_origem") {
+                            $produto[$key] .= " | " . $value;
+                        } else if ($key == "quantidade_entrada") {
+                            $produto[$key] += $value;
+                        }
+                    } else {
+                        $produto[$key] = $value;
+                    }
                 }
-
-                $entrada_offset++;
             }
 
             $produto["giro"] = 0;

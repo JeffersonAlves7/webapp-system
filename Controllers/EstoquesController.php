@@ -20,7 +20,7 @@ class EstoquesController extends _Controller
         //     $this->estoquesModel->create($name);
         //     header("location: /estoques");
         // }
-        
+
         $page = 1;
 
         if (isset($_GET["page"])) {
@@ -28,12 +28,25 @@ class EstoquesController extends _Controller
         }
 
         $estoque_ID = null;
-        if(isset($_GET["estoque"]) && $_GET["estoque"] != "") {
+        if (isset($_GET["estoque"]) && $_GET["estoque"] != "") {
             $estoque_ID = $_GET["estoque"];
         }
 
+        $alert = 0.2;
+        if (isset($_COOKIE["alerta"])) {
+            $alert = $_COOKIE["alerta"] / 100;
+        }
+
+        $where = "1";
+        if (isset($_COOKIE["codigo"]) && $_COOKIE["codigo"] != "") {
+            $where = "p.code LIKE '%" . $_COOKIE["codigo"] . "%'";
+        }
+        if(isset($_GET["importadora"]) && $_GET["importadora"] != ""){
+            $where = "p.importer = '".$_GET["importadora"]."'";
+        }
+
         $stocks = $this->estoquesModel->getAll();
-        $productsData = $this->estoquesModel->getProductsByStock($estoque_ID, $page);
+        $productsData = $this->estoquesModel->getProductsByStock($estoque_ID, $page, alert: $alert, where: $where, limit: 30);
         $produtos = $productsData["products"];
         $pageCount = $productsData["pageCount"];
 
