@@ -37,14 +37,15 @@ require "Components/Header.php";
                 Código:
                 <input type="search" class="form-control" name="codigo" placeholder="Ex.: BT-001" id="input-codigo" value="<?= isset($_COOKIE["codigo"]) ? $_COOKIE["codigo"] : "" ?>">
             </label>
-            <label>
-                Importadora:
-                <input type="search" class="form-control" name="importadora" placeholder="Ex.: ATTUS" value="<?= isset($_GET["importadora"]) ? $_GET["importadora"] : "" ?>">
-            </label>
 
-            <label>
-                Data de Entrada:
-                <input type="date" class="form-control" name="data_de_entrada" value="<?= isset($_GET["data_de_entrada"]) ? $_GET["data_de_entrada"] : "" ?>">
+            <label for="importadora" class="form-label">
+                Importadora:
+                <select class="form-select" name="importadora" id="importadora">
+                    <option value="">Selecione uma opção</option>
+                    <option value="ATTUS" <?= (isset($_GET["importadora"]) && $_GET["importadora"] == "ATTUS") ? "selected" : "" ?>>ATTUS</option>
+                    <option value="ATTUS_BLOOM" <?= (isset($_GET["importadora"]) && $_GET["importadora"] == "ATTUS_BLOOM") ? "selected" : "" ?>>ATTUS_BLOOM</option>
+                    <option value="ALPHA_YNFINITY" <?= (isset($_GET["importadora"]) && $_GET["importadora"] == "ALPHA_YNFINITY") ? "selected" : "" ?>>ALPHA_YNFINITY</option>
+                </select>
             </label>
 
             <label>
