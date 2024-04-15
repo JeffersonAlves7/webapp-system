@@ -12,6 +12,9 @@ class AuthController
 
     public function login()
     {
+        $mensagem_erro = isset($_SESSION['mensagem_erro']) ? $_SESSION['mensagem_erro'] : "";
+        unset($_SESSION['mensagem_erro']); // Remove a mensagem de erro da sessão
+
         if (AuthManager::isLoggedIn()) {
             header("location: /");
             exit(0);
@@ -21,14 +24,18 @@ class AuthController
             $email = $_POST["email"];
             $password = $_POST["password"];
 
-
             $user = $this->authManager->login($email, $password);
-            print_r($user);
+
             if ($user) {
                 AuthManager::setUser($user["ID"], $user["email"], $user["username"]);
-                header("location: /");
-                exit(0);
+            } else if ($user === false) {
+                $_SESSION['mensagem_erro'] = "Usuário desativado, entre em contato com um administrador";
+            } else {
+                $_SESSION['mensagem_erro'] = "Usuário ou senha inválidos";
             }
+
+            header("location: /");
+            exit(0);
         }
 
         require_once "Views/Login.php";

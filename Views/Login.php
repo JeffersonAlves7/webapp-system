@@ -4,6 +4,7 @@ ob_start();
 ?>
 <div class="container mt-4">
     <h1 class="text-center mb-4">Login</h1>
+
     <form method="post">
         <div class="mb-3">
             <label for="user-email" class="form-label">Email</label>
@@ -21,6 +22,7 @@ ob_start();
 </div>
 
 <?php
+include "Components/StatusMessage.php";
 $content = ob_get_clean();
 include "Components/Template.php";
 ?>
