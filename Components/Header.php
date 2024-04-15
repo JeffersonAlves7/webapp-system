@@ -31,11 +31,14 @@
           <a class="nav-link <?= (isset($pageTitle) && $pageTitle === "Reservas") ? 'active' : ''; ?>" href="/reservas">Reservas</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link <?= (isset($pageTitle) && $pageTitle === "Painel") ? 'active' : ''; ?>" href="/painel">Painel</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="/auth/info">
             <i class="bi bi-person-circle"></i>
-            <?php 
-              $user = AuthManager::getUser();
-              echo $user === null ? '' : ' ' . $user['name'];
+            <?php
+            $user = AuthManager::getUser();
+            echo $user === null ? '' : ' ' . $user['name'];
             ?>
           </a>
         </li>
