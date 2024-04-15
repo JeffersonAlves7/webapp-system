@@ -32,9 +32,9 @@ class AuthManager
 
     public static function isLoggedIn()
     {
-        return isset($_COOKIE['user_id']) &&
-            isset($_COOKIE['user_email']) &&
-            isset($_COOKIE['user_name']);
+        return isset($_COOKIE['user_id']) && !empty($_COOKIE['user_id'])
+            && isset($_COOKIE['user_email']) && !empty($_COOKIE['user_email'])
+            && isset($_COOKIE['user_name']) && !empty($_COOKIE['user_name']);
     }
 
     public static function getUser()

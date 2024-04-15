@@ -33,7 +33,10 @@
         <li class="nav-item">
           <a class="nav-link" href="/auth/info">
             <i class="bi bi-person-circle"></i>
-            <?= $_SESSION["username"]; ?>
+            <?php 
+              $user = AuthManager::getUser();
+              echo $user === null ? '' : ' ' . $user['name'];
+            ?>
           </a>
         </li>
       </ul>
