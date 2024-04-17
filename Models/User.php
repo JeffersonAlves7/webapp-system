@@ -14,13 +14,16 @@ class User extends Model
         $result = $stmt->get_result();
         $user = $result->fetch_assoc();
 
-        if(!$user["active"]){
+        if (!$user) {
+            return null;
+        }
+
+        if (!$user["active"]) {
             return false;
         }
 
-        if ($user && password_verify($password, $user["password"])) {
+        if (password_verify($password, $user["password"]))
             return $user;
-        }
 
         return null;
     }
@@ -50,7 +53,8 @@ class User extends Model
         return $result->fetch_assoc();
     }
 
-    public function getGroups(){
+    public function getGroups()
+    {
         $sql = "SELECT * FROM `permission_groups`";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
@@ -116,5 +120,37 @@ class User extends Model
             "users" => $users,
             "pageCount" => ceil($this->db->query("SELECT COUNT(*) FROM `users`")->fetch_row()[0] / $limit)
         ];
+    }
+
+    public function updateUser($id, $types, $properties)
+    {
+        $sql = "UPDATE `users` SET ";
+        $values = [];
+        $set = "";
+
+        foreach ($properties as $key => $value) {
+            $set .= "`$key` = ?, ";
+            $values[] = $value;
+        }
+
+        $set = rtrim($set, ", ");
+        $sql .= $set . " WHERE `id` = ?";
+        $values[] = $id;
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param($types . "i", ...$values);
+        $stmt->execute();
+
+        return $stmt->affected_rows > 0;
+    }
+
+    public function deleteUser($id)
+    {
+        $sql = "DELETE FROM `users` WHERE `id` = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+
+        return $stmt->affected_rows > 0;
     }
 }
