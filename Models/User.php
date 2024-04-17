@@ -71,28 +71,72 @@ class User extends Model
 
     public function getGroupsPermissions($group_ID)
     {
+        // Selecionar todos os controllers
+        $sql = "SELECT * FROM `controllers`";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $controllers = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $controllers[] = $row;
+        }
+
+        if (empty($controllers)) return array();
+
+        if ($group_ID == 1) {
+            $permissions = [];
+            foreach ($controllers as $controller) {
+                $permissions[$controller["name"]] = [
+                    "read" => true,
+                    "write" => true,
+                    "delete" => true,
+                    "controller" => $controller["name"],
+                    "ID" => $controller["ID"]
+                ];
+            }
+
+            return $permissions;
+        }
+
+        // Selecionar todas as permissoes do grupo
         $sql = "SELECT 
-            `permissions`.`ID`, 
-            `permissions`.`read`,
-            `permissions`.`write`,
-            `permissions`.`delete`,
-            `controllers`.`name` AS `controller_name`
-        FROM `permissions` 
+        `permissions`.`ID`,
+        `permissions`.`read`,
+        `permissions`.`write`,
+        `permissions`.`delete`,
+        `controllers`.`name`,
+        `controllers`.`ID` as controller_ID
+         FROM `permissions`
         INNER JOIN `controllers` ON `controllers`.`ID` = `permissions`.`controller_ID` 
         WHERE `group_ID` = ?";
         $stmt = $this->db->prepare($sql);
-
         $stmt->bind_param("i", $group_ID);
         $stmt->execute();
 
         $result = $stmt->get_result();
         $permissions = [];
 
+        // Se o controller nao tiver permissao, criar uma permissao com read, write e delete como false
+        foreach ($controllers as $controller) {
+            $permissions[$controller["name"]] = [
+                "read" => false,
+                "write" => false,
+                "delete" => false,
+                "controller" => $controller["name"],
+                "ID" => $controller["ID"]
+            ];
+        }
+
+        // Se o controller tiver permissao, atualizar a permissao
         while ($row = $result->fetch_assoc()) {
-            $permissions[$row["controller_name"]] = [
+            $permissions[$row["name"]] = [
                 "read" => $row["read"],
                 "write" => $row["write"],
-                "delete" => $row["delete"]
+                "delete" => $row["delete"],
+                "controller" => $row["name"],
+                "ID" => $row["controller_ID"]
             ];
         }
 
@@ -152,5 +196,55 @@ class User extends Model
         $stmt->execute();
 
         return $stmt->affected_rows > 0;
+    }
+
+    public function updateGroupPermissions($group_ID, $permissions)
+    {
+        $this->db->beginTransaction();
+
+        try {
+            foreach ($permissions as $controller => $permission) {
+                $permission = $this->preparePermission($permission);
+                var_dump($permission);
+
+                $sql = "SELECT * FROM `permissions` WHERE `group_ID` = ? AND `controller_ID` = ?";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bind_param("ii", $group_ID, $permission["ID"]);
+                $stmt->execute();
+
+                $result = $stmt->get_result();
+                $row = $result->fetch_assoc();
+
+                if ($row) {
+                    $sql = "UPDATE `permissions` SET `read` = ?, `write` = ?, `delete` = ?  WHERE `group_ID` = ?  AND `controller_ID` = ?";
+                    $stmt = $this->db->prepare($sql);
+                    $stmt->bind_param("iiiii", $permission["read"], $permission["write"], $permission["delete"], $group_ID, $permission["ID"]);
+                    $stmt->execute();
+                } else {
+                    $sql = "INSERT INTO `permissions` (`read`, `write`, `delete`, `group_ID`, `controller_ID`) VALUES (?, ?, ?, ?, ?)";
+                    $stmt = $this->db->prepare($sql);
+                    $stmt->bind_param("iiiii", $permission["read"], $permission["write"], $permission["delete"], $group_ID, $permission["ID"]);
+                    $stmt->execute();
+                }
+            }
+
+            $this->db->commit();
+        } catch (Exception $e) {
+            $this->db->rollback();
+            echo "Erro ao atualizar permissões!";
+            throw $e;
+        }
+
+        return $stmt->affected_rows > 0;
+    }
+
+    private function preparePermission($permission)
+    {
+        return [
+            "read" => isset($permission["read"]) && $permission["read"] ? 1 : 0,
+            "write" => isset($permission["write"]) && $permission["write"] ? 1 : 0,
+            "delete" => isset($permission["delete"]) && $permission["delete"] ? 1 : 0,
+            "ID" => $permission["ID"]
+        ];
     }
 }

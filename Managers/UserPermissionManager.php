@@ -43,11 +43,10 @@ class UserPermissionManager
         $this->user = $user;
 
         $permissions = $userModel->getGroupsPermissions($this->user["group_ID"]);
-
         $userPermissions = [];
 
         foreach ($permissions as $permission) {
-            $userPermissions[$permission["controller_name"]] = new Permission(
+            $userPermissions[$permission["controller"]] = new Permission(
                 $permission["read"],
                 $permission["write"],
                 $permission["delete"]
