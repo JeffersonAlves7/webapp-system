@@ -23,6 +23,10 @@
   background-color: var(--quaternary-color) !important;
 }
 
+.bg-secondary {
+  background-color: var(--secondary-color) !important;
+}
+
 .btn-custom,
 .btn-custom:active,
 .btn-custom:focus {
