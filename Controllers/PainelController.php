@@ -20,11 +20,12 @@ class PainelController extends _Controller
             header("Location: /");
             exit;
         }
-        
+
         $this->userModel = new User();
     }
 
-    public function index(){
+    public function index()
+    {
         $this->view("Painel/index");
     }
 
@@ -64,8 +65,53 @@ class PainelController extends _Controller
         ]);
     }
 
-    public function grupos(){
-        $this->view("Painel/grupos");
+    public function grupos()
+    {
+        if (
+            $_SERVER["REQUEST_METHOD"] == "POST"
+            && isset($_POST["_method"])
+            && $_POST["_method"] == "GET"
+        ) {
+            $permissions = $this->userModel->getGroupsPermissions($_POST["group_ID"]);
+            echo json_encode($permissions);
+            exit;
+        }
+
+        $mensagem_erro = isset($_SESSION["mensagem_erro"]) ? $_SESSION["mensagem_erro"] : "";
+        unset($_SESSION["mensagem_erro"]);
+
+        $sucesso = isset($_SESSION["sucesso"]) && $_SESSION["sucesso"];
+        unset($_SESSION["sucesso"]);
+
+
+        $groups = $this->userModel->getGroups();
+
+        $this->view("Painel/grupos", [
+            "groups" => $groups
+        ]);
+    }
+
+    public function updateGroupPermissions()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["_method"]) && $_POST["_method"] == "PUT") {
+            $group_ID = $_POST["group_ID"];
+            $permissions = $_POST["permissions"];
+
+            try {
+                $affected_rows = $this->userModel->updateGroupPermissions($group_ID, $permissions);
+                echo json_encode([
+                    "success" => true,
+                    "affected_rows" => $affected_rows
+                ]);
+                $_SESSION["sucesso"] = true;
+            } catch (Exception $e) {
+                $_SESSION["mensagem_erro"] = "Erro ao atualizar permissões!";
+                $_SESSION["error"] = $e->getMessage();
+            }
+        }
+
+        header("Location: /painel/grupos");
+        exit;
     }
 
     public function updateUser()
@@ -98,8 +144,6 @@ class PainelController extends _Controller
                     ]);
                 }
             }
-
-            exit;
         }
 
         exit;
