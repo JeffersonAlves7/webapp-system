@@ -15,6 +15,11 @@ require "Components/Header.php";
         <h1 class="mt-4 mb-3"><?= $pageTitle ?> - Grupos</h1>
     </div>
 
+    <!-- Adicionar também um botão para adicionar um novo grupo -->
+    <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#editGroupModal">Adicionar grupo
+        <i class="bi bi-plus"></i>
+    </button>
+
     <!-- List groups without their permissions -->
     <div class="table-responsive">
         <table class="table table-striped" id="table-groups">
@@ -46,6 +51,55 @@ require "Components/Header.php";
 
     <?php include "Components/StatusMessage.php"; ?>
 </main>
+
+<!-- Modal para criar um novo group -->
+<!-- <div class="modal fade" id="editGroupModal" tabindex="-1" aria-labelledby="editGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editGroupModalLabel">Adicionar grupo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editGroupForm" method="post" action="/painel/grupos">
+                    <div class="mb-3">
+                        <label for="groupName" class="form-label">Nome do grupo</label>
+                        <input type="text" class="form-control" id="groupName" name="name" required>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Funcionalidade</th>
+                                    <th>Leitura</th>
+                                    <th>Escrita</th>
+                                    <th>Deleção</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($controllers as $controller) : ?>
+                                    <tr>
+                                        <td><?= $controller["controller"] ?></td>
+                                        <td>
+                                            <input type="checkbox" name="permissions[<?= $controller["controller"] ?>][read]">
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" name="permissions[<?= $controller["controller"] ?>][write]">
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" name="permissions[<?= $controller["controller"] ?>][delete]">
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> -->
 
 <!-- Modal para aparecer as permissoes do grpo quando clicar em alterar e tambem o nome do grupo que pode ser alterado -->
 <div class="modal fade" id="editGroupModal" tabindex="-1" aria-labelledby="editGroupModalLabel" aria-hidden="true">
