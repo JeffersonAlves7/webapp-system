@@ -216,6 +216,9 @@ require "Components/Header.php";
             </form>
         </div>
     <?php endif; ?>
+
+
+    <?php include "Components/StatusMessage.php"; ?>
 </main>
 
 <?php

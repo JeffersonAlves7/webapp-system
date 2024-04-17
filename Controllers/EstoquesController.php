@@ -20,6 +20,10 @@ class EstoquesController extends _Controller
         //     $this->estoquesModel->create($name);
         //     header("location: /estoques");
         // }
+        $sucesso = isset($_SESSION["sucesso"]) && $_SESSION["sucesso"];
+        unset($_SESSION["sucesso"]);
+        $mensagem_erro = isset($_SESSION["mensagem_erro"]) ? $_SESSION["mensagem_erro"] : "";
+        unset($_SESSION["mensagem_erro"]);
 
         $page = 1;
 
@@ -41,8 +45,8 @@ class EstoquesController extends _Controller
         if (isset($_COOKIE["codigo"]) && $_COOKIE["codigo"] != "") {
             $where = "p.code LIKE '%" . $_COOKIE["codigo"] . "%'";
         }
-        if(isset($_GET["importadora"]) && $_GET["importadora"] != ""){
-            $where = "p.importer = '".$_GET["importadora"]."'";
+        if (isset($_GET["importadora"]) && $_GET["importadora"] != "") {
+            $where = "p.importer = '" . $_GET["importadora"] . "'";
         }
 
         $stocks = $this->estoquesModel->getAll();

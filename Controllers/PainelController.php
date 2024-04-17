@@ -10,19 +10,25 @@ class PainelController extends _Controller
     {
         parent::__construct();
 
-        $this->userModel = new User();
 
         if (
             !$this->userPermissionManager->controller("Painel")->canRead()
             || !$this->userPermissionManager->controller("Painel")->canWrite()
             || !$this->userPermissionManager->controller("Painel")->canDelete()
         ) {
+            $_SESSION["mensagem_erro"] = "Você não tem permissão para acessar o painel!";
             header("Location: /");
             exit;
         }
+        
+        $this->userModel = new User();
     }
 
-    public function index()
+    public function index(){
+        $this->view("Painel/index");
+    }
+
+    public function usuarios()
     {
         $sucesso = isset($_SESSION["sucesso"]) && $_SESSION["sucesso"];
         unset($_SESSION["sucesso"]);
@@ -50,12 +56,16 @@ class PainelController extends _Controller
 
         $usersData = $this->userModel->getAllUsers($page);
 
-        $this->view("Painel/index", [
+        $this->view("Painel/usuarios", [
             "users" => $usersData["users"],
             "pageCount" => $usersData["pageCount"],
             "groups" => $this->userModel->getGroups(),
             "page" => $page
         ]);
+    }
+
+    public function grupos(){
+        $this->view("Painel/grupos");
     }
 
     public function updateUser()
