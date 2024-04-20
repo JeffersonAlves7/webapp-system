@@ -64,7 +64,6 @@ require "Components/Header.php";
         </form>
     </div>
 
-
     <!-- Tabela -->
     <form method="get" class="table-responsive" style="max-height: 400px; overflow-y: auto;">
         <table class="table table-striped">
@@ -75,7 +74,8 @@ require "Components/Header.php";
                         <th>QUANTIDADE</br> DE ENTRADA</th>
                         <th>SALDO </br>ATUAL</th>
                         <th>CONTAINER</br> DE ORIGEM </th>
-                        <th>IMPORTADORA </th> <th>DATA </br>DE ENTRADA</th>
+                        <th>IMPORTADORA </th>
+                        <th>DATA DE </br>ENTRADA</th>
                         <th>DIAS </br>EM ESTOQUE</th>
                         <th>GIRO</th>
                         <th>QUANTIDADE </br>PARA ALERTA</th>
@@ -87,7 +87,7 @@ require "Components/Header.php";
                         <th>QUANTIDADE</br> DE ENTRADA</th>
                         <th>SALDO </br>ATUAL</th>
                         <th>IMPORTADORA </th>
-                        <th>DATA </br>DE ENTRADA</th>
+                        <th>DATA DE </br>ENTRADA</th>
                         <th>DIAS </br>EM ESTOQUE</th>
                         <th>GIRO</th>
                         <th>QUANTIDADE </br>PARA ALERTA</th>
@@ -128,12 +128,14 @@ require "Components/Header.php";
                             }
 
                             echo "<td >
-                                <div class=\"container\">
+                                <div class=\"container-col\">
                                  <p>$container</p>
                                 </div>
                             </td>
                             <td>$importadora</td>
-                            <td>$data</td>
+                            <td style='min-width: 100px;'>
+                                $data
+                            </td>
                             <td>$dias dia(s)</td>
                             <td>$giro%</td>
                             <td>$alerta</td>
@@ -221,7 +223,7 @@ require "Components/Header.php";
 </main>
 
 <style>
-.container {
+.container-col {
     max-width: 125px;
     white-space: nowrap;
     overflow: scroll;

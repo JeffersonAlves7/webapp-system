@@ -9,8 +9,8 @@ ob_start();
     <h1 class="mt-4 mb-3">Produtos</h1>
 
     <div class="d-flex justify-content-end mb-3">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newProductModal">
-            Novo Produto
+        <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#newProductModal">
+            Novo Produto <i class="bi bi-plus-lg"></i>
         </button>
     </div>
 
@@ -24,18 +24,14 @@ ob_start();
                     <th><i class="bi bi-shop"></i> Importadora</th>
                     <th><i class="bi bi-file-text"></i> Descrição</th>
                     <th><i class="bi bi-file-earmark-text"></i> Descrição em Chinês</th>
-                    <th>
-                        <!-- <i class="bi bi-pencil-square"></i> -->
-                    </th>
-                    <th>
-                        <!-- <i class='bi bi-trash'></i> -->
-                    </th>
+                    <th></th>
+                    <th></th>
                 </tr>
                 <tr>
                     <th></th>
                     <th><input type="search" class="form-control" name="code" placeholder="Filtrar por código" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
                     <th><input type="search" class="form-control" name="ean" placeholder="Filtrar por EAN" value="<?= isset($_GET["ean"]) ? $_GET["ean"] : "" ?>"></th>
-                    <th><input type="search" class="form-control" name="importer" placeholder="Filtrar por importadora" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>"></th>
+                    <th><input type="search" style="min-width: 250px;" class="form-control" name="importer" placeholder="Filtrar por importadora" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>"></th>
                     <th><input type="search" class="form-control" name="description" placeholder="Filtrar por descrição" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>"></th>
                     <th colspan="3"><input type="search" class="form-control" name="chinese_description" placeholder="Filtrar por descrição em Chinês" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>"></th>
                 </tr>
@@ -70,9 +66,9 @@ ob_start();
                                     <i class='bi bi-zoom-in'></i>
                                 </a>
                             </td>
-                            <td><i class='bi bi-tag'></i> <?= htmlspecialchars($row["code"]) ?></td>
-                            <td><i class='bi bi-barcode'></i> <?= htmlspecialchars($row["ean"]) ?></td>
-                            <td><i class='bi bi-shop'></i> <?= htmlspecialchars($row["importer"]) ?></td>
+                            <td><i class='bi bi-tag'></i> <?= htmlspecialchars($row["code"] ?? '') ?></td>
+                            <td><i class='bi bi-barcode'></i> <?= htmlspecialchars($row["ean"] ?? '') ?></td>
+                            <td><i class='bi bi-shop'></i> <?= htmlspecialchars($row["importer"] ?? '') ?></td>
                             <td><?= generateDescription($row["description"]) ?></td>
                             <td><?= generateDescription($row["chinese_description"]) ?></td>
                             <td>
