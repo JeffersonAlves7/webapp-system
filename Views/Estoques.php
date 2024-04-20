@@ -69,23 +69,20 @@ require "Components/Header.php";
     <form method="get" class="table-responsive" style="max-height: 400px; overflow-y: auto;">
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0;">
-                <?php
-                // Se o nome do estoque for Galpão
-                if (!isset($_GET["estoque"]) || !$_GET["estoque"] || $_GET["estoque"] == 1) {
-                    echo "<tr>
-                    <th>CÓDIGO </th>
-                    <th>QUANTIDADE</br> DE ENTRADA</th>
-                    <th>SALDO </br>ATUAL</th>
-                    <th>CONTAINER</br> DE ORIGEM </th>
-                    <th>IMPORTADORA </th>
-                    <th>DATA </br>DE ENTRADA</th>
-                    <th>DIAS </br>EM ESTOQUE</th>
-                    <th>GIRO</th>
-                    <th>QUANTIDADE </br>PARA ALERTA</th>
-                    <th>OBSERVAÇÃO</th>
-                    </tr>";
-                } else {
-                    echo "<tr>
+                <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"] || $_GET["estoque"] == 1) : ?>
+                    <tr>
+                        <th>CÓDIGO </th>
+                        <th>QUANTIDADE</br> DE ENTRADA</th>
+                        <th>SALDO </br>ATUAL</th>
+                        <th>CONTAINER</br> DE ORIGEM </th>
+                        <th>IMPORTADORA </th> <th>DATA </br>DE ENTRADA</th>
+                        <th>DIAS </br>EM ESTOQUE</th>
+                        <th>GIRO</th>
+                        <th>QUANTIDADE </br>PARA ALERTA</th>
+                        <th>OBSERVAÇÃO</th>
+                    </tr>
+                <?php else : ?>
+                    <tr>
                         <th>CÓDIGO </th>
                         <th>QUANTIDADE</br> DE ENTRADA</th>
                         <th>SALDO </br>ATUAL</th>
@@ -95,9 +92,8 @@ require "Components/Header.php";
                         <th>GIRO</th>
                         <th>QUANTIDADE </br>PARA ALERTA</th>
                         <th>OBSERVAÇÃO</th>
-                    </tr>";
-                }
-                ?>
+                    </tr>
+                <?php endif; ?>
             </thead>
             <tbody>
                 <?php if (isset($produtos) && count($produtos) > 0) :
@@ -131,7 +127,11 @@ require "Components/Header.php";
                                 echo "<td class='bg-warning'>$saldo</td>";
                             }
 
-                            echo "<td>$container</td>
+                            echo "<td >
+                                <div class=\"container\">
+                                 <p>$container</p>
+                                </div>
+                            </td>
                             <td>$importadora</td>
                             <td>$data</td>
                             <td>$dias dia(s)</td>
@@ -217,9 +217,17 @@ require "Components/Header.php";
         </div>
     <?php endif; ?>
 
-
     <?php include "Components/StatusMessage.php"; ?>
 </main>
+
+<style>
+.container {
+    max-width: 125px;
+    white-space: nowrap;
+    overflow: scroll;
+    text-overflow: ellipsis;
+}
+</style>
 
 <?php
 // <div class="modal fade" id="newStock" tabindex="-1" aria-labelledby="newStockLabel" aria-hidden="true">
