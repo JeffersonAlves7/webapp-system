@@ -57,7 +57,7 @@ body > main {
   body {
     display: grid;
     grid-template-areas: "header main";
-    grid-template-columns: 200px auto;
+    grid-template-columns: 180px auto;
   }
 
   body > header > nav {
@@ -80,7 +80,7 @@ body > main {
   #navbarSupportedContent > ul {
     display: flex;
     flex-direction: column !important;
-    align-items: center;
+    align-items: start;
     justify-content: center;
   }
 
