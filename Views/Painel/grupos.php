@@ -16,11 +16,10 @@ require "Components/Header.php";
     </div>
 
     <!-- Adicionar também um botão para adicionar um novo grupo -->
-    <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#editGroupModal">Adicionar grupo
-        <i class="bi bi-plus"></i>
+    <button class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#criarGroupModal">
+        Adicionar grupo <i class="bi bi-plus"></i>
     </button>
 
-    <!-- List groups without their permissions -->
     <div class="table-responsive">
         <table class="table table-striped" id="table-groups">
             <thead class="thead-dark" style="position: sticky; top: 0;">
@@ -29,18 +28,25 @@ require "Components/Header.php";
                     <th>Ações</th>
                 </tr>
             </thead>
+
             <tbody>
                 <?php foreach ($groups as $group) : ?>
                     <tr data-id="<?= $group["ID"] ?>">
                         <td><?= $group["name"] ?></td>
                         <td>
                             <div class="d-flex gap-2">
-                                <button class="btn btn-warning edit-group" data-id="<?= $group["ID"] ?>" title="Editar grupo">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="btn btn-danger delete-group" data-id="<?= $group["ID"] ?>">
-                                    <i class="bi bi-trash"></i>
-                                </button>
+                                <?php if ($group["ID"] == 1) : ?>
+                                    <button class="btn btn-primary" disabled>
+                                        <i class="bi bi-shield"></i>
+                                    </button>
+                                <?php else : ?>
+                                    <button class="btn btn-warning edit-group" data-id="<?= $group["ID"] ?>" title="Editar grupo">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-danger delete-group" data-id="<?= $group["ID"] ?>">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                <?php endif; ?>
                             </div>
                         </td>
                     </tr>
@@ -52,56 +58,26 @@ require "Components/Header.php";
     <?php include "Components/StatusMessage.php"; ?>
 </main>
 
-<!-- Modal para criar um novo group -->
-<!-- <div class="modal fade" id="editGroupModal" tabindex="-1" aria-labelledby="editGroupModalLabel" aria-hidden="true">
+<div class="modal fade" id="criarGroupModal" tabindex="-1" aria-labelledby="criarGroupModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editGroupModalLabel">Adicionar grupo</h5>
+                <h5 class="modal-title" id="criarGroupModalLabel">Criar grupo</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form id="editGroupForm" method="post" action="/painel/grupos">
+            <div class="modal-body text-center">
+                <form id="criarGroupForm" method="post" action="/painel/createGroup">
                     <div class="mb-3">
                         <label for="groupName" class="form-label">Nome do grupo</label>
-                        <input type="text" class="form-control" id="groupName" name="name" required>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th>Funcionalidade</th>
-                                    <th>Leitura</th>
-                                    <th>Escrita</th>
-                                    <th>Deleção</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($controllers as $controller) : ?>
-                                    <tr>
-                                        <td><?= $controller["controller"] ?></td>
-                                        <td>
-                                            <input type="checkbox" name="permissions[<?= $controller["controller"] ?>][read]">
-                                        </td>
-                                        <td>
-                                            <input type="checkbox" name="permissions[<?= $controller["controller"] ?>][write]">
-                                        </td>
-                                        <td>
-                                            <input type="checkbox" name="permissions[<?= $controller["controller"] ?>][delete]">
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                        <input type="text" class="form-control" id="groupName" name="groupName" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Salvar</button>
                 </form>
             </div>
         </div>
     </div>
-</div> -->
+</div>
 
-<!-- Modal para aparecer as permissoes do grpo quando clicar em alterar e tambem o nome do grupo que pode ser alterado -->
 <div class="modal fade" id="editGroupModal" tabindex="-1" aria-labelledby="editGroupModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -139,11 +115,29 @@ require "Components/Header.php";
     </div>
 </div>
 
+<div class="modal fade" id="deleteGroupModal" tabindex="-1" aria-labelledby="deleteGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteGroupModalLabel">Deletar grupo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>Deseja realmente deletar este grupo?</p>
+                <form id="deleteGroupForm" method="post" action="/painel/deleteGroup">
+                    <input type="hidden" name="group_ID" id="group_ID">
+                    <button type="submit" class="btn btn-danger">Deletar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     window.addEventListener("load", () => {
         const editGroupModal = new bootstrap.Modal(document.getElementById("editGroupModal"));
         const editGroupForm = document.getElementById("editGroupForm");
-        const groupNameInput = document.getElementById("groupName");
+        const groupNameInput = document.querySelector("#editGroupModal #groupName");
         const permissionsTable = document.getElementById("permissionsTable");
         const group_ID = document.getElementById("group_ID");
 
@@ -173,7 +167,6 @@ require "Components/Header.php";
                 permissionsTable.appendChild(tr);
             }
 
-
             editGroupModal.show();
         }
 
@@ -192,6 +185,21 @@ require "Components/Header.php";
                 const groupName = document.querySelector(`#table-groups tr[data-id="${group_ID}"] td:first-child`).innerText;
                 const group = await response.json();
                 editGroup(groupName, group_ID, group);
+            });
+        });
+
+        const deleteGroupModal = new bootstrap.Modal(document.getElementById("deleteGroupModal"));
+        const deleteGroupForm = document.getElementById("deleteGroupForm");
+
+        const deleteGroup = (group_ID) => {
+            document.querySelector("#deleteGroupModal #group_ID").value = group_ID;
+            deleteGroupModal.show();
+        }
+
+        document.querySelectorAll(".delete-group").forEach((button) => {
+            button.addEventListener("click", (event) => {
+                const group_ID = event.currentTarget.dataset.id;
+                deleteGroup(group_ID);
             });
         });
     });

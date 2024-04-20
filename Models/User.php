@@ -247,4 +247,36 @@ class User extends Model
             "ID" => $permission["ID"]
         ];
     }
+
+    public function createGroup($groupName)
+    {
+        $sql = "INSERT INTO `permission_groups` (`name`) VALUES (?)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("s", $groupName);
+        $stmt->execute();
+
+        return $stmt->affected_rows > 0;
+    }
+
+    public function deleteGroup($group_ID)
+    {
+        // Se o grupo for o grupo de administradores, nao deletar
+        if ($group_ID == 1) {
+            return false;
+        }
+
+        // Alterar permissao de todos os usuarios do grupo para o grupo NULL
+        $sql = "UPDATE `users` SET `group_ID` = NULL WHERE `group_ID` = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("i", $group_ID);
+        $stmt->execute();
+
+        // Depois deletar o grupo
+        $sql = "DELETE FROM `permission_groups` WHERE `ID` = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("i", $group_ID);
+        $stmt->execute();
+
+        return $stmt->affected_rows > 0;
+    }
 }

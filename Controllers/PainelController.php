@@ -91,6 +91,23 @@ class PainelController extends _Controller
         ]);
     }
 
+    public function createGroup()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $groupName = $_POST["groupName"];
+            try {
+                $this->userModel->createGroup($groupName);
+                $_SESSION["sucesso"] = true;
+            } catch (Exception $e) {
+                $_SESSION["mensagem_erro"] = "Erro ao criar grupo!";
+            }
+
+
+            header("Location: /painel/grupos");
+            exit;
+        }
+    }
+
     public function updateGroupPermissions()
     {
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["_method"]) && $_POST["_method"] == "PUT") {
@@ -146,6 +163,21 @@ class PainelController extends _Controller
             }
         }
 
+        exit;
+    }
+
+    public function deleteGroup()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["group_ID"])) {
+            try {
+                $this->userModel->deleteGroup($_POST["group_ID"]);
+                $_SESSION["sucesso"] = true;
+            } catch (Exception $e) {
+                $_SESSION["mensagem_erro"] = "Erro ao deletar grupo!";
+            }
+        }
+
+        header("Location: /painel/grupos");
         exit;
     }
 }
