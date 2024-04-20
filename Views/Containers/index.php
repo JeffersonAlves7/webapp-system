@@ -3,19 +3,44 @@ $pageTitle = "Embarques";
 ob_start();
 
 require "Components/Header.php";
+
+$search = isset($_GET['search']) ? $_GET['search'] : "";
 ?>
 <main>
     <h1 class="mt-4 mb-3"><?= $pageTitle ?></h1>
+
+    <form method="get" class="mb-3 row g-3">
+        <div class="col-md-3">
+            <label for="search" class="form-label sr-only">Código do container</label>
+            <input type="text" class="form-control" name="search" placeholder="Ex.: LT-001" value="<?= $search ?>">
+        </div>
+
+        <div class="col-md-3">
+            <label for="start_date" class="form-label sr-only">Data de início</label>
+            <input type="date" class="form-control" name="start_date" placeholder="Data de início" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : "" ?>" >
+        </div>
+
+        <div class="col-md-3">
+            <label for="end_date" class="form-label sr-only">Data de término</label>
+            <input type="date" class="form-control" name="end_date" placeholder="Data de término" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : "" ?>" >
+        </div>
+
+        <div class="col-md-3 d-flex justify-content-start align-items-end">
+            <button type="submit" class="btn btn-custom">
+                <i class="bi bi-search"></i> Buscar
+            </button>
+        </div>
+    </form>
 
     <!-- Tabela -->
     <form method="get" class="table-responsive" style="max-height: 400px; overflow-y: auto;">
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0;">
                 <tr>
-                    <th><i class="bi bi-info-circle"></i></th>
                     <th><i class="bi bi-tag"></i> Código</th>
+                    <th><i class="bi bi-check2"></i> Conferidos</th>
                     <th><i class="bi bi-calendar-date"></i> Data</th>
-                    <th><i class='bi bi-trash'></i></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -26,10 +51,10 @@ require "Components/Header.php";
                         <tr>
                             <td>
                                 <a href="/embarques/produtos/<?= $row['ID'] ?>">
-                                    <i class='bi bi-zoom-in'></i>
+                                    <i class='bi bi-zoom-in' style="margin-right: .5rem;"></i> <?= $row['name'] ?>
                                 </a>
                             </td>
-                            <td><?= $row['name'] ?></td>
+                            <td><?= $row['conferidos'] ?> / <?= $row['total'] ?></td>
                             <td><?= $row['created_at'] ?></td>
                             <td>
                                 <a href="/embarques/deletar/<?= $row['ID'] ?>">

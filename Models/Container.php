@@ -16,7 +16,11 @@ class Container extends Model
         }
 
         $offset = ($page - 1) * $limit;
-        $sql =  "SELECT * FROM lote_container 
+        $sql =  "SELECT 
+            *, 
+            (SELECT COUNT(*) FROM products_in_container WHERE container_ID = lote_container.ID) as total,
+            (SELECT COUNT(*) FROM products_in_container WHERE container_ID = lote_container.ID AND in_stock = 1) as conferidos
+        FROM lote_container
         WHERE $where 
         ORDER BY `created_at` DESC LIMIT $limit OFFSET $offset";
         $result = $this->db->query($sql);

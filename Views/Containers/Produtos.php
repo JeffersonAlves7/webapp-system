@@ -5,7 +5,14 @@ ob_start();
 require "Components/Header.php";
 ?>
 <main>
-    <h1 class="mb-3"><?= $pageTitle ?> - Produtos</h1>
+
+    <div class="d-flex gap-4 align-items-center">
+        <button id="go-back" class="btn btn-custom">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        <h1 class="mb-3"><?= $pageTitle ?> - Produtos</h1>
+    </div>
+
     <div class="table-responsive">
         <table class="table table-striped" style="min-width:max-content">
             <thead class="thead-dark" style="position: sticky; top: 0;">
