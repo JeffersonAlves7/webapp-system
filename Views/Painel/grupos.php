@@ -101,6 +101,24 @@ require "Components/Header.php";
                                     <th>Escrita</th>
                                     <th>Deleção</th>
                                 </tr>
+                                <tr>
+                                    <td>
+                                        <button id="selectAll" type="button" style="border: none; background: none; cursor: pointer;"
+                                            <strong>
+                                                <i class="bi bi-check2-all"></i> Selecionar todos
+                                            </strong>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" id="selectAllLeitura">
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" id="selectAllEscrita">
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" id="selectAllDelecao">
+                                    </td>
+                                </tr>
                             </thead>
                             <tbody id="permissionsTable">
                                 <!-- Permissions will be inserted here -->
@@ -201,6 +219,37 @@ require "Components/Header.php";
                 const group_ID = event.currentTarget.dataset.id;
                 deleteGroup(group_ID);
             });
+        });
+
+        // Selecionar todos os checkboxes de leitura
+        document.getElementById("selectAllLeitura").addEventListener("change", (event) => {
+            const checkboxes = document.querySelectorAll("#permissionsTable input[name$='[read]']");
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = event.currentTarget.checked;
+            });
+        });
+
+        // Selecionar todos os checkboxes de escrita
+        document.getElementById("selectAllEscrita").addEventListener("change", (event) => {
+            const checkboxes = document.querySelectorAll("#permissionsTable input[name$='[write]']");
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = event.currentTarget.checked;
+            });
+        });
+
+        // Selecionar todos os checkboxes de deleção
+        document.getElementById("selectAllDelecao").addEventListener("change", (event) => {
+            const checkboxes = document.querySelectorAll("#permissionsTable input[name$='[delete]']");
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = event.currentTarget.checked;
+            });
+        });
+
+        // Selecionar todos os checkboxes
+        document.getElementById("selectAll").addEventListener("click", (event) => {
+            document.getElementById("selectAllLeitura").click();
+            document.getElementById("selectAllEscrita").click();
+            document.getElementById("selectAllDelecao").click();
         });
     });
 </script>
