@@ -18,7 +18,6 @@ ob_start();
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0;">
                 <tr>
-                    <th><i class="bi bi-info-circle"></i></th>
                     <th><i class="bi bi-tag"></i> Código</th>
                     <th><i class="bi bi-barcode"></i> EAN</th>
                     <th><i class="bi bi-shop"></i> Importadora</th>
@@ -28,10 +27,16 @@ ob_start();
                     <th></th>
                 </tr>
                 <tr>
-                    <th></th>
                     <th><input type="search" class="form-control" name="code" placeholder="Filtrar por código" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
                     <th><input type="search" class="form-control" name="ean" placeholder="Filtrar por EAN" value="<?= isset($_GET["ean"]) ? $_GET["ean"] : "" ?>"></th>
-                    <th><input type="search" style="min-width: 250px;" class="form-control" name="importer" placeholder="Filtrar por importadora" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>"></th>
+                    <th>
+                        <select class="form-select" name="importer" id="importer" style="min-width: 220px;">
+                            <option value="">Selecione uma opção</option>
+                            <option value="ATTUS" <?= (isset($_GET["importer"]) && $_GET["importer"] == "ATTUS") ? "selected" : "" ?>>ATTUS</option>
+                            <option value="ATTUS_BLOOM" <?= (isset($_GET["importer"]) && $_GET["importer"] == "ATTUS_BLOOM") ? "selected" : "" ?>>ATTUS_BLOOM</option>
+                            <option value="ALPHA_YNFINITY" <?= (isset($_GET["importer"]) && $_GET["importer"] == "ALPHA_YNFINITY") ? "selected" : "" ?>>ALPHA_YNFINITY</option>
+                        </select>
+                    </th>
                     <th><input type="search" class="form-control" name="description" placeholder="Filtrar por descrição" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>"></th>
                     <th colspan="3"><input type="search" class="form-control" name="chinese_description" placeholder="Filtrar por descrição em Chinês" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>"></th>
                 </tr>
@@ -62,12 +67,11 @@ ob_start();
                     <?php while ($row = $products->fetch_assoc()) : ?>
                         <tr>
                             <td>
-                                <a href='/produtos/byId/<?= htmlspecialchars($row["ID"]) ?>' title='Ver mais'>
-                                    <i class='bi bi-zoom-in'></i>
+                                <a href='/produtos/byId/<?= htmlspecialchars($row["ID"]) ?>' title='Ver mais' class="d-flex gap-2">
+                                    <i class='bi bi-tag'></i> <?= htmlspecialchars($row["code"] ?? '') ?>
                                 </a>
                             </td>
-                            <td><i class='bi bi-tag'></i> <?= htmlspecialchars($row["code"] ?? '') ?></td>
-                            <td><i class='bi bi-barcode'></i> <?= htmlspecialchars($row["ean"] ?? '') ?></td>
+                            <td><i class='bi bi-barcode'></i> <?= htmlspecialchars($row["ean"] ?? '...') ?></td>
                             <td><i class='bi bi-shop'></i> <?= htmlspecialchars($row["importer"] ?? '') ?></td>
                             <td><?= generateDescription($row["description"]) ?></td>
                             <td><?= generateDescription($row["chinese_description"]) ?></td>
