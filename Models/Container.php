@@ -104,4 +104,51 @@ class Container extends Model
             WHERE `container_ID` = $container_ID AND `product_ID` = {$product['product_ID']}");
         }
     }
+
+    public function importData($products)
+    {
+
+        /**
+         * Criando os containers
+         * 1) Pegar a chave lote de todos os produtos e agrupar
+         * 2) Se não existir, criar um container para cada lote
+         */
+        $containers = [];
+        foreach ($products as $product) {
+            $containers[$product["lote"]] = $product["lote"];
+        }
+
+        $containers = array_values($containers);
+        var_dump($containers);
+
+        // $container_com_id = []; // Array com o ID do container e o lote
+
+        // foreach ($containers as $container) {
+        //     // Verificar se o container já existe
+        //     $stmt = $this->db->prepare("SELECT * FROM `lote_container` WHERE `lote` = ?");
+        //     $stmt->bind_param("s", $container);
+        //     $stmt->execute();
+
+        //     $result = $stmt->get_result();
+        //     $container = $result->fetch_assoc();
+
+        //     if (!$container) {
+        //         $stmt = $this->db->prepare("INSERT INTO `lote_container` (`lote`) VALUES (?)");
+        //         $stmt->bind_param("s", $container);
+        //         $stmt->execute();
+
+        //         $container_com_id[] = [$container, $stmt->insert_id];
+        //     } else {
+        //         $container_com_id[] = [$container, $container["ID"]];
+        //     }
+        // }
+
+        /**
+         * Criando produtos quando estes não existirem
+         * Adicionando os produtos no seu respectivo container
+         * 1) Verificar se o produto existe
+         * 2) Se não existir, criar o produto
+         * 3) Adicionar o produto no container
+         */
+    }
 }

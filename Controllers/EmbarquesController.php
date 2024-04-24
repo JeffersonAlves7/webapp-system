@@ -1,6 +1,7 @@
 <?php
 require_once "Models/Container.php";
 require_once "Controllers/_Controller.php";
+require_once "Utils/PhpExcel.php";
 
 class EmbarquesController extends _Controller
 {
@@ -40,6 +41,79 @@ class EmbarquesController extends _Controller
         $containers = $this->containerModel->getAll($page, where: $where);
 
         include_once "Views/Containers/index.php";
+    }
+
+    public function importar()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $file = $_FILES["file"];
+            $rows = PhpExcel::read($file["tmp_name"], 7);
+
+            if (count($rows) == 0) {
+                $_SESSION["mensagem_erro"] = "Falha ao importar arquivo! O arquivo não possuí dados";
+                header("Refresh: 1; URL = /embarques");
+                return;
+            }
+
+            // echo PhpExcel::formatAsTable($rows);
+
+            array_shift($rows);
+            $products = [];
+
+            $index = 0;
+            foreach ($rows as $row) {
+                $ean = $row[0];
+                $code = $row[1];
+                $description = $row[2];
+                $description_chinese = $row[3];
+                $quantity = $row[4];
+                $importer = $row[5];
+                $lote = $row[6];
+
+                $campos_vazios = [];
+                if (!$code || empty($code)) {
+                    $campos_vazios[] = "Código";
+                }
+                if (!$description || empty($description)) {
+                    $campos_vazios[] = "Descrição";
+                }
+                if (!$quantity || empty($quantity)) {
+                    $campos_vazios[] = "Quantidade";
+                }
+                if (!$importer || empty($importer)) {
+                    $campos_vazios[] = "Importador";
+                }
+                if (!$lote || empty($lote)) {
+                    $campos_vazios[] = "Lote";
+                }
+
+                if (count($campos_vazios) > 0) {
+                    $_SESSION["mensagem_erro"] = "Falha ao importar arquivo! Os seguintes campos estão vazios: " . implode(", ", $campos_vazios) . " na linha " . ($index + 2);
+                    header("Refresh: 1; URL = /embarques");
+                    return;
+                }
+
+                $products[] = [
+                    "ean" => $ean,
+                    "code" => $code,
+                    "description" => $description,
+                    "description_chinese" => $description_chinese,
+                    "quantity" => $quantity,
+                    "importer" => $importer,
+                    "lote" => $lote,
+                ];
+
+                $index++;
+            }
+
+            $this->containerModel->importData($products);
+
+            $_SESSION["sucesso"] = true;
+        } else {
+            $_SESSION["mensagem_erro"] = "Falha ao importar arquivo!";
+        }
+
+        // header("Refresh: 1; URL = /embarques");
     }
 
     public function produtos($container_ID)

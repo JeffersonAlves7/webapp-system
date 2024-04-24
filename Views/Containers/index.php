@@ -17,12 +17,12 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
 
         <div class="col-md-3">
             <label for="start_date" class="form-label sr-only">Data de início</label>
-            <input type="date" class="form-control" name="start_date" placeholder="Data de início" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : "" ?>" >
+            <input type="date" class="form-control" name="start_date" placeholder="Data de início" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : "" ?>">
         </div>
 
         <div class="col-md-3">
             <label for="end_date" class="form-label sr-only">Data de término</label>
-            <input type="date" class="form-control" name="end_date" placeholder="Data de término" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : "" ?>" >
+            <input type="date" class="form-control" name="end_date" placeholder="Data de término" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : "" ?>">
         </div>
 
         <div class="col-md-3 d-flex justify-content-start align-items-end">
@@ -56,6 +56,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                             </td>
                             <td><?= $row['conferidos'] ?> / <?= $row['total'] ?></td>
                             <td><?= $row['created_at'] ?></td>
+                            <!-- Importar arquivo -->
                             <td>
                                 <a href="/embarques/deletar/<?= $row['ID'] ?>">
                                     <button type='button' class='btn'>
@@ -77,6 +78,19 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
             </tbody>
         </table>
         <button type="submit" hidden></button>
+    </form>
+
+    <form method="post" enctype="multipart/form-data" class="mb-3" action="/embarques/importar">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <input type="file" name="file" class="form-control" accept=".xlsx, .csv" required>
+            </div>
+            <div class="col-md-6">
+                <button type="submit" class="btn btn-custom">
+                    <i class="bi bi-file-earmark-arrow-up"></i> Importar
+                </button>
+            </div>
+        </div>
     </form>
 </main>
 
