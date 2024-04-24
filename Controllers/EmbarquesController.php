@@ -47,7 +47,7 @@ class EmbarquesController extends _Controller
     {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $file = $_FILES["file"];
-            $rows = PhpExcel::read($file["tmp_name"], 7);
+            $rows = PhpExcel::read($file["tmp_name"], 9);
 
             if (count($rows) == 0) {
                 $_SESSION["mensagem_erro"] = "Falha ao importar arquivo! O arquivo não possuí dados";
@@ -55,7 +55,8 @@ class EmbarquesController extends _Controller
                 return;
             }
 
-            // echo PhpExcel::formatAsTable($rows);
+            echo PhpExcel::formatAsTable($rows);
+            return;
 
             array_shift($rows);
             $products = [];
@@ -69,22 +70,36 @@ class EmbarquesController extends _Controller
                 $quantity = $row[4];
                 $importer = $row[5];
                 $lote = $row[6];
+                $date = $row[8];
+                $status = $row[9];
 
                 $campos_vazios = [];
                 if (!$code || empty($code)) {
                     $campos_vazios[] = "Código";
                 }
+
                 if (!$description || empty($description)) {
                     $campos_vazios[] = "Descrição";
                 }
+
                 if (!$quantity || empty($quantity)) {
                     $campos_vazios[] = "Quantidade";
                 }
+
                 if (!$importer || empty($importer)) {
                     $campos_vazios[] = "Importador";
                 }
+
                 if (!$lote || empty($lote)) {
                     $campos_vazios[] = "Lote";
+                }
+
+                if (!$date || empty($date)) {
+                    $campos_vazios[] = "Data de embarque";
+                }
+
+                if (!$status || empty($status)) {
+                    $campos_vazios[] = "Status";
                 }
 
                 if (count($campos_vazios) > 0) {
@@ -92,6 +107,15 @@ class EmbarquesController extends _Controller
                     header("Refresh: 1; URL = /embarques");
                     return;
                 }
+
+                // Tentar formatar data para dd/mm/yyyy, se não conseguir, retornar erro
+                if (!strtotime($date)) {
+                    $_SESSION["mensagem_erro"] = "Falha ao importar arquivo! Data inválida na linha " . ($index + 2);
+                    header("Refresh: 1; URL = /embarques");
+                    return;
+                }
+
+                $date = date("Y-m-d", strtotime($date));
 
                 $products[] = [
                     "ean" => $ean,
@@ -101,6 +125,8 @@ class EmbarquesController extends _Controller
                     "quantity" => $quantity,
                     "importer" => $importer,
                     "lote" => $lote,
+                    "date" => $date,
+                    "status" => $status
                 ];
 
                 $index++;
