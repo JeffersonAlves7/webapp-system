@@ -92,6 +92,8 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
             </div>
         </div>
     </form>
+
+    <?php include_once "Components/StatusMessage.php"; ?>
 </main>
 
 <?php

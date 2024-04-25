@@ -5,7 +5,6 @@ ob_start();
 require "Components/Header.php";
 ?>
 <main>
-
     <div class="d-flex gap-4 align-items-center">
         <button id="go-back" class="btn btn-custom">
             <i class="bi bi-arrow-left"></i>
@@ -145,6 +144,8 @@ require "Components/Header.php";
             <a href="/embarques/conferir/<?= $container_ID ?>">Conferir embarque</a>
         </div>
     <?php endif; ?>
+
+    <?php include_once "Components/StatusMessage.php"; ?>
 </main>
 
 <script>
