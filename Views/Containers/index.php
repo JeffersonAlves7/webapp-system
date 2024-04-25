@@ -55,7 +55,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                                 </a>
                             </td>
                             <td><?= $row['conferidos'] ?> / <?= $row['total'] ?></td>
-                            <td><?= $row['created_at'] ?></td>
+                            <td><?= date('d/m/Y h:i:s' , strtotime($row['created_at'])) ?></td>
                             <!-- Importar arquivo -->
                             <td>
                                 <a href="/embarques/deletar/<?= $row['ID'] ?>">

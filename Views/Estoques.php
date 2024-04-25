@@ -97,88 +97,63 @@ require "Components/Header.php";
             </thead>
             <tbody>
                 <?php if (isset($produtos) && count($produtos) > 0) :
-                    foreach ($produtos as $produto) {
-                        if (!isset($_GET["estoque"]) || !$_GET["estoque"] || $_GET["estoque"] == 1) {
-                            $codigo = $produto["codigo"];
-                            $quantidade_entrada = $produto["quantidade_entrada"] ?? 0;
-                            $saldo = $produto["saldo_atual"] ?? 0;
-                            $container = $produto["container_de_origem"] ?? "";
-                            $importadora = $produto["importadora"] ?? "";
-                            $data = $produto["data_de_entrada"]  ?? "";
-                            $dias = $produto["dias_em_estoque"] ?? 0;
-                            $giro = $produto["giro"] ?? 0;
-                            $alerta = $produto["quantidade_para_alerta"] ?? 0;
-                            $observacao = $produto["observation"] ?? "";
-
-                            echo "<tr>
-                            <td>
-                                <a href='/produtos/byId/" . htmlspecialchars($produto["ID"]) . "' title='Ver mais'>
-                                    $codigo
-                                </a>
-                            </td>
-                            <td>$quantidade_entrada</td>";
-
-                            // Adicionar background ao saldo, verde se for maior que o alerta, vermelho se for menor e amarelo se for igual
-                            if ($saldo > $alerta) {
-                                echo "<td class='bg-quaternary'>$saldo</td>";
-                            } elseif ($saldo < $alerta) {
-                                echo "<td class='bg-danger'>$saldo</td>";
-                            } else {
-                                echo "<td class='bg-warning'>$saldo</td>";
-                            }
-
-                            echo "<td >
-                                <div class=\"container-col\">
-                                 <p>$container</p>
-                                </div>
-                            </td>
-                            <td>$importadora</td>
-                            <td style='min-width: 100px;'>
-                                $data
-                            </td>
-                            <td>$dias dia(s)</td>
-                            <td>$giro%</td>
-                            <td>$alerta</td>
-                            <td>$observacao</td>
-                        </tr>";
+                    foreach ($produtos as $produto) :
+                        $codigo = $produto["codigo"];
+                        $quantidade_entrada = $produto["quantidade_entrada"] ?? 0;
+                        $saldo = $produto["saldo_atual"] ?? 0;
+                        if (isset($produto["data_de_entrada"])) {
+                            $data = $produto["data_de_entrada"]  ?
+                                date("d/m/Y", strtotime($produto["data_de_entrada"]))
+                                : "";
                         } else {
-                            $codigo = $produto["codigo"];
-                            $quantidade_entrada = $produto["quantidade_entrada"] ?? 0;
-                            $saldo = $produto["saldo_atual"] ?? 0;
-                            $importadora = $produto["importadora"] ?? "";
-                            $data = $produto["data_de_entrada"]  ?? "";
-                            $dias = $produto["dias_em_estoque"] ?? 0;
-                            $giro = $produto["giro"] ?? 0;
-                            $alerta = $produto["quantidade_para_alerta"] ?? 0;
-                            $observacao = $produto["observation"] ?? "";
-
-                            echo "<tr>
+                            $data = "-";
+                        }
+                        $dias = $produto["dias_em_estoque"] ?? 0;
+                        $giro = $produto["giro"] ?? 0;
+                        $alerta = $produto["quantidade_para_alerta"] ?? 0;
+                        $observacao = $produto["observation"] ?? "";
+                        $importadora = $produto["importadora"] ?? "";
+                        $container = isset($produto["container_de_origem"]) ? $produto["container_de_origem"] : "";
+                ?>
+                        <tr>
                             <td>
-                                <a href='/produtos/byId/" . htmlspecialchars($produto["ID"]) . "' title='Ver mais'>
-                                    $codigo
+                                <a href='/produtos/byId/<?= htmlspecialchars($produto["ID"]) ?>' title='Ver mais'>
+                                    <?= $codigo ?>
                                 </a>
                             </td>
-                            <td>$quantidade_entrada</td>";
+                            <td><?= $quantidade_entrada ?></td>
 
-                            if ($saldo > $alerta) {
-                                echo "<td class='bg-quaternary'>$saldo</td>";
-                            } elseif ($saldo < $alerta) {
-                                echo "<td class='bg-danger'>$saldo</td>";
-                            } else {
-                                echo "<td class='bg-warning'>$saldo</td>";
-                            }
+                            <?php if ($saldo > $alerta) : ?>
+                                <td class='bg-quaternary'><?= $saldo ?></td>
+                            <?php elseif ($saldo < $alerta) : ?>
+                                <td class='bg-danger'><?= $saldo ?></td>
+                            <?php else : ?>
+                                <td class='bg-warning'><?= $saldo ?></td>
+                            <?php endif; ?>
 
-                            echo "
-                            <td>$importadora</td>
-                            <td>$data</td>
-                            <td>$dias</td>
-                            <td>$giro%</td>
-                            <td>$alerta</td>
-                            <td>$observacao</td>
-                        </tr>";
-                        }
-                    }
-                endif; ?>
+                            <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"] || $_GET["estoque"] == 1) : ?>
+                                <td>
+                                    <div class="container-col">
+                                        <p><?= $container ?></p>
+                                    </div>
+                                </td>
+                            <?php endif; ?>
+
+                            <td><?= $importadora ?></td>
+                            <td style='min-width: 100px;'>
+                                <?= $data ?>
+                            </td>
+                            <td><?= $dias ?> dia(s)</td>
+                            <td><?= $giro ?>%</td>
+                            <td><?= $alerta ?></td>
+                            <td><?= $observacao ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <tr>
+                        <td colspan="9" class="text-center">Nenhum produto encontrado</td>
+                    </tr>
+                <?php endif; ?>
             </tbody>
         </table>
         <button type="submit" hidden></button>
@@ -223,12 +198,12 @@ require "Components/Header.php";
 </main>
 
 <style>
-.container-col {
-    max-width: 125px;
-    white-space: nowrap;
-    overflow: scroll;
-    text-overflow: ellipsis;
-}
+    .container-col {
+        max-width: 150px;
+        overflow: auto;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
 </style>
 
 <?php

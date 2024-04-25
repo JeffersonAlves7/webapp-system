@@ -68,11 +68,11 @@ ob_start();
                         <tr>
                             <td>
                                 <a href='/produtos/byId/<?= htmlspecialchars($row["ID"]) ?>' title='Ver mais' class="d-flex gap-2">
-                                    <i class='bi bi-tag'></i> <?= htmlspecialchars($row["code"] ?? '') ?>
+                                    <i class='bi bi-tag'></i> <?= htmlspecialchars($row["code"]) ?>
                                 </a>
                             </td>
-                            <td><i class='bi bi-barcode'></i> <?= htmlspecialchars($row["ean"] ?? '...') ?></td>
-                            <td><i class='bi bi-shop'></i> <?= htmlspecialchars($row["importer"] ?? '') ?></td>
+                            <td><i class='bi bi-barcode'></i> <?= htmlspecialchars($row["ean"] ?? '-') ?></td>
+                            <td><i class='bi bi-shop'></i> <?= htmlspecialchars($row["importer"] ?? '-') ?></td>
                             <td><?= generateDescription($row["description"]) ?></td>
                             <td><?= generateDescription($row["chinese_description"]) ?></td>
                             <td>

@@ -122,7 +122,7 @@ ob_start();
                             <td><?= $transacao["to_stock"]; ?></td>
                             <td><?= $transacao["client_name"]; ?></td>
                             <td><?= $transacao["observation"]; ?></td>
-                            <td><?= $transacao["updated_at"]; ?></td>
+                            <td><?= date('d/m/Y H:i:s', strtotime($transacao["updated_at"])) ?></td>
                             <td>
                                 <button type='button' class='btn btn-danger delete-transaction' data-id='<?= $transacao["ID"] ?>' data-bs-toggle='modal' data-bs-target='#cancelModal' class='btn-cancel'>Apagar</button>
                             </td>

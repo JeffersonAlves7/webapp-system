@@ -51,12 +51,12 @@ require "Components/Header.php";
                             </td>
                             <td>
                                 <p class="text-center">
-                                    <?= $row['departure_date'] ? $row['departure_date'] : '-' ?>
+                                    <?= $row['departure_date'] ?  date('d/m/Y', strtotime($row['departure_date'])) : '-' ?>
                                 </p>
                             </td>
                             <td>
                                 <p class="text-center">
-                                    <?= $row['departure_date'] ? date('Y-m-d', strtotime($row['departure_date'] . ' + 30 days')) : '-' ?>
+                                    <?= $row['departure_date'] ? date('d/m/Y', strtotime($row['departure_date'] . ' + 30 days')) : '-' ?>
                                 </p>
                             </td>
                             <td>
