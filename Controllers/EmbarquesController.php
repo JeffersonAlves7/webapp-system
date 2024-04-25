@@ -177,7 +177,12 @@ class EmbarquesController extends _Controller
         $productsData = $this->containerModel->produtosById($container_ID, $page, where: $where);
         $products = $productsData["products"];
         $pageCount = $productsData["pageCount"];
-        include_once "Views/Containers/Produtos.php";
+
+        $this->view("Containers/Produtos", [
+            "products" => $products,
+            "container_ID" => $container_ID,
+            "pageCount" => $pageCount
+        ]);
     }
 
     public function conferir($container_ID)
@@ -188,12 +193,17 @@ class EmbarquesController extends _Controller
             $page = (int) $_GET["page"];
         }
 
-        $where = "1 = 1 ";
-        $where .= " AND in_stock = 0";
+        $where = "pc.`in_stock` = 0";
 
-        $products_in_container = $this->containerModel->produtosById($container_ID, $page, where: $where);
+        $products = $this->containerModel->produtosById($container_ID, $page, where: $where);
+        $container = $this->containerModel->byId($container_ID);
 
-        include_once "Views/Containers/Conferir.php";
+        $this->view("Containers/Conferir", [
+            "products" => $products["products"],
+            "container_ID" => $container_ID,
+            "container" => $container,
+            "pageCount" => $products["pageCount"]
+        ]);
     }
 
     public function deletarProduto()

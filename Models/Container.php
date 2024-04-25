@@ -74,24 +74,6 @@ class Container extends Model
         $this->db->query("DELETE FROM `lote_container` WHERE `ID` = $container_ID");
     }
 
-    public function produtosNotInStock($container_ID)
-    {
-        $sql =  "SELECT pc.*, p.`code` FROM products_in_container pc
-        INNER JOIN products p ON p.ID = pc.product_ID
-        WHERE pc.`container_ID` = $container_ID AND pc.`in_stock` = 0
-        ORDER BY `created_at` DESC";
-        $result = $this->db->query($sql);
-        $products = [];
-
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $products[] = $row;
-            }
-        }
-
-        return $products;
-    }
-
     public function confirmProducts($container_ID, $products)
     {
         // A variavel produtos precisa ter o Id dos produtos, tambem precisa ter a quantidade que foi entregue
@@ -168,7 +150,7 @@ class Container extends Model
 
             // Adicionando o produto no container
             if ($product["status"] == "A caminho") {
-                $stmt = $this->db->prepare("INSERT INTO `products_in_container` (`container_ID`, `product_ID`, `quantity`, `in_stock`, `departure_date`) VALUES (?, ?, ?, 0, ?)");
+                $stmt = $this->db->prepare("INSERT INTO `products_in_container` (`container_ID`, `product_ID`, `quantity_expected`, `in_stock`, `departure_date`) VALUES (?, ?, ?, 0, ?)");
                 $stmt->bind_param("iiis", $container_ID, $product_ID, $product["quantity"], $product["date"]);
                 $stmt->execute();
             } else {
@@ -181,5 +163,15 @@ class Container extends Model
                 $stmt->execute();
             }
         }
+    }
+
+    public function byId($container_ID)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM `lote_container` WHERE `ID` = ?");
+        $stmt->bind_param("i", $container_ID);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
     }
 }

@@ -55,8 +55,19 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                                 </a>
                             </td>
                             <td><?= $row['conferidos'] ?> / <?= $row['total'] ?></td>
-                            <td><?= date('d/m/Y h:i:s' , strtotime($row['created_at'])) ?></td>
-                            <!-- Importar arquivo -->
+                            <td><?= date('d/m/Y h:i:s', strtotime($row['created_at'])) ?></td>
+                            <td>
+                                <?php if ($row['conferidos'] == $row['total']) : ?>
+                                    Conferido <i class='bi bi-check2 text-success'></i>
+                                <?php else : ?>
+                                    <a href="/embarques/conferir/<?= $row['ID'] ?>">
+                                        <button type='button' class='btn btn-custom'>
+                                            Conferir
+                                            <i class='bi bi-check2 text-success'></i>
+                                        </button>
+                                    </a>
+                                <?php endif; ?>
+                            </td>
                             <td>
                                 <a href="/embarques/deletar/<?= $row['ID'] ?>">
                                     <button type='button' class='btn'>

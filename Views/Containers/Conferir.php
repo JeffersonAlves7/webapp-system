@@ -5,13 +5,31 @@ ob_start();
 require "Components/Header.php";
 ?>
 <main>
-    <h1><?= $pageTitle ?> - Produtos no Container</h1>
+    <div class="d-flex gap-4 align-items-center">
+        <button id="go-back" class="btn btn-custom">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        <h1 class="mb-3">
+            <?= $pageTitle ?> - Conferência do Container <?= $container['name'] ?>
+        </h1>
+    </div>
 
-    <div class="table-responsive">
+    <!-- Data de chegada: Aqui o usuario vai poder customizar a data de chegada dos produtos no container -->
+    <div class="mb-3" style="max-width: 300px;">
+        <label for="arrival_date" class="form-label">Data de chegada</label>
+        <input type="date" class="form-control" id="arrival_date" value="<?= date('Y-m-d') ?>">
+    </div>
+
+    <div class="table-responsive" style="max-height: 60vh; min-height: 100px">
         <table class="table table-striped" style="min-width:max-content">
             <thead class="thead-dark" style="position: sticky; top: 0;">
                 <tr>
-                    <th><input type="checkbox" id="select-all" /> <label for="select-all">Selecionar</label></th>
+                    <th>
+                        <label>
+                            <input type="checkbox" id="selectAll" class="form-check-input">
+                            Selecionar
+                        </label>
+                    </th>
                     <th>Código</th>
                     <th>Importadora</th>
                     <th>Quantidade Esperada</th>
@@ -20,11 +38,11 @@ require "Components/Header.php";
             </thead>
             <tbody>
                 <?php
-                if (isset($products_in_container) && count($products_in_container) > 0) : ?>
-                    <?php foreach ($products_in_container as $row) : ?>
-                        <tr id=<?= "row-" . $row['ID'] ?>>
+                if (isset($products) && $products->num_rows > 0) : ?>
+                    <?php while ($row = $products->fetch_assoc()) : ?>
+                        <tr data-id="<?= $row['product_ID'] ?>">
                             <td>
-                                <input type="checkbox" name="is-checked" id="<?= $row['ID'] ?>">
+                                <input type="checkbox" class="form-check-input">
                             </td>
                             <td><?= $row['code'] ?></td>
                             <td><?= $row['importer'] ?></td>
@@ -34,106 +52,135 @@ require "Components/Header.php";
                                 </p>
                             </td>
                             <td>
-                                <div class="d-flex" style="width: 150px;">
-                                    <input type="number" class="form-control" placeholder="0" min="0" max="<?= $row['quantity_expected'] ?>" name="quantity_received" required>
-                                    <button class="btn btn-outline-secondary fill-button" title="Preencher com a quantidade esperada" data-id="<?= $row['ID'] ?>">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd" d="M8 3.5a.5.5 0 0 1 .5.5v2.793l1.354-1.353a.5.5 0 0 1 .708.708l-2.147 2.146a.5.5 0 0 1-.708 0L5.94 6.646a.5.5 0 0 1 .708-.708L7.5 6.793V4a.5.5 0 0 1 .5-.5z" />
-                                            <path fill-rule="evenodd" d="M8 4.5a.5.5 0 0 0-.5.5V7.207l-1.354-1.353a.5.5 0 0 0-.708.708l2.147 2.146a.5.5 0 0 0 .708 0l2.147-2.146a.5.5 0 0 0-.708-.708L8.5 7.207V5a.5.5 0 0 0-.5-.5z" />
-                                        </svg>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" data-expect="<?= $row['quantity_expected'] ?>">
+                                    <button class="btn btn-custom completar">
+                                        <i class="bi bi-check2"></i>
                                     </button>
                                 </div>
                             </td>
-                            <td>
-                            </td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php endwhile; ?>
                 <?php else : ?>
                     <tr>
-                        <td colspan='5'>Nenhum produto encontrado neste container.</td>
+                        <td colspan='6' class="text-center" style="padding: 1rem;">Nenhum produto para conferir neste container.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </div>
-    <?php if (isset($products_in_container) && count($products_in_container) > 0) : ?>
-        <div class="d-flex justify-content-end">
-            <button class="btn btn-primary" id="button-embarque">Realizar Embarque</button>
+
+    <?php if ($pageCount > 1) : ?>
+        <?php
+        function isButtonDisabled($condition)
+        {
+            return $condition ? 'disabled' : '';
+        }
+
+        $currentPage = $_GET['page'] ?? 1;
+        $prevPage = $currentPage - 1;
+        $nextPage = $currentPage + 1;
+        $isPrevDisabled = !isset($_GET["page"]) || intval($_GET["page"]) <= 1;
+        $isNextDisabled = !isset($products) || !$products->num_rows || $currentPage >= $pageCount;
+        ?>
+
+        <div class="d-flex justify-content-center align-items-center gap-2 flex-wraps">
+            <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 300px;">
+                <form method="GET" class="d-flex align-items-center">
+                    <input type="hidden" name="page" value="<?= $prevPage ?>">
+                    <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isPrevDisabled) ?> title="Voltar">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
+                </form>
+
+                <span class="text-center">Página <?= $currentPage ?> de <?= $pageCount ?></span>
+
+                <form method="GET">
+                    <input type="hidden" name="page" value="<?= $nextPage ?>">
+                    <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isNextDisabled) ?> title="Avançar">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+
+            <a href="/embarques/conferir/<?= $container_ID ?>">Conferir embarque</a>
         </div>
     <?php endif; ?>
+
+    <form method="POST" action="/embarques/conferir/<?= $container_ID ?>">
+        <button type="submit" class="btn btn-custom">
+            Confirmar
+        </button>
+    </form>
+
+    <?php include_once "Components/StatusMessage.php"; ?>
 </main>
 
 <script>
-    // Selecionar todos os checkboxes no caso de clicar no elemento #select-all e salvar o estado do checkbox dentro de um array
-    const selectAll = document.getElementById('select-all');
-    const productCheckboxes = document.querySelectorAll('input[name=is-checked]');
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+    const quantidades = document.querySelectorAll('tbody input[type="number"]');
 
-    const checkAll = () => {
-        productCheckboxes.forEach(checkbox => {
+    selectAll.addEventListener('change', () => {
+        checkboxes.forEach(checkbox => {
             checkbox.checked = selectAll.checked;
         });
-    }
+    });
 
-    selectAll.addEventListener('click', checkAll);
+    function getSelecteds() {
+        const selecteds = [];
 
-    // Adicionar cores de status para os inputs de quantidade. Verde para quantidade esperada e vermelho para quantidade recebida
-    const quantityInputs = document.querySelectorAll('input[name=quantity_received]');
-    quantityInputs.forEach(input => {
-        input.addEventListener('input', () => {
-            if (input.value == input.max) {
-                input.classList.remove('border-danger');
-                input.classList.add('border-success');
-            } else {
-                input.classList.remove('border-success');
-                input.classList.add('border-danger');
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                selecteds.push(checkbox.closest('tr').dataset.id);
             }
         });
-    });
 
-    function fillWithExpectedQuantity(event) {
-        const id = event.target.dataset.id;
-
-        const quantityInput = document.querySelector(`#row-${id} input[name=quantity_received]`);
-        quantityInput.value = <?= $row['quantity_expected'] ?>;
-        quantityInput.dispatchEvent(new Event('input'));
+        return selecteds;
     }
 
-    const fillButtons = document.querySelectorAll('.fill-button');
-    fillButtons.forEach(button => {
-        button.addEventListener('click', fillWithExpectedQuantity);
+    function completar(e) {
+        //  Funcao sera acionada quando o botao de completar for clicado
+        //  Ao clicar nesse botao o valor de quantity_expected deve ser aplicado no input de quantidade entregue
+        const input = e.currentTarget.previousElementSibling;
+        const expect = input.dataset.expect;
+
+        input.value = expect;
+        input.dispatchEvent(new Event('input'));
+    }
+
+    document.querySelectorAll('.completar').forEach(button => {
+        button.addEventListener('click', completar);
     });
 
-    const buttonEmbarque = document.getElementById('button-embarque');
+    function onChangeQuantidade(e) {
+        const input = e.currentTarget;
+        const expect = input.dataset.expect;
+        const tr = input.closest('tr');
+        const value = input.value;
 
-    buttonEmbarque.addEventListener('click', () => {
-        const selectedProducts = Array.from(document.querySelectorAll('input[name=is-checked]:checked')).map(checkbox => checkbox.id);
-        const products = selectedProducts.map(id => {
-            console.log(`row-${id}`)
-            const row = document.getElementById(`row-${id}`);
-            const code = row.children[1].innerText;
-            const quantity = row.querySelector('input[name=quantity_received]').value;
-            return {
-                id,
-                code,
-                quantity
-            };
-        });
+        // Mudar a cor de fundo de todas as colunas ao inves da linha
+        const colunas = tr.querySelectorAll('td');
 
+        if (value == expect) {
+            colunas.forEach(coluna => {
+                coluna.style.backgroundColor = 'rgba(0, 255, 0, 0.2)';
+            });
+        } else if (value) {
+            colunas.forEach(coluna => {
+                coluna.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
+            });
+        } else {
+            colunas.forEach(coluna => {
+                coluna.style.backgroundColor = 'transparent';
+            });
+        }
+    }
 
-        // fetch('http://localhost:8000/Embarque/Realizar', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(products)
-        // }).then(response => {
-        //     if (response.ok) {
-        //         window.location.href = 'http://localhost:8000/Embarque';
-        //     }
-        // });
+    quantidades.forEach(input => {
+        input.addEventListener('input', onChangeQuantidade);
     });
 </script>
-
 
 <?php
 $content = ob_get_clean();
