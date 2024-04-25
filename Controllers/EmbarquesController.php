@@ -15,6 +15,12 @@ class EmbarquesController extends _Controller
 
     public function index()
     {
+        $mensagem_erro = isset($_SESSION['mensagem_erro']) ? $_SESSION['mensagem_erro'] : "";
+        unset($_SESSION['mensagem_erro']);
+
+        $sucesso = isset($_SESSION['sucesso']) ? $_SESSION['sucesso'] : false;
+        unset($_SESSION['sucesso']);
+
         $page = 1;
         if (isset($_GET["page"])) {
             $page = (int) $_GET["page"];
@@ -51,12 +57,11 @@ class EmbarquesController extends _Controller
 
             if (count($rows) == 0) {
                 $_SESSION["mensagem_erro"] = "Falha ao importar arquivo! O arquivo não possuí dados";
-                header("Refresh: 1; URL = /embarques");
+                header("Refresh: 0; URL = /embarques");
                 return;
             }
 
             echo PhpExcel::formatAsTable($rows);
-            return;
 
             array_shift($rows);
             $products = [];
@@ -70,8 +75,8 @@ class EmbarquesController extends _Controller
                 $quantity = $row[4];
                 $importer = $row[5];
                 $lote = $row[6];
-                $date = $row[8];
-                $status = $row[9];
+                $date = $row[7];
+                $status = $row[8];
 
                 $campos_vazios = [];
                 if (!$code || empty($code)) {
@@ -104,18 +109,28 @@ class EmbarquesController extends _Controller
 
                 if (count($campos_vazios) > 0) {
                     $_SESSION["mensagem_erro"] = "Falha ao importar arquivo! Os seguintes campos estão vazios: " . implode(", ", $campos_vazios) . " na linha " . ($index + 2);
-                    header("Refresh: 1; URL = /embarques");
+                    header("Refresh: 0; URL = /embarques");
                     return;
                 }
 
-                // Tentar formatar data para dd/mm/yyyy, se não conseguir, retornar erro
-                if (!strtotime($date)) {
-                    $_SESSION["mensagem_erro"] = "Falha ao importar arquivo! Data inválida na linha " . ($index + 2);
-                    header("Refresh: 1; URL = /embarques");
+                // Verificar se importadora eh igual a "ATTUS_BLOOM", "ALPHA_YNFINITY" ou "ATTUS". 
+                if ($importer != "ATTUS_BLOOM" && $importer != "ALPHA_YNFINITY" && $importer != "ATTUS" && $importer != "ALPHA_YNFINITY") {
+                    $_SESSION["mensagem_erro"] = "Falha ao importar arquivo! O importador não é válido na linha " . ($index + 2);
+                    header("Refresh: 0; URL = /embarques");
                     return;
                 }
 
-                $date = date("Y-m-d", strtotime($date));
+                if (!preg_match("/\d{2}\/\d{2}\/\d{4}/", $date)) {
+                    $_SESSION["mensagem_erro"] = "Falha ao importar arquivo! A data de embarque não está no formato correto (dd/mm/yyyy) na linha " . ($index + 2);
+                    header("Refresh: 0; URL = /embarques");
+                    return;
+                }
+
+                // Mudar data para formato do banco de dados
+                $date = DateTime::createFromFormat("d/m/Y", $date)->format("Y-m-d");
+
+                $ean = empty($product["ean"]) ? null : $product["ean"];
+                $description_chinese = empty($product["description_chinese"]) ? null : $product["description_chinese"];
 
                 $products[] = [
                     "ean" => $ean,
@@ -139,11 +154,17 @@ class EmbarquesController extends _Controller
             $_SESSION["mensagem_erro"] = "Falha ao importar arquivo!";
         }
 
-        // header("Refresh: 1; URL = /embarques");
+        header("Refresh: 0; URL = /embarques");
     }
 
     public function produtos($container_ID)
     {
+        $mensagem_erro = isset($_SESSION['mensagem_erro']) ? $_SESSION['mensagem_erro'] : "";
+        unset($_SESSION['mensagem_erro']);
+
+        $sucesso = isset($_SESSION['sucesso']) ? $_SESSION['sucesso'] : false;
+        unset($_SESSION['sucesso']);
+
         $page = 1;
 
         if (isset($_GET["page"])) {
@@ -188,18 +209,18 @@ class EmbarquesController extends _Controller
             $container_ID = $_POST["container_ID"];
 
             $this->containerModel->deleteProduct($container_ID, $product_ID);
-            echo "Sucesso ao deletar!";
+            $_SESSION["sucesso"] = true;
         } else {
-            echo "Falha ao deletar!";
+            $_SESSION["mensagem_erro"] = "Falha ao deletar produto!";
         }
 
-        header("Refresh: 1; URL = $redirect");
+        header("Refresh: 0; URL = $redirect");
     }
 
     public function deletar($id)
     {
         $this->containerModel->delete($id);
-        echo "Container apagado com sucesso!";
-        header("Refresh: 1; URL = /embarques");
+        $_SESSION["sucesso"] = true;
+        header("Refresh: 0; URL = /embarques");
     }
 }
