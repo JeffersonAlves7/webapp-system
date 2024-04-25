@@ -38,7 +38,6 @@ body > main {
   max-width: 100vw;
   grid-area: main;
   padding: 20px;
-  min-height: 100vh;
 }
 
 #navbarSupportedContent {
@@ -69,6 +68,7 @@ body > main {
 
   body > main {
     max-width: calc(100vw - 200px);
+    min-height: 100vh;
   }
 
   #navbarSupportedContent {
