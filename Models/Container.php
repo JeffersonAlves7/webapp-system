@@ -107,48 +107,79 @@ class Container extends Model
 
     public function importData($products)
     {
-
-        /**
-         * Criando os containers
-         * 1) Pegar a chave lote de todos os produtos e agrupar
-         * 2) Se não existir, criar um container para cada lote
-         */
         $containers = [];
         foreach ($products as $product) {
             $containers[$product["lote"]] = $product["lote"];
         }
 
         $containers = array_values($containers);
-        var_dump($containers);
 
-        // $container_com_id = []; // Array com o ID do container e o lote
+        // Criando containers
+        $container_com_id = [];
 
-        // foreach ($containers as $container) {
-        //     // Verificar se o container já existe
-        //     $stmt = $this->db->prepare("SELECT * FROM `lote_container` WHERE `lote` = ?");
-        //     $stmt->bind_param("s", $container);
-        //     $stmt->execute();
+        foreach ($containers as $container_name) {
+            $stmt = $this->db->prepare("SELECT * FROM `lote_container` WHERE `name` = ?");
+            $stmt->bind_param("s", $container_name);
+            $stmt->execute();
 
-        //     $result = $stmt->get_result();
-        //     $container = $result->fetch_assoc();
+            $result = $stmt->get_result();
+            $container = $result->fetch_assoc();
 
-        //     if (!$container) {
-        //         $stmt = $this->db->prepare("INSERT INTO `lote_container` (`lote`) VALUES (?)");
-        //         $stmt->bind_param("s", $container);
-        //         $stmt->execute();
+            if (!$container) {
+                $stmt = $this->db->prepare("INSERT INTO `lote_container` (`name`) VALUES (?)");
+                $stmt->bind_param("s", $container_name);
+                $stmt->execute();
 
-        //         $container_com_id[] = [$container, $stmt->insert_id];
-        //     } else {
-        //         $container_com_id[] = [$container, $container["ID"]];
-        //     }
-        // }
+                $container_com_id[$container_name] = $stmt->insert_id;
+            } else {
+                $container_com_id[$container_name] = $container["ID"];
+            }
+        }
 
-        /**
-         * Criando produtos quando estes não existirem
-         * Adicionando os produtos no seu respectivo container
-         * 1) Verificar se o produto existe
-         * 2) Se não existir, criar o produto
-         * 3) Adicionar o produto no container
-         */
+        // Adicionando produtos nos containers
+        foreach ($products as $product) {
+            $stmt = $this->db->prepare("SELECT * FROM `products` WHERE `code` = ?");
+            $stmt->bind_param("s", $product["code"]);
+            $stmt->execute();
+
+            $result = $stmt->get_result();
+            $product_from_DB = $result->fetch_assoc();
+            $container_ID = $container_com_id[$product["lote"]];
+
+            if (!$product_from_DB) {
+                // Criar produto no banco de dados se nao existir
+                $stmt = $this->db->prepare("INSERT INTO `products` (`code`, `description`, `chinese_description`, `ean`, `importer`) VALUES (?, ?, ?, ?, ?)");
+                $stmt->bind_param("sssss", $product["code"], $product["description"], $product["description_chinese"], $product["ean"], $product["importer"]);
+                $stmt->execute();
+
+                $product_ID = $stmt->insert_id;
+            } else {
+                $product_ID = $product_from_DB["ID"];
+
+                // Verificar se produto ja esta no container, se estiver passar para o proximo
+                $stmt = $this->db->prepare("SELECT * FROM `products_in_container` WHERE `container_ID` = ? AND `product_ID` = ?");
+                $stmt->bind_param("ii", $container_ID, $product_ID);
+                $stmt->execute();
+
+                if ($stmt->get_result()->fetch_assoc()) {
+                    continue;
+                }
+            }
+
+            // Adicionando o produto no container
+            if ($product["status"] == "A caminho") {
+                $stmt = $this->db->prepare("INSERT INTO `products_in_container` (`container_ID`, `product_ID`, `quantity`, `in_stock`, `departure_date`) VALUES (?, ?, ?, 0, ?)");
+                $stmt->bind_param("iiis", $container_ID, $product_ID, $product["quantity"], $product["date"]);
+                $stmt->execute();
+            } else {
+                $stmt = $this->db->prepare("INSERT INTO `products_in_container` (`container_ID`, `product_ID`, `quantity`, `in_stock`, `departura_date`, `arrival_date`) VALUES (?, ?, ?, 1, NOW(), ?)");
+                $stmt->bind_param("iiis", $container_ID, $product_ID, $product["quantity"], $product["date"]);
+                $stmt->execute();
+
+                $stmt = $this->db->prepare("UPDATE `products` SET `quantity` = `quantity` + ? WHERE `ID` = ?");
+                $stmt->bind_param("ii", $product["quantity"], $product_ID);
+                $stmt->execute();
+            }
+        }
     }
 }
