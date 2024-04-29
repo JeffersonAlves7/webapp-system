@@ -89,13 +89,6 @@ require "Components/Header.php";
                             </td>
                             <td><?= $row['arrival_date'] ?></td>
                             <td>
-                                <!-- <form method="post" class="deleteProductForm" id="<?= "formProduct" . $row['product_ID'] ?>">
-                                    <input type="hidden" name="product_ID" value="<?= $row['product_ID'] ?>">
-                                    <input type="hidden" name="container_ID" value="<?= $row['container_ID'] ?>">
-                                    <button type='submit' class='btn'>
-                                        <i class='bi bi-trash text-danger'></i>
-                                    </button>
-                                </form> -->
                                 <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteProductModal" data-id="<?= $row['product_ID'] ?>">
                                     <i class='bi bi-trash text-danger'></i>
                                 </button>
