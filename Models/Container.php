@@ -74,16 +74,22 @@ class Container extends Model
         $this->db->query("DELETE FROM `lote_container` WHERE `ID` = $container_ID");
     }
 
-    public function confirmProducts($container_ID, $products)
+    public function confirmProducts($container_ID, $products, $arrival_date)
     {
         // A variavel produtos precisa ter o Id dos produtos, tambem precisa ter a quantidade que foi entregue
+        $stmt = $this->db->prepare("UPDATE `products_in_container`
+            SET `in_stock` = 1, 
+            `arrival_date` = ?, 
+            `quantity` = ? 
+            WHERE `container_ID` = ? AND `product_ID` = ?");
+
+        if ($stmt === false) {
+            throw new Exception('Failed to prepare statement: ' . $this->db->error);
+        }
 
         foreach ($products as $product) {
-            $this->db->query("UPDATE `products_in_container` SET 
-            `in_stock` = 1, 
-            `arrival_date` = NOW(), 
-            `quantity` = {$product['quantity']}
-            WHERE `container_ID` = $container_ID AND `product_ID` = {$product['product_ID']}");
+            $stmt->bind_param("siii", $arrival_date, $product['quantity'], $container_ID, $product['product_ID']);
+            $stmt->execute();
         }
     }
 
