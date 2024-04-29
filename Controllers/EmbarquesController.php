@@ -46,7 +46,12 @@ class EmbarquesController extends _Controller
 
         $containers = $this->containerModel->getAll($page, where: $where);
 
-        include_once "Views/Containers/index.php";
+        $this->view("Containers/Index", [
+            "containers" => $containers,
+            "page" => $page,
+            "sucesso" => $sucesso,
+            "mensagem_erro" => $mensagem_erro
+        ]);
     }
 
     public function importar()
@@ -181,7 +186,9 @@ class EmbarquesController extends _Controller
         $this->view("Containers/Produtos", [
             "products" => $products,
             "container_ID" => $container_ID,
-            "pageCount" => $pageCount
+            "pageCount" => $pageCount,
+            "sucesso" => $sucesso,
+            "mensagem_erro" => $mensagem_erro
         ]);
     }
 
@@ -238,7 +245,9 @@ class EmbarquesController extends _Controller
             "products" => $products["products"],
             "container_ID" => $container_ID,
             "container" => $container,
-            "pageCount" => $products["pageCount"]
+            "pageCount" => $products["pageCount"],
+            "sucesso" => $sucesso,
+            "mensagem_erro" => $mensagem_erro
         ]);
     }
 
