@@ -66,21 +66,24 @@ require "Components/Header.php";
                                         echo "Chegou no prazo.";
                                     } else {
                                         $expected_arrival_date = new DateTime(date('Y-m-d', strtotime($row['departure_date'] . ' + 30 days')));
-                                        $days_late = (new DateTime())->diff($expected_arrival_date)->days;
+
+                                        $arrival_date = new DateTime($row['arrival_date']);
+                                        $diffInSeconds = $arrival_date->getTimestamp() - $expected_arrival_date->getTimestamp();
+                                        $days_late = round($diffInSeconds / (60 * 60 * 24));
 
                                         if ($row['arrival_date']) {
                                             if ($days_late > 0) {
-                                                echo "Chegou dia " . $row['arrival_date'] . " " . $days_late . " dias atrasado.";
+                                                echo "Chegou dia " . $row['arrival_date'] . " " . $days_late . " dia(s) atrasado.";
                                             } else {
-                                                echo "Chegou dia " . $row['arrival_date'] . " " . abs($days_late) . " dias adiantado.";
+                                                echo "Chegou dia " . $row['arrival_date'] . " " . abs($days_late) . " dia(s) adiantado.";
                                             }
                                         } else {
                                             if ($days_late == 0) {
                                                 echo "<span class='text-warning'>Previsto para chegar hoje!</span>";
                                             } else if ($days_late > 0) {
-                                                echo "<span class='text-danger'>" . $days_late . " dias atrasado!</span>";
+                                                echo "<span class='text-danger'>" . $days_late . " dia(s) atrasado!</span>";
                                             } else {
-                                                echo "<span class='text-success'>Previsto para chegar em " . abs($days_late) . " dias!</span>";
+                                                echo "<span class='text-success'>Previsto para chegar em " . abs($days_late) . " dia(s)!</span>";
                                             }
                                         }
                                     }
