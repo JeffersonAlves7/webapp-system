@@ -17,7 +17,13 @@ require "Components/Header.php";
     <!-- Data de chegada: Aqui o usuario vai poder customizar a data de chegada dos produtos no container -->
     <div class="mb-3" style="max-width: 300px;">
         <label for="arrival_date" class="form-label">Data de chegada</label>
-        <input type="date" class="form-control" id="arrival_date" value="<?= date('Y-m-d') ?>">
+        <!-- Data no horario de brasilia -->
+        <input type="date" class="form-control" id="arrival_date" value="<?=  date('Y-m-d') ?>">
+    </div>
+
+    <!-- Mostrar total selecionado pelo checkbox (atraves da soma do campo quantidade entregue) -->
+    <div class="mb-3">
+        <p>Total selecionado: <span id="total">0</span></p>
     </div>
 
     <div class="table-responsive" style="max-height: 60vh; min-height: 100px">
@@ -33,7 +39,9 @@ require "Components/Header.php";
                     <th>Código</th>
                     <th>Importadora</th>
                     <th>Quantidade Esperada</th>
-                    <th>Quantidade Entregue</th>
+                    <th style="max-width: 200px;">
+                        Quantidade Entregue</th>
+                    <th>Observações</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,22 +50,25 @@ require "Components/Header.php";
                     <?php while ($row = $products->fetch_assoc()) : ?>
                         <tr data-id="<?= $row['product_ID'] ?>">
                             <td>
-                                <input type="checkbox" class="form-check-input">
+                                <input type="checkbox" class="form-check-input" name="selected[]" value="<?= $row['product_ID'] ?>">
                             </td>
                             <td><?= $row['code'] ?></td>
                             <td><?= $row['importer'] ?></td>
-                            <td>
-                                <p class="text-center">
+                            <td style="max-width: 200px;">
+                                <p class="text-center" style="max-width: 200px;">
                                     <?= $row['quantity_expected'] ? $row['quantity_expected'] : '-' ?>
                                 </p>
                             </td>
-                            <td>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" data-expect="<?= $row['quantity_expected'] ?>">
+                            <td style="max-width: 200px;">
+                                <div class="input-group" style="max-width: 200px;">
+                                    <input type="number" class="form-control" data-expect="<?= $row['quantity_expected'] ?>" name="quantity_delivered[]">
                                     <button class="btn btn-custom completar">
                                         <i class="bi bi-check2"></i>
                                     </button>
                                 </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" name="observations[]">
                             </td>
                         </tr>
                     <?php endwhile; ?>
@@ -107,7 +118,8 @@ require "Components/Header.php";
         </div>
     <?php endif; ?>
 
-    <form method="POST" action="/embarques/conferir/<?= $container_ID ?>">
+    <form method="POST" action="/embarques/conferir/<?= $container_ID ?>" id="form">
+        <input type="hidden" name="container_ID" value="<?= $container_ID ?>">
         <button type="submit" class="btn btn-custom">
             Confirmar
         </button>
@@ -120,6 +132,8 @@ require "Components/Header.php";
     const selectAll = document.getElementById('selectAll');
     const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
     const quantidades = document.querySelectorAll('tbody input[type="number"]');
+    const total = document.getElementById('total');
+    const form = document.getElementById('form');
 
     selectAll.addEventListener('change', () => {
         checkboxes.forEach(checkbox => {
@@ -177,9 +191,81 @@ require "Components/Header.php";
         }
     }
 
-    quantidades.forEach(input => {
-        input.addEventListener('input', onChangeQuantidade);
+    function getTotalSelected() {
+        const selecteds = getSelecteds();
+        const totalValue = [...quantidades].reduce((acc, input) => {
+            if (selecteds.includes(input.closest('tr').dataset.id)) {
+                return acc + Number(input.value);
+            }
+
+            return acc;
+        }, 0);
+
+        return totalValue;
+    }
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            total.textContent = getTotalSelected();
+        })
     });
+
+    quantidades.forEach(input => {
+        input.addEventListener('input', (e) => {
+            onChangeQuantidade(e);
+            total.textContent = getTotalSelected();
+        });
+    });
+
+    function onSubmit(e) {
+        // Funcao sera acionada quando o formulario for submetido
+        // Vai capturar a quantidade dos produtos com checkbox selecionado e enviar para o servidor
+        // Vai também passar ao servidor a observacao de cada produto
+        // Adicionar campos ao proprio formulario para enviar esses dados
+        e.preventDefault();
+
+        const selecteds = getSelecteds();
+        // Se nao tiver nenhum produto selecionado, nao faz nada
+        if (!selecteds.length) {
+            return false;
+        }
+
+        const quantities = [...quantidades].map(input => input.value);
+        const observations = [...document.querySelectorAll('tbody input[type="text"]')].map(input => input.value);
+
+        selecteds.forEach((selected, index) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = `selected[]`;
+            input.value = selected;
+            form.appendChild(input);
+
+            const quantity = document.createElement('input');
+            quantity.type = 'hidden';
+            quantity.name = `quantity_delivered[]`;
+            quantity.value = quantities[index];
+            form.appendChild(quantity);
+
+            const observation = document.createElement('input');
+            observation.type = 'hidden';
+            observation.name = `observations[]`;
+            observation.value = observations[index];
+            form.appendChild(observation);
+        });
+
+        const arrival_date = document.getElementById('arrival_date').value;
+        const arrivalDateInput = document.createElement('input');
+        arrivalDateInput.type = 'hidden';
+        arrivalDateInput.name = 'arrival_date';
+        arrivalDateInput.value = arrival_date;
+        form.appendChild(arrivalDateInput);
+
+        form.submit();
+
+        return false;
+    }
+
+    form.addEventListener('submit', onSubmit);
 </script>
 
 <?php

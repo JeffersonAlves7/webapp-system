@@ -187,6 +187,42 @@ class EmbarquesController extends _Controller
 
     public function conferir($container_ID)
     {
+        $sucesso = isset($_SESSION['sucesso']) ? $_SESSION['sucesso'] : false;
+        unset($_SESSION['sucesso']);
+
+        $mensagem_erro = isset($_SESSION['mensagem_erro']) ? $_SESSION['mensagem_erro'] : "";
+        unset($_SESSION['mensagem_erro']);
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            try {
+                $products = [];
+
+                // Cada produto tem que ter o campo "product_ID" e "quantity_delivered"
+                foreach ($_POST["selected"] as $index => $product_ID) {
+                    $quantity_delivered = $_POST["quantity_delivered"][$index];
+                    $observations = $_POST["observations"][$index];
+
+                    $products[] = [
+                        "product_ID" => $product_ID,
+                        "quantity" => $quantity_delivered,
+                        "observations" => $observations
+                    ];
+                }
+
+                $arrival_date = $_POST["arrival_date"];
+
+                // Transformar a data para o formato do banco de dados
+                $this->containerModel->confirmProducts($container_ID, $products, $arrival_date);
+                $_SESSION["sucesso"] = true;
+            } catch (Exception $e) {
+                // Mensagem generica de erro com quebra de linha e descricao do erro
+                $_SESSION["mensagem_erro"] = "Falha ao confirmar produtos! \n" . $e->getMessage();
+            }
+
+            header("Refresh: 0; URL = /embarques");
+            return;
+        }
+
         $page = 1;
 
         if (isset($_GET["page"])) {
