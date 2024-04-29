@@ -69,11 +69,9 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <a href="/embarques/deletar/<?= $row['ID'] ?>">
-                                    <button type='button' class='btn'>
-                                        <i class='bi bi-trash text-danger'></i>
-                                    </button>
-                                </a>
+                                <button type='button' class='btn' data-bs-toggle='modal' data-bs-target='#deleteContainerModal' data-id='<?= $row['ID'] ?>'>
+                                    <i class='bi bi-trash text-danger'></i>
+                                </button>
                             </td>
                         </tr>
                     <?php
@@ -104,8 +102,40 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
         </div>
     </form>
 
+    <!-- Modal para confirmar delecao do container -->
+    <div class="modal fade" id="deleteContainerModal" tabindex="-1" aria-labelledby="deleteContainerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteContainerModalLabel">Deletar container</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza que deseja deletar este container?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <a href="" id="deleteContainerLink">
+                        <button type="button" class="btn btn-danger">Deletar</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <?php include_once "Components/StatusMessage.php"; ?>
 </main>
+
+<script>
+    // Adiciona o ID do container ao link de delete
+    var deleteContainerModal = document.getElementById('deleteContainerModal');
+    deleteContainerModal.addEventListener('show.bs.modal', function(event) {
+        var button = event.relatedTarget;
+        var container_ID = button.getAttribute('data-id');
+        var deleteContainerLink = document.getElementById('deleteContainerLink');
+        deleteContainerLink.href = "/embarques/deletar/" + container_ID;
+    });
+</script>
 
 <?php
 $content = ob_get_clean();
