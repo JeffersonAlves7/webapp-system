@@ -1,5 +1,6 @@
 <?php
 require_once "Models/Model.php";
+require_once "Models/Lancamento.php";
 
 class Container extends Model
 {
@@ -83,13 +84,42 @@ class Container extends Model
             `quantity` = ? 
             WHERE `container_ID` = ? AND `product_ID` = ?");
 
+        $stock_ID = 1;
+
         if ($stmt === false) {
             throw new Exception('Failed to prepare statement: ' . $this->db->error);
         }
 
         foreach ($products as $product) {
-            $stmt->bind_param("siii", $arrival_date, $product['quantity'], $container_ID, $product['product_ID']);
+            $product_ID = $product['product_ID'];
+            $quantity = $product['quantity'];
+            $observation = $product['observations'];
+
+            $stmt->bind_param("siii", $arrival_date, $quantity, $container_ID, $product_ID);
             $stmt->execute();
+
+            $result = $this->db->query(
+                "SELECT `ID` FROM `quantity_in_stock` 
+                WHERE `product_ID` = $product_ID AND `stock_ID` = $stock_ID"
+            );
+
+            if ($result->num_rows == 0) {
+                $this->db->query(
+                    "INSERT INTO quantity_in_stock 
+                        (`product_ID`, `stock_ID`, `quantity`) VALUES 
+                        ($product_ID, $stock_ID, $quantity)"
+                );
+            } else {
+                $row = $result->fetch_assoc();
+
+                $this->db->query(
+                    "UPDATE `quantity_in_stock` 
+                SET `quantity` = `quantity` + $quantity 
+                WHERE `ID` = " . $row["ID"]
+                );
+            }
+
+            Lancamento::createTransaction($this->db, $product_ID, null, $stock_ID, "Entrada", $quantity, observation: $observation);
         }
     }
 
