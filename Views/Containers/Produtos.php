@@ -89,13 +89,16 @@ require "Components/Header.php";
                             </td>
                             <td><?= $row['arrival_date'] ?></td>
                             <td>
-                                <form method="post" class="deleteProductForm" id="<?= "formProduct" . $row['product_ID'] ?>">
+                                <!-- <form method="post" class="deleteProductForm" id="<?= "formProduct" . $row['product_ID'] ?>">
                                     <input type="hidden" name="product_ID" value="<?= $row['product_ID'] ?>">
                                     <input type="hidden" name="container_ID" value="<?= $row['container_ID'] ?>">
                                     <button type='submit' class='btn'>
                                         <i class='bi bi-trash text-danger'></i>
                                     </button>
-                                </form>
+                                </form> -->
+                                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteProductModal" data-id="<?= $row['product_ID'] ?>">
+                                    <i class='bi bi-trash text-danger'></i>
+                                </button>
                             </td>
                         </tr>
                     <?php endwhile; ?>
@@ -145,6 +148,29 @@ require "Components/Header.php";
         </div>
     <?php endif; ?>
 
+    <!-- Modal para confirmar o delete do produto -->
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteProductModalLabel">Deletar Produto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza que deseja deletar este produto?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form method="post" class="deleteProductForm" id="formProduct">
+                        <input type="hidden" name="product_ID" value="">
+                        <input type="hidden" name="container_ID" value="<?= $container_ID ?>">
+                        <button type="submit" class="btn btn-danger">Deletar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <?php include_once "Components/StatusMessage.php"; ?>
 </main>
 
@@ -159,6 +185,15 @@ require "Components/Header.php";
         // Define a ação do formulário
         document.querySelectorAll('.deleteProductForm').forEach((e) => e.setAttribute('action', formAction));
     }
+
+    // Adiciona o ID do produto ao formulário de delete
+    var deleteProductModal = document.getElementById('deleteProductModal');
+    deleteProductModal.addEventListener('show.bs.modal', function(event) {
+        var button = event.relatedTarget;
+        var product_ID = button.getAttribute('data-id');
+        var formProduct = document.getElementById('formProduct');
+        formProduct.querySelector('input[name="product_ID"]').value = product_ID;
+    });
 </script>
 
 <?php
