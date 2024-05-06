@@ -64,12 +64,8 @@ class AuthController
 
     public function logout()
     {
-        AuthManager::clearUser();
         AuthManager::logout();
         header("location: /");
-
-        echo 'You have cleaned session';
-        header('Refresh: 1; URL = login');
         exit(0);
     }
 

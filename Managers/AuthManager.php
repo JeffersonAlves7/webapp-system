@@ -28,6 +28,7 @@ class AuthManager
     public static function logout()
     {
         session_destroy();
+        self::clearUser();
     }
 
     public static function isLoggedIn()

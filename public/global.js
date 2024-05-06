@@ -12,3 +12,7 @@ document.querySelectorAll(".toggle-description").forEach(function (element) {
     alert(fullDescription);
   });
 });
+
+document.getElementById('user-info').addEventListener('click', function() {
+  document.getElementById('logout-button').style.display = 'block';
+});

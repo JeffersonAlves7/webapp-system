@@ -34,13 +34,14 @@
           <a class="nav-link <?= (isset($pageTitle) && $pageTitle === "Painel") ? 'active' : ''; ?>" href="/painel">Painel</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/auth/info">
+          <p class="nav-link" id="user-info">
             <i class="bi bi-person-circle"></i>
             <?php
             $user = AuthManager::getUser();
             echo $user === null ? '' : ' ' . $user['name'];
             ?>
-          </a>
+            <a id="logout-button" style="display: none;" href="/auth/logout">Logout</a>
+          </p>
         </li>
       </ul>
     </div>
