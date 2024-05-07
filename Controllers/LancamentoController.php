@@ -2,6 +2,7 @@
 require_once "Models/Lancamento.php";
 require_once "Models/Estoque.php";
 require_once "Controllers/_Controller.php";
+require_once "Utils/PhpPDF.php";
 
 class LancamentoController extends _Controller
 {
@@ -55,7 +56,6 @@ class LancamentoController extends _Controller
 
         require_once "Views/Lancamento/Entrada.php";
     }
-
 
     public function saida()
     {
@@ -218,6 +218,42 @@ class LancamentoController extends _Controller
         require_once "Views/Lancamento/Reserva.php";
     }
 
+    public function exportarTransferencias()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $transferenciasIds = json_decode($_POST["transference-ids"]);
+            $idsString = implode(",", $transferenciasIds); 
+
+            $transferencias = $this->lancamentoModel->getTransferenciasPendentes(
+                "`transferences`.`ID` IN ($idsString)"
+            );
+            $data = array();
+
+            foreach ($transferencias as $transferencia) {
+                $data[] = array(
+                    $transferencia['code'],
+                    $transferencia['importer'],
+                    $transferencia['description'],
+                    $transferencia['quantity'],
+                    $transferencia['from_stock_name'],
+                    $transferencia['to_stock_name'],
+                    $transferencia['observation']
+                );
+            }
+
+            $pdf = PhpPDF::arrayToPdf(
+                array('Produto', 'Importadora', 'Descrição', 'Quantidade', 'Origem', 'Destino', 'Observação'),
+                $data
+            );
+
+            header('Content-Type: application/pdf');
+            header('Content-Disposition: attachment; filename="relatorio.pdf"');
+            header('Cache-Control: max-age=0');
+
+            $pdf->save('php://output');
+        }
+    }
+
     public function conferirTransferencias()
     {
         // Verifica se há uma mensagem de erro na sessão
@@ -229,7 +265,11 @@ class LancamentoController extends _Controller
         unset($_SESSION['sucesso']); // Remove a variável de sucesso da sessão
 
         $transferencias = $this->lancamentoModel->getTransferenciasPendentes();
-        require_once "Views/Lancamento/ConferirTransferencias.php";
+        $this->view('Lancamento/ConferirTransferencias', [
+            'transferencias' => $transferencias,
+            'mensagem_erro' => $mensagem_erro,
+            'sucesso' => $sucesso
+        ]);
     }
 
     public function confirmarTransferencias()

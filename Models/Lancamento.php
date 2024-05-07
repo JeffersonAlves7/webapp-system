@@ -269,13 +269,14 @@ class Lancamento
         $this->db->query("DELETE FROM `transferences` WHERE `ID` IN ($transference_IDs_str)");
     }
 
-    public function getTransferenciasPendentes()
+    public function getTransferenciasPendentes($where = "1")
     {
-        $result = $this->db->query("SELECT `transferences`.*, `products`.`code`, `products`.`importer`, `products`.`description`, `from_stock`.`name` as `from_stock_name`, `to_stock`.`name` as `to_stock_name` FROM `transferences` 
+        $query = "SELECT `transferences`.*, `products`.`code`, `products`.`importer`, `products`.`description`, `from_stock`.`name` as `from_stock_name`, `to_stock`.`name` as `to_stock_name` FROM `transferences` 
         INNER JOIN `products` ON `transferences`.`product_ID` = `products`.`ID`
         LEFT JOIN `stocks` AS `from_stock` ON `transferences`.`from_stock_ID` = `from_stock`.`ID`
         LEFT JOIN `stocks` AS `to_stock` ON `transferences`.`to_stock_ID` = `to_stock`.`ID`
-        WHERE `confirmed` = 0");
+        WHERE `confirmed` = 0 AND $where";
+        $result = $this->db->query($query);
 
         $transferences = [];
         while ($row = $result->fetch_assoc()) {

@@ -78,7 +78,7 @@ require "Components/Header.php";
 
                 <?php if (empty($transferencias)) : ?>
                     <tr>
-                        <td colspan="8" class="text-center">Nenhuma transferência pendente</td>
+                        <td colspan="9" class="text-center">Nenhuma transferência pendente</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -93,84 +93,128 @@ require "Components/Header.php";
             <form action="/lancamento/cancelarTransferencias" method="post" id="form-cancel">
                 <button type="submit" class="btn btn-danger">Cancelar</button>
             </form>
+            <form action="/lancamento/exportarTransferencias" method="post" id="form-export">
+                <button type="submit" class="btn btn-success">Exportar</button>
+            </form>
         </div>
     <?php endif; ?>
 </main>
 
 <script>
-    window.onload = () => {
-        const checkboxes = document.querySelectorAll('input[name="is-checked"]');
-        const selectAllCheckbox = document.getElementById('selecionar-todos');
+    const checkboxes = document.querySelectorAll('input[name="is-checked"]');
+    const selectAllCheckbox = document.getElementById('selecionar-todos');
 
-        const checkAll = () => {
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = selectAllCheckbox.checked;
-            });
-        }
-
-        selectAllCheckbox.addEventListener('change', checkAll);
-
-        const quantityInputs = document.querySelectorAll('input[name=quantity_received]');
-        quantityInputs.forEach(input => {
-            input.addEventListener('input', () => {
-                if (input.value == input.dataset.quantityExpected) {
-                    input.classList.remove('border-danger');
-                    input.classList.add('border-success');
-                } else {
-                    input.classList.remove('border-success');
-                    input.classList.add('border-danger');
-                }
-            });
-        });
-
-        function fillWithExpectedQuantity(event) {
-            const id = event.currentTarget.dataset.id;
-
-            const quantityInput = document.querySelector(`#row-${id} input[name=quantity_received]`);
-            quantityInput.value = quantityInput.dataset.quantityExpected;
-
-            quantityInput.dispatchEvent(new Event('input'));
-        }
-
-        const fillButtons = document.querySelectorAll('.fill-button');
-        fillButtons.forEach(button => {
-            button.addEventListener('click', fillWithExpectedQuantity);
-        });
-
-
-        const confirmForm = document.getElementById('form-confirm');
-        confirmForm.addEventListener('submit', (event) => {
-            event.preventDefault(); // Adicionei so para poder testar
-
-            const selectedIds = getTransferencesData();
-
-            const invalidInputs = selectedIds.filter(
-                v => v.quantity == 0
-            )
-
-            if (invalidInputs.length > 0) {
-                alert('Preencha a quantidade corretamente');
-                return;
-            }
-
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'transferences';
-            input.value = JSON.stringify(selectedIds);
-            confirmForm.appendChild(input);
-
-            confirmForm.submit();
-        });
-
-        const cancelForm = document.getElementById('form-cancel');
-        cancelForm.addEventListener('submit', (event) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'transference-ids';
-            input.value = JSON.stringify(selectedIds);
-            cancelForm.appendChild(input);
+    const checkAll = () => {
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
         });
     }
+
+    selectAllCheckbox.addEventListener('change', checkAll);
+
+    const quantityInputs = document.querySelectorAll('input[name=quantity_received]');
+    quantityInputs.forEach(input => {
+        input.addEventListener('input', () => {
+            if (input.value == input.dataset.quantityExpected) {
+                input.classList.remove('border-danger');
+                input.classList.add('border-success');
+            } else {
+                input.classList.remove('border-success');
+                input.classList.add('border-danger');
+            }
+        });
+    });
+
+    function fillWithExpectedQuantity(event) {
+        const id = event.currentTarget.dataset.id;
+
+        const quantityInput = document.querySelector(`#row-${id} input[name=quantity_received]`);
+        quantityInput.value = quantityInput.dataset.quantityExpected;
+
+        quantityInput.dispatchEvent(new Event('input'));
+    }
+
+    const fillButtons = document.querySelectorAll('.fill-button');
+    fillButtons.forEach(button => {
+        button.addEventListener('click', fillWithExpectedQuantity);
+    });
+
+    const confirmForm = document.getElementById('form-confirm');
+    confirmForm.addEventListener('submit', (event) => {
+        event.preventDefault(); // Adicionei so para poder testar
+
+        if (!confirm('Tem certeza que deseja confirmar as transferências?')) {
+            return;
+        }
+
+        const selectedIds = getTransferencesData();
+
+        if (selectedIds.length === 0) {
+            alert('Selecione pelo menos uma transferência');
+            return;
+        }
+
+        const invalidInputs = selectedIds.filter(
+            v => v.quantity == 0
+        )
+
+        if (invalidInputs.length > 0) {
+            alert('Preencha a quantidade corretamente.\nSe for a quantidade for 0, por favor cancele a transferência');
+            return;
+        }
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'transferences';
+        input.value = JSON.stringify(selectedIds);
+        confirmForm.appendChild(input);
+
+        confirmForm.submit();
+    });
+
+    const cancelForm = document.getElementById('form-cancel');
+    cancelForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        if (!confirm('Tem certeza que deseja cancelar as transferências?')) {
+            return;
+        }
+
+        const selectedIds = getTransferencesData().map(v => v.id);
+
+        if (selectedIds.length === 0) {
+            alert('Selecione pelo menos uma transferência');
+            return;
+        }
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'transference-ids';
+        input.value = JSON.stringify(selectedIds);
+        cancelForm.appendChild(input);
+
+        cancelForm.submit();
+    });
+
+    const exportForm = document.getElementById('form-export');
+    exportForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const selectedIds = getTransferencesData().map(v => v.id);
+
+        if (selectedIds.length === 0) {
+            alert('Selecione pelo menos uma transferência');
+            return;
+        }
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'transference-ids';
+        input.value = JSON.stringify(selectedIds);
+        exportForm.appendChild(input);
+
+        exportForm.submit();
+    });
 
     function getTransferencesData() {
         const selectedCheckboxes = document.querySelectorAll('input[name="is-checked"]:checked');
