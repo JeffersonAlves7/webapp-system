@@ -12,9 +12,13 @@ class HistoricoController extends _Controller
         $this->historicoModel = new Historico();
     }
 
+    public function index(){
+        $this->view("Historico/Index");
+    }
+
     public function transferencias()
     {
         $transferencias = $this->historicoModel->getTransferencias();
-        include "Views/Historico/Transferencias.php";
+        $this->view("Historico/Transferencias", ["transferencias" => $transferencias]);
     }
 }

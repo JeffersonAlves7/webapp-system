@@ -34,6 +34,9 @@
           <a class="nav-link <?= (isset($pageTitle) && $pageTitle === "Painel") ? 'active' : ''; ?>" href="/painel">Painel</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link <?= (isset($pageTitle) && $pageTitle === "Histórico") ? 'active' : ''; ?>" href="/historico">Histórico</a>
+        </li>
+        <li class="nav-item">
           <p class="nav-link" id="user-info">
             <i class="bi bi-person-circle"></i>
             <?php
