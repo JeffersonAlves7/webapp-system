@@ -49,8 +49,20 @@ class EstoquesController extends _Controller
             $where = "p.importer = '" . $_GET["importadora"] . "'";
         }
 
+        $orderBy = "p.created_at";
+        $orderType = "DESC";
+        if (isset($_GET["orderBy"]) && !empty($_GET["orderBy"])) {
+            $orderBy = $_GET["orderBy"];
+            if ($orderBy == "codigo") {
+                $orderBy = "p.code";
+            }
+        }
+        if (isset($_GET["orderType"]) && !empty($_GET["orderType"]) && ($_GET["orderType"] == "asc" || $_GET["orderType"] == "desc")) {
+            $orderType = $_GET["orderType"];
+        }
+
         $stocks = $this->estoquesModel->getAll();
-        $productsData = $this->estoquesModel->getProductsByStock($estoque_ID, $page, alert: $alert, where: $where, limit: 30);
+        $productsData = $this->estoquesModel->getProductsByStock($estoque_ID, $page, limit: 30, alert: $alert, where: $where, order: $orderBy . " " . $orderType);
         $produtos = $productsData["products"];
         $pageCount = $productsData["pageCount"];
 

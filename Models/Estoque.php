@@ -18,7 +18,7 @@ class Estoque extends Model
         return $this->db->query($sql);
     }
 
-    public function getProductsByStock($stock_ID = null, $page = 1, $limit = 10, $alert = 0.2, $where = "1")
+    public function getProductsByStock($stock_ID = null, $page = 1, $limit = 10, $alert = 0.2, $where = "1", $order = "p.created_at DESC ")
     {
         $offset = ($page - 1) * $limit;
 
@@ -36,8 +36,8 @@ class Estoque extends Model
                 JOIN `quantity_in_stock` qis ON p.ID = qis.product_ID
             WHERE $where $stock_sql 
             GROUP BY p.ID 
-            ORDER BY p.created_at 
-            DESC LIMIT ? OFFSET ?";
+            ORDER BY $order 
+            LIMIT ? OFFSET ?";
 
         // Prepare the SQL statement
         $stmt = $this->db->prepare($sql);
