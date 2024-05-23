@@ -16,7 +16,7 @@
           <a class="nav-link <?= (isset($pageTitle) && $pageTitle === "Estoques") ? 'active' : ''; ?>" href="/">Estoques</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <?= (isset($pageTitle) && $pageTitle === "Relatórios") ? 'active' : ''; ?>" href="#">Relatórios</a>
+          <a class="nav-link <?= (isset($pageTitle) && $pageTitle === "Relatórios") ? 'active' : ''; ?>" href="/relatorios">Relatórios</a>
         </li>
         <li class="nav-item">
           <a class="nav-link <?= (isset($pageTitle) && $pageTitle === "Incluir Lançamento") ? 'active' : ''; ?>" href="/lancamento">Incluir Lançamento</a>
