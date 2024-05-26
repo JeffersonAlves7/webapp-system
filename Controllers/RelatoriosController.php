@@ -132,4 +132,52 @@ class RelatoriosController extends _Controller
 
         $this->view("Relatorios/comparativoDeVendas");
     }
+
+    public function entradas()
+    {
+        if($_SERVER["REQUEST_METHOD"] == "POST") {
+            header("Content-Type: application/json");
+
+
+            $dados = $this->relatorios->entradas();
+
+            // Para cada dado
+            // {2024-4: 100, 2024-5: 50}
+            // Preciso que ele preencha os meses vazios
+            // Sendo que precisa ter do mes atual até 12 meses atras
+            // {2024-4: 100, 2024-5: 50, 2024-6: 0, 2024-7: 0, 2024-8: 0, 2024-9: 0, 2024-10: 0, 2024-11: 0, 2024-12: 0, 2025-1: 0, 2025-2: 0, 2025-3: 0}
+
+            $meses = 12;
+            $dataAtual = date("Y-m");
+            $data = explode("-", $dataAtual);
+            $ano = $data[0];
+            $mes = $data[1];
+
+            $dadosFinais = [];
+
+            for ($i = 0; $i < $meses; $i++) {
+                $mesAtual = $mes - $i;
+                $anoAtual = $ano;
+
+                if ($mesAtual <= 0) {
+                    $mesAtual = 12 + $mesAtual;
+                    $anoAtual = $ano - 1;
+                }
+
+                $mesAtual = str_pad($mesAtual, 2, "0", STR_PAD_LEFT);
+                $dataAtual = "$anoAtual-$mesAtual";
+
+                if (!isset($dados[$dataAtual])) {
+                    $dadosFinais[$dataAtual] = 0;
+                } else {
+                    $dadosFinais[$dataAtual] = $dados[$dataAtual];
+                }
+            }
+
+            echo json_encode($dadosFinais);
+            exit;
+        }
+
+        $this->view("Relatorios/entradas");
+    }
 }

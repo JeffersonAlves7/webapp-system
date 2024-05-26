@@ -44,6 +44,13 @@ require "Components/Header.php"
                 </p>
             </a>
         </div>
+
+        <div class="d-flex gap-4">
+            <a href="/relatorios/entradas" class="card p-3 bg-secondary" style="width: 18rem; text-decoration: none;">
+                <h5 class="card-title text-white">Entradas</h5>
+                <p class="card-text text-white">Acessar Relatório de Entradas dos últimos 12 meses</p>
+            </a>
+        </div>
     </div>
 </main>
 
