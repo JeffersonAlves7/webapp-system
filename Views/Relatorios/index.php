@@ -35,6 +35,15 @@ require "Components/Header.php"
                 <p class="card-text text-white">Acessar Relatório de Movimentações</p>
             </a>
         </div>
+
+        <div class="d-flex gap-4">
+            <a href="/relatorios/comparativoDeVendas" class="card p-3 bg-secondary" style="width: 18rem; text-decoration: none;">
+                <h5 class="card-title text-white">Comparativo de Vendas</h5>
+                <p class="card-text text-white">
+                    Acessar Relatório de Comparativo de Vendas
+                </p>
+            </a>
+        </div>
     </div>
 </main>
 

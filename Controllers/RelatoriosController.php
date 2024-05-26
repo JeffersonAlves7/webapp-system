@@ -36,7 +36,8 @@ class RelatoriosController extends _Controller
         $this->view("Relatorios/saidasDiarias", ["dados" => $dados]);
     }
 
-    public function estoqueMinimo(){
+    public function estoqueMinimo()
+    {
         $page = 1;
         $limit = 30;
         $porcentagem = 0.50;
@@ -78,8 +79,7 @@ class RelatoriosController extends _Controller
 
         if (isset($_GET["dataMovimentacao"]) && !empty($_GET["dataMovimentacao"])) {
             $dataMovimentacao = $_GET["dataMovimentacao"];
-        }
-        else{
+        } else {
             $dataMovimentacao = date("Y-m");
         }
 
@@ -94,5 +94,42 @@ class RelatoriosController extends _Controller
         );
 
         $this->view("Relatorios/movimentacoes", ["dados" => $dados]);
+    }
+
+    public function comparativoDeVendas()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            header("Content-Type: application/json");
+
+            $data = json_decode(file_get_contents("php://input"), true);
+            $meses = $data["meses"];
+
+            $dados = $this->relatorios->comparativoDeVendas($meses);
+
+            // Para cada dia do mês, se não houver vendas, adicionar um array com o valor 0
+            // para que o gráfico não fique com "buracos"
+            // Key = '2024-05'
+            // Value = Array ([26] => 75)
+            // A ideia eh que ele complete os dias vazios
+            foreach ($dados as $key => $value) {
+                $dias = $value;
+                // Fixar para sempre 31 dias
+                $diasDoMes = 31;
+
+                for ($i = 1; $i <= $diasDoMes; $i++) {
+                    if (!isset($dias[$i])) {
+                        $dias[$i] = 0;
+                    }
+                }
+
+                ksort($dias);
+                $dados[$key] = $dias;
+            }
+
+            echo json_encode($dados);
+            exit;
+        }
+
+        $this->view("Relatorios/comparativoDeVendas");
     }
 }
