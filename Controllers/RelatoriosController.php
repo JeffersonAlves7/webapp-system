@@ -35,4 +35,37 @@ class RelatoriosController extends _Controller
 
         $this->view("Relatorios/saidasDiarias", ["dados" => $dados]);
     }
+
+    public function estoqueMinimo(){
+        $page = 1;
+        $limit = 30;
+        $porcentagem = 0.50;
+        $quantidadeDePaginas = 1;
+
+        // if (isset($_GET["page"]) && !empty($_GET["page"])) {
+        //     $page = $_GET["page"];
+        // }
+
+        // if (isset($_GET["limit"]) && !empty($_GET["limit"])) {
+        //     $limit = $_GET["limit"];
+        // }
+
+        if (isset($_COOKIE["porcentagemParaAlerta"]) && !empty($_GET["porcentagemParaAlerta"])) {
+            $porcentagem = $_COOKIE["porcentagemParaAlerta"];
+        }
+
+        // $quantidadeDePaginasCookie = "Relatorios:estoqueMinimo:quantidadeDePaginas";
+        // if (isset($_COOKIE[$quantidadeDePaginasCookie]) && !empty($_COOKIE[$quantidadeDePaginasCookie])) {
+        //     $quantidadeDePaginas = $_COOKIE[$quantidadeDePaginasCookie];
+        // }
+
+        $dados = $this->relatorios->estoqueMinimo($page, $limit, $porcentagem, $quantidadeDePaginas);
+
+        $this->view("Relatorios/estoqueMinimo", [
+            "dados" => $dados["dados"],
+            "quantidadeDePaginas" => $dados["quantidadeDePaginas"],
+            "page" => $page,
+            "porcentagem" => $porcentagem,
+        ]);
+    }
 }

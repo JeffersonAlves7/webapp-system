@@ -41,4 +41,54 @@ class Relatorios extends Model
 
         return $result;
     }
+
+    public function estoqueMinimo($page = 1, $limit = 30, $porcentagem = 0.50, $quantidadeDePaginas = false)
+    {
+        $offset = ($page - 1) * $limit;
+
+        $sql = "SELECT 
+            p.code as 'CODIGO', 
+            (qs.quantity + qs.quantity_in_reserve) as 'SALDO', 
+            t.quantity as 'ENTRADA',
+            ? * t.quantity as 'QUANTIDADE DE ALERTA'
+        FROM products p
+            INNER JOIN quantity_in_stock qs ON qs.product_ID = p.ID AND qs.stock_ID = 1
+            INNER JOIN transactions t ON t.type_ID = 1 AND t.product_ID = p.ID
+            WHERE (qs.quantity + qs.quantity_in_reserve) < ? * t.quantity
+        ORDER BY t.updated_at
+        LIMIT ? OFFSET ?;
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("ddii", $porcentagem, $porcentagem, $limit, $offset);
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        // Get the total number of records
+        if($quantidadeDePaginas == false){
+            $sqlTotal = "SELECT COUNT(*) as total
+            FROM products p
+                INNER JOIN quantity_in_stock qs ON qs.product_ID = p.ID AND qs.stock_ID = 1
+                INNER JOIN transactions t ON t.type_ID = 1 AND t.product_ID = p.ID
+                WHERE (qs.quantity + qs.quantity_in_reserve) < ? * t.quantity
+            ";
+
+            $stmtTotal = $this->db->prepare($sqlTotal);
+            $stmtTotal->bind_param("d", $porcentagem);
+
+            $stmtTotal->execute();
+            $resultTotal = $stmtTotal->get_result();
+            $rowTotal = $resultTotal->fetch_assoc();
+
+            $totalPages = ceil($rowTotal['total'] / $limit);
+        }else{
+            $totalPages = $quantidadeDePaginas;
+        }
+
+        return [
+            "dados" => $result,
+            "totalPages" => $totalPages
+        ];
+    }
 }
