@@ -187,4 +187,38 @@ class Relatorios extends Model
 
         return $results;
     }
+
+    public function entradas()
+    {
+        $results = [];
+
+        $sql = "SELECT 
+                SUM(t.quantity) as total, MONTH(t.created_at) as 'MONTH', YEAR(t.created_at) as 'YEAR'
+            from transactions t
+            WHERE 
+                t.type_ID = 1 
+                AND t.created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+            GROUP BY MONTH(t.created_at)
+            ORDER BY MONTH(t.created_at) ASC;
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows == 0) {
+            return [];
+        }
+
+        while ($row = $result->fetch_assoc()) {
+            $month = $row["MONTH"];
+            $month = str_pad($month, 2, "0", STR_PAD_LEFT);
+            $year = $row["YEAR"];
+
+            $totalInt = (int)$row["total"];
+            $results["$year-$month"] = $totalInt;
+        }
+
+        return $results;
+    }
 }
