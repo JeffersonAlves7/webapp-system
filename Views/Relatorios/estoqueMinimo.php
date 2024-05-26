@@ -17,17 +17,13 @@ require "Components/Header.php"
 
         <button class="btn btn-custom" id="btn-saidas-diarias">Exportar em massa</button>
     </div>
-
-    <form class="d-flex mb-3 gap-4" style="max-width: 300px;">
-        <input type="date" id="data-saida" class="form-control" value="<?= isset($_GET["dataSaida"]) && !empty($_GET["dataSaida"]) ? $_GET["dataSaida"] : date("Y-m-d") ?>" name="dataSaida">
-        <button class="btn btn-custom" id="btn-pesquisar">Pesquisar</button>
-    </form>
     
     <p>
         Porcentagem de alerta: <span id="porcentagem-alerta" style="font-weight: bold;">
             <?= isset($_COOKIE["porcentagemParaAlerta"]) && !empty($_GET["porcentagemParaAlerta"]) ? $_GET["porcentagemParaAlerta"] : "50" ?> %
         </span>
     </p>
+
     <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
         <table class="table table-striped">
             <thead>
