@@ -150,4 +150,41 @@ class Relatorios extends Model
 
         return $results;
     }
+
+    public function comparativoDeVendas($meses)
+    {
+        $results = [];
+
+        foreach ($meses as $key => $mes) {
+            $sql = "SELECT 
+                        SUM(t.quantity) as total, DAY(t.created_at) as 'DAY'
+                        from transactions t
+                    WHERE 
+                        t.type_ID = 2 
+                        AND t.created_at >= CONCAT(?, '-01 00:00:00')
+                        AND t.created_at < CONCAT(DATE_ADD(CONCAT(?, '-01'), INTERVAL 1 MONTH), ' 00:00:00')
+                    GROUP BY 'DAY' 
+                    ORDER BY 'DAY' ASC;
+                ";
+
+            $stmt = $this->db->prepare($sql);
+
+            $stmt->bind_param("ss", $mes, $mes);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows == 0) {
+                $results[$mes] = [];
+                continue;
+            }
+
+            while ($row = $result->fetch_assoc()) {
+                $dia = $row["DAY"];
+                $totalInt = (int)$row["total"];
+                $results[$mes][$dia] = $totalInt;
+            }
+        }
+
+        return $results;
+    }
 }
