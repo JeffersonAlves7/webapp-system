@@ -66,7 +66,7 @@ class Relatorios extends Model
         $result = $stmt->get_result();
 
         // Get the total number of records
-        if($quantidadeDePaginas == false){
+        if ($quantidadeDePaginas == false) {
             $sqlTotal = "SELECT COUNT(*) as total
             FROM products p
                 INNER JOIN quantity_in_stock qs ON qs.product_ID = p.ID AND qs.stock_ID = 1
@@ -82,7 +82,7 @@ class Relatorios extends Model
             $rowTotal = $resultTotal->fetch_assoc();
 
             $totalPages = ceil($rowTotal['total'] / $limit);
-        }else{
+        } else {
             $totalPages = $quantidadeDePaginas;
         }
 
@@ -90,5 +90,64 @@ class Relatorios extends Model
             "dados" => $result,
             "totalPages" => $totalPages
         ];
+    }
+
+    public function movimentacoes($dataMovimentacao, $page = 1, $limit = 30)
+    {
+        $offset = ($page - 1) * $limit;
+
+        $sqlTotal = "SELECT SUM(quantity) AS total
+                FROM transactions
+                WHERE 
+                    type_ID = 2 
+                    AND created_at >= CONCAT(?, '-01 00:00:00') 
+                    AND created_at < CONCAT(DATE_ADD(CONCAT(?, '-01'), INTERVAL 1 MONTH), ' 00:00:00')";
+
+        $stmtTotal = $this->db->prepare($sqlTotal);
+        $stmtTotal->bind_param("ss", $dataMovimentacao, $dataMovimentacao);
+        $stmtTotal->execute();
+
+        $resultTotal = $stmtTotal->get_result();
+        $rowTotal = $resultTotal->fetch_assoc();
+        if ($rowTotal['total'] == 0) {
+            return false;
+        }
+
+        $sqlMain = "SELECT 
+                p.code AS 'CODIGO', 
+                SUM(t.quantity) AS 'SAIDAS',
+                (SUM(t.quantity) / ?) * 100 AS 'PERCENTUAL',
+                qs.total_stock AS 'ESTOQUE'
+            FROM 
+                products p 
+            INNER JOIN 
+                transactions t ON t.product_ID = p.ID 
+            INNER JOIN (
+                SELECT 
+                    product_ID, 
+                    SUM(quantity) + SUM(quantity_in_reserve) AS total_stock
+                FROM 
+                    quantity_in_stock
+                GROUP BY 
+                    product_ID
+            ) qs ON qs.product_ID = p.ID
+            WHERE 
+                t.type_ID = 2 
+                AND t.created_at >= CONCAT(?, '-01 00:00:00') 
+                AND t.created_at < CONCAT(DATE_ADD(CONCAT(?, '-01'), INTERVAL 1 MONTH), ' 00:00:00')
+            GROUP BY 
+                p.ID
+            ORDER BY
+                SAIDAS DESC
+            LIMIT ? OFFSET ?;";
+
+
+        $stmtMain = $this->db->prepare($sqlMain);
+        $stmtMain->bind_param("dssii", $rowTotal['total'], $dataMovimentacao, $dataMovimentacao, $limit, $offset);
+        $stmtMain->execute();
+
+        $results = $stmtMain->get_result();
+
+        return $results;
     }
 }
