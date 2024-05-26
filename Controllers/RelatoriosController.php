@@ -68,4 +68,31 @@ class RelatoriosController extends _Controller
             "porcentagem" => $porcentagem,
         ]);
     }
+
+    public function movimentacoes()
+    {
+        // Exemplo: ?dataMovimentacao=2021-09
+        $dataMovimentacao = null;
+        $page = 1;
+        $limit = 30;
+
+        if (isset($_GET["dataMovimentacao"]) && !empty($_GET["dataMovimentacao"])) {
+            $dataMovimentacao = $_GET["dataMovimentacao"];
+        }
+        else{
+            $dataMovimentacao = date("Y-m");
+        }
+
+        if (isset($_GET["page"]) && !empty($_GET["page"])) {
+            $page = $_GET["page"];
+        }
+
+        $dados = $this->relatorios->movimentacoes(
+            $dataMovimentacao,
+            $page,
+            $limit
+        );
+
+        $this->view("Relatorios/movimentacoes", ["dados" => $dados]);
+    }
 }
