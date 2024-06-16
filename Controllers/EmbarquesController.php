@@ -10,8 +10,41 @@ class EmbarquesController extends _Controller
     public function __construct()
     {
         parent::__construct();
+
+        if (
+            !$this->userPermissionManager->controller("Embarques")->canRead()
+        ) {
+            $_SESSION['mensagem_erro'] = "Você não tem permissão para acessar os Embarques!";
+            header("Location: /");
+            exit;
+        }
+
+
         $this->containerModel = new Container();
     }
+
+    private function verifyWritePermission()
+    {
+        if (
+            !$this->userPermissionManager->controller("Embarques")->canWrite()
+        ) {
+            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
+            header("Location: /embarques");
+            exit;
+        }
+    }
+
+    private function verifyDeletePermission()
+    {
+        if (
+            !$this->userPermissionManager->controller("Embarques")->canDelete()
+        ) {
+            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
+            header("Location: /embarques");
+            exit;
+        }
+    }
+
 
     public function index()
     {
@@ -57,6 +90,8 @@ class EmbarquesController extends _Controller
     public function importar()
     {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $this->verifyWritePermission();
+
             $file = $_FILES["file"];
             $rows = PhpExcel::read($file["tmp_name"], 9);
 
@@ -194,6 +229,8 @@ class EmbarquesController extends _Controller
 
     public function conferir($container_ID)
     {
+        $this->verifyWritePermission();
+
         $sucesso = isset($_SESSION['sucesso']) ? $_SESSION['sucesso'] : false;
         unset($_SESSION['sucesso']);
 
@@ -253,6 +290,8 @@ class EmbarquesController extends _Controller
 
     public function deletarProduto()
     {
+        $this->verifyDeletePermission();
+
         $redirect = "/";
 
         if (isset($_GET["redirect"])) {
@@ -274,6 +313,8 @@ class EmbarquesController extends _Controller
 
     public function deletar($id)
     {
+        $this->verifyDeletePermission();
+
         $this->containerModel->delete($id);
         $_SESSION["sucesso"] = true;
         header("Refresh: 0; URL = /embarques");

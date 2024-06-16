@@ -9,6 +9,15 @@ class RelatoriosController extends _Controller
     public function __construct()
     {
         parent::__construct();
+
+        if (
+            !$this->userPermissionManager->controller("Relatorios")->canRead()
+        ) {
+            $_SESSION['mensagem_erro'] = "Você não tem permissão para acessar os Relatórios!";
+            header("Location: /");
+            exit;
+        }
+
         $this->relatorios = new Relatorios();
     }
 
@@ -135,7 +144,7 @@ class RelatoriosController extends _Controller
 
     public function entradas()
     {
-        if($_SERVER["REQUEST_METHOD"] == "POST") {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Content-Type: application/json");
 
 

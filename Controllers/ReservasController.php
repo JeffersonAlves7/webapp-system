@@ -11,8 +11,39 @@ class ReservasController extends _Controller
     public function __construct()
     {
         parent::__construct();
+
+        if (
+            !$this->userPermissionManager->controller("Reservas")->canRead()
+        ) {
+            $_SESSION['mensagem_erro'] = "Você não tem permissão para acessar as Reservas!";
+            header("Location: /");
+            exit;
+        }
+
         $this->estoquesModel = new Estoque();
         $this->reservaModel = new Reserva();
+    }
+
+    private function verifyWritePermission()
+    {
+        if (
+            !$this->userPermissionManager->controller("Reservas")->canWrite()
+        ) {
+            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
+            header("Location: /reservas");
+            exit;
+        }
+    }
+
+    private function verifyDeletePermission()
+    {
+        if (
+            !$this->userPermissionManager->controller("Reservas")->canDelete()
+        ) {
+            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
+            header("Location: /reservas");
+            exit;
+        }
     }
 
     public function index()
@@ -45,6 +76,9 @@ class ReservasController extends _Controller
             exit(0);
         }
 
+        $this->verifyWritePermission();
+        $this->verifyDeletePermission();
+
         $ID = $_POST["ID"];
 
         echo "Reserve cancelada com sucesso!";
@@ -57,6 +91,8 @@ class ReservasController extends _Controller
         if ($_SERVER["REQUEST_METHOD"] != "POST") {
             exit(0);
         }
+
+        $this->verifyWritePermission();
 
         $ID = $_POST["ID"];
 

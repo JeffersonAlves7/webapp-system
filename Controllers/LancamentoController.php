@@ -12,6 +12,15 @@ class LancamentoController extends _Controller
     public function __construct()
     {
         parent::__construct();
+
+        if (
+            !$this->userPermissionManager->controller("Lancamento")->canRead()
+        ) {
+            $_SESSION['mensagem_erro'] = "Você não tem permissão para acessar o lançamento!";
+            header("Location: /");
+            exit;
+        }
+
         $this->lancamentoModel = new Lancamento();
         $this->estoqueModel = new Estoque();
     }
@@ -19,6 +28,17 @@ class LancamentoController extends _Controller
     public function index()
     {
         $this->entrada();
+    }
+
+    private function verifyWritePermission()
+    {
+        if (
+            !$this->userPermissionManager->controller("Lancamento")->canWrite()
+        ) {
+            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
+            header("Location: /lancamento");
+            exit;
+        }
     }
 
     public function entrada()
@@ -32,6 +52,8 @@ class LancamentoController extends _Controller
         unset($_SESSION['sucesso']); // Remove a variável de sucesso da sessão
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $this->verifyWritePermission();
+
             $produto_id = $_POST["produto_id"];
             $quantidade = $_POST["quantidade"];
             $lote_container = $_POST["lote_container"];
@@ -68,6 +90,8 @@ class LancamentoController extends _Controller
         unset($_SESSION['sucesso']); // Remove a variável de sucesso da sessão
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $this->verifyWritePermission();
+
             $produto_ID = $_POST["produto_id"];
             $quantidade = $_POST["quantidade"];
             $stock_ID = $_POST["estoque_origem"];
@@ -107,6 +131,8 @@ class LancamentoController extends _Controller
         unset($_SESSION['sucesso']); // Remove a variável de sucesso da sessão
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $this->verifyWritePermission();
+
             $produto_ID = $_POST["produto_id"];
             $quantidade = $_POST["quantidade"];
             $estoque_origem = $_POST["estoque_origem"];
@@ -148,6 +174,8 @@ class LancamentoController extends _Controller
         unset($_SESSION['sucesso']); // Remove a variável de sucesso da sessão
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $this->verifyWritePermission();
+
             $produto_ID = $_POST["produto_id"];
             $quantidade = $_POST["quantidade"];
             $estoque_destino = $_POST["estoque_destino"];
@@ -187,6 +215,8 @@ class LancamentoController extends _Controller
         unset($_SESSION['sucesso']); // Remove a variável de sucesso da sessão
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $this->verifyWritePermission();
+
             $product_ID = $_POST["produto_id"];
             $quantity = $_POST["quantidade"];
             $stock_ID = $_POST["estoque_origem"];
@@ -222,7 +252,7 @@ class LancamentoController extends _Controller
     {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $transferenciasIds = json_decode($_POST["transference-ids"]);
-            $idsString = implode(",", $transferenciasIds); 
+            $idsString = implode(",", $transferenciasIds);
 
             $transferencias = $this->lancamentoModel->getTransferenciasPendentes(
                 "`transferences`.`ID` IN ($idsString)"
@@ -275,6 +305,8 @@ class LancamentoController extends _Controller
     public function confirmarTransferencias()
     {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $this->verifyWritePermission();
+
             try {
                 $transferencias = json_decode($_POST["transferences"]);
                 $this->lancamentoModel->confirmarTransferencias($transferencias);

@@ -13,10 +13,42 @@ class ProdutosController extends _Controller
     public function __construct()
     {
         parent::__construct();
+
+        if (
+            !$this->userPermissionManager->controller("Produtos")->canRead()
+        ) {
+            $_SESSION['mensagem_erro'] = "Você não tem permissão para acessar os Produtos!";
+            header("Location: /");
+            exit;
+        }
+
         $this->productModel = new Product();
         $this->transacaoModel = new Transacao();
         $this->estoquesModel = new Estoque();
     }
+
+    private function verifyWritePermission()
+    {
+        if (
+            !$this->userPermissionManager->controller("Produtos")->canWrite()
+        ) {
+            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
+            header("Location: /produtos");
+            exit;
+        }
+    }
+
+    private function verifyDeletePermission()
+    {
+        if (
+            !$this->userPermissionManager->controller("Produtos")->canDelete()
+        ) {
+            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
+            header("Location: /produtos");
+            exit;
+        }
+    }
+
 
     public function index()
     {
@@ -27,6 +59,8 @@ class ProdutosController extends _Controller
         unset($_SESSION['sucesso']);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["_method"])) {
+            $this->verifyWritePermission();
+
             $redirect_to = isset($_SESSION['redirect_to']) ? $_SESSION['redirect_to'] : "/produtos";
 
             if ($_POST["_method"] == "put") {
@@ -150,12 +184,15 @@ class ProdutosController extends _Controller
 
             switch ($method) {
                 case "delete":
+                    $this->verifyDeletePermission();
+
                     try {
                         $this->transacaoModel->delete($_POST["ID"]);
                         $_SESSION['sucesso'] = true;
                     } catch (Exception $e) {
                         $_SESSION['mensagem_erro'] = $e->getMessage();
                     }
+
                     break;
             }
 
