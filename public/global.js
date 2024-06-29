@@ -3,7 +3,7 @@ const buttonToGoBack = document.getElementById("go-back");
 buttonToGoBack?.addEventListener("click", () => {
   // As vezes acontece de o historico voltar para a mesma pagina
   // Para evitar isso, verificamos se a pagina anterior é a mesma
-  if (window.history.length > 1){
+  if (window.history.length > 1) {
     const previousUrl = window.history.state?.url;
     const currentUrl = window.location.href;
     if (previousUrl && previousUrl === currentUrl) {
