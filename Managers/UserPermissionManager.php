@@ -7,12 +7,14 @@ class Permission
     private $read;
     private $write;
     private $delete;
+    private $edit;
 
-    public function __construct($read, $write, $delete)
+    public function __construct($read, $write, $delete, $edit)
     {
         $this->read = $read;
         $this->write = $write;
         $this->delete = $delete;
+        $this->edit = $edit;
     }
 
     public function canRead()
@@ -28,6 +30,11 @@ class Permission
     public function canDelete()
     {
         return $this->delete;
+    }
+
+    public function canEdit()
+    {
+        return $this->edit;
     }
 }
 
@@ -49,7 +56,8 @@ class UserPermissionManager
             $userPermissions[$permission["controller"]] = new Permission(
                 $permission["read"],
                 $permission["write"],
-                $permission["delete"]
+                $permission["delete"],
+                $permission["edit"],
             );
         }
 
@@ -59,13 +67,13 @@ class UserPermissionManager
     public function controller($name)
     {
         if ($this->user["group_ID"] == 1) {
-            return new Permission(true, true, true);
+            return new Permission(true, true, true, true);
         }
 
         if (isset($this->permissions[$name])) {
             return $this->permissions[$name];
         } else {
-            return new Permission(false, false, false);
+            return new Permission(false, false, false, false);
         }
     }
 }
