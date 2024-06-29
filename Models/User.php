@@ -92,6 +92,7 @@ class User extends Model
                     "read" => true,
                     "write" => true,
                     "delete" => true,
+                    "edit" => true,
                     "controller" => $controller["name"],
                     "ID" => $controller["ID"]
                 ];
@@ -106,6 +107,7 @@ class User extends Model
         `permissions`.`read`,
         `permissions`.`write`,
         `permissions`.`delete`,
+        `permissions`.`edit`,
         `controllers`.`name`,
         `controllers`.`ID` as controller_ID
          FROM `permissions`
@@ -124,6 +126,7 @@ class User extends Model
                 "read" => false,
                 "write" => false,
                 "delete" => false,
+                "edit" => false,
                 "controller" => $controller["name"],
                 "ID" => $controller["ID"]
             ];
@@ -135,6 +138,7 @@ class User extends Model
                 "read" => $row["read"],
                 "write" => $row["write"],
                 "delete" => $row["delete"],
+                "edit" => $row["edit"],
                 "controller" => $row["name"],
                 "ID" => $row["controller_ID"]
             ];
@@ -205,7 +209,6 @@ class User extends Model
         try {
             foreach ($permissions as $controller => $permission) {
                 $permission = $this->preparePermission($permission);
-                var_dump($permission);
 
                 $sql = "SELECT * FROM `permissions` WHERE `group_ID` = ? AND `controller_ID` = ?";
                 $stmt = $this->db->prepare($sql);
@@ -216,16 +219,14 @@ class User extends Model
                 $row = $result->fetch_assoc();
 
                 if ($row) {
-                    $sql = "UPDATE `permissions` SET `read` = ?, `write` = ?, `delete` = ?  WHERE `group_ID` = ?  AND `controller_ID` = ?";
-                    $stmt = $this->db->prepare($sql);
-                    $stmt->bind_param("iiiii", $permission["read"], $permission["write"], $permission["delete"], $group_ID, $permission["ID"]);
-                    $stmt->execute();
+                    $sql = "UPDATE `permissions` SET `read` = ?, `write` = ?, `delete` = ?, `edit` = ?  WHERE `group_ID` = ?  AND `controller_ID` = ?";
                 } else {
-                    $sql = "INSERT INTO `permissions` (`read`, `write`, `delete`, `group_ID`, `controller_ID`) VALUES (?, ?, ?, ?, ?)";
-                    $stmt = $this->db->prepare($sql);
-                    $stmt->bind_param("iiiii", $permission["read"], $permission["write"], $permission["delete"], $group_ID, $permission["ID"]);
-                    $stmt->execute();
+                    $sql = "INSERT INTO `permissions` (`read`, `write`, `delete`, `edit`, `group_ID`, `controller_ID`) VALUES (?, ?, ?, ?, ?, ?)";
                 }
+
+                $stmt = $this->db->prepare($sql);
+                $stmt->bind_param("iiiiii", $permission["read"], $permission["write"], $permission["delete"], $permission['edit'], $group_ID, $permission["ID"]);
+                $stmt->execute();
             }
 
             $this->db->commit();
@@ -244,7 +245,8 @@ class User extends Model
             "read" => isset($permission["read"]) && $permission["read"] ? 1 : 0,
             "write" => isset($permission["write"]) && $permission["write"] ? 1 : 0,
             "delete" => isset($permission["delete"]) && $permission["delete"] ? 1 : 0,
-            "ID" => $permission["ID"]
+            "edit" => isset($permission["edit"]) && $permission["edit"] ? 1 : 0,
+            "ID" => (int) $permission["ID"]
         ];
     }
 

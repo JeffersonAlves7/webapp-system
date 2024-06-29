@@ -100,10 +100,11 @@ require "Components/Header.php";
                                     <th>Leitura</th>
                                     <th>Escrita</th>
                                     <th>Deleção</th>
+                                    <th>Edição</th>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <button id="selectAll" type="button" style="border: none; background: none; cursor: pointer;"
+                                        <button id="selectAll" type="button" style="border: none; background: none; cursor: pointer;">
                                             <strong>
                                                 <i class="bi bi-check2-all"></i> Selecionar todos
                                             </strong>
@@ -117,6 +118,9 @@ require "Components/Header.php";
                                     </td>
                                     <td>
                                         <input type="checkbox" id="selectAllDelecao">
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" id="selectAllEdicao">
                                     </td>
                                 </tr>
                             </thead>
@@ -179,6 +183,9 @@ require "Components/Header.php";
                     <td>
                         <input type="checkbox" name="permissions[${controller}][delete]" ${controllerPermissions.delete ? "checked" : ""}>
                     </td>
+                    <td>
+                        <input type="checkbox" name="permissions[${controller}][edit]" ${controllerPermissions.edit ? "checked" : ""}>
+                    </td>
                     <input type="hidden" name="permissions[${controller}][ID]" value="${controllerPermissions.ID}">
                 `;
 
@@ -191,6 +198,11 @@ require "Components/Header.php";
         document.querySelectorAll(".edit-group").forEach((button) => {
             button.addEventListener("click", async (event) => {
                 const group_ID = event.currentTarget.dataset.id;
+                // Descelecionar inputs de selectAll
+                document.getElementById("selectAllLeitura").checked = false;
+                document.getElementById("selectAllEscrita").checked = false;
+                document.getElementById("selectAllDelecao").checked = false;
+                document.getElementById("selectAllEdicao").checked = false;
 
                 const response = await fetch("/painel/grupos", {
                     method: "POST",
@@ -245,11 +257,20 @@ require "Components/Header.php";
             });
         });
 
+        // Selecionar todos os checkboxes de edição
+        document.getElementById("selectAllEdicao").addEventListener("change", (event) => {
+            const checkboxes = document.querySelectorAll("#permissionsTable input[name$='[edit]']");
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = event.currentTarget.checked;
+            });
+        });
+
         // Selecionar todos os checkboxes
         document.getElementById("selectAll").addEventListener("click", (event) => {
             document.getElementById("selectAllLeitura").click();
             document.getElementById("selectAllEscrita").click();
             document.getElementById("selectAllDelecao").click();
+            document.getElementById("selectAllEdicao").click();
         });
     });
 </script>
