@@ -79,7 +79,7 @@ class EmbarquesController extends _Controller
 
         $containers = $this->containerModel->getAll($page, where: $where);
 
-        $this->view("Containers/Index", [
+        $this->view("Embarques/Index", [
             "containers" => $containers,
             "page" => $page,
             "sucesso" => $sucesso,
@@ -218,7 +218,7 @@ class EmbarquesController extends _Controller
         $products = $productsData["products"];
         $pageCount = $productsData["pageCount"];
 
-        $this->view("Containers/Produtos", [
+        $this->view("Embarques/Produtos", [
             "products" => $products,
             "container_ID" => $container_ID,
             "pageCount" => $pageCount,
@@ -278,7 +278,7 @@ class EmbarquesController extends _Controller
         $products = $this->containerModel->produtosById($container_ID, $page, where: $where);
         $container = $this->containerModel->byId($container_ID);
 
-        $this->view("Containers/Conferir", [
+        $this->view("Embarques/Conferir", [
             "products" => $products["products"],
             "container_ID" => $container_ID,
             "container" => $container,
@@ -306,6 +306,31 @@ class EmbarquesController extends _Controller
             $_SESSION["sucesso"] = true;
         } else {
             $_SESSION["mensagem_erro"] = "Falha ao deletar produto!";
+        }
+
+        header("Refresh: 0; URL = $redirect");
+    }
+
+    public function editarProduto()
+    {
+        $this->verifyWritePermission();
+
+        $redirect = "/";
+
+        if (isset($_GET["redirect"])) {
+            $redirect = htmlspecialchars($_GET["redirect"]);
+        }
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $product_ID = $_POST["product_ID"];
+            $container_ID = $_POST["container_ID"];
+            $quantity = $_POST["quantity"];
+            $arrival_date = $_POST["arrival_date"];
+
+            $this->containerModel->editProduct($container_ID, $product_ID, $quantity, $arrival_date);
+            $_SESSION["sucesso"] = true;
+        } else {
+            $_SESSION["mensagem_erro"] = "Falha ao editar produto!";
         }
 
         header("Refresh: 0; URL = $redirect");

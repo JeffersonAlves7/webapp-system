@@ -70,6 +70,13 @@ class Container extends Model
             `product_ID` = $product_ID");
     }
 
+    public function editProduct($container_ID, $product_ID, $quantity, $arrival_date)
+    {
+        $stmt = $this->db->prepare("UPDATE `products_in_container` SET `quantity` = ?, `arrival_date` = ? WHERE `container_ID` = ? AND `product_ID` = ?");
+        $stmt->bind_param("issi", $quantity, $arrival_date, $container_ID, $product_ID);
+        $stmt->execute();
+    }
+    
     public function delete($container_ID)
     {
         $this->db->query("DELETE FROM `lote_container` WHERE `ID` = $container_ID");
