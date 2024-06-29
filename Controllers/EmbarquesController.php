@@ -34,6 +34,17 @@ class EmbarquesController extends _Controller
         }
     }
 
+    private function verifyEditPermission()
+    {
+        if (
+            !$this->userPermissionManager->controller("Embarques")->canEdit()
+        ) {
+            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
+            header("Location: /embarques");
+            exit;
+        }
+    }
+
     private function verifyDeletePermission()
     {
         if (
@@ -313,7 +324,7 @@ class EmbarquesController extends _Controller
 
     public function editarProduto()
     {
-        $this->verifyWritePermission();
+        $this->verifyEditPermission();
 
         $redirect = "/";
 
