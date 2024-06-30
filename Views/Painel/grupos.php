@@ -20,7 +20,7 @@ require "Components/Header.php";
         Adicionar grupo <i class="bi bi-plus"></i>
     </button>
 
-    <div class="table-responsive">
+    <div class="table-responsive" style="max-height: 60vh; min-height: 100px">
         <table class="table table-striped" id="table-groups">
             <thead class="thead-dark" style="position: sticky; top: 0;">
                 <tr>

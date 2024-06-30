@@ -12,7 +12,7 @@ require "Components/Header.php";
         <h1 class="mb-3"><?= $pageTitle ?> - Produtos</h1>
     </div>
 
-    <div class="table-responsive">
+    <div class="table-responsive" style="max-height: 60vh; min-height: 100px">
         <table class="table table-striped" style="min-width:max-content">
             <thead class="thead-dark" style="position: sticky; top: 0;">
                 <tr>

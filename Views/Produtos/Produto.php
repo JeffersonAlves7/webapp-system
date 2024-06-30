@@ -97,8 +97,7 @@ ob_start();
         ?>
     </div>
 
-
-    <div class="table-responsive">
+    <div class="table-responsive" style="max-height: 60vh; min-height: 100px">
         <table class="table table-striped">
             <thead>
                 <tr>

@@ -18,7 +18,7 @@ require "Components/Header.php";
     <div class="mb-3" style="max-width: 300px;">
         <label for="arrival_date" class="form-label">Data de chegada</label>
         <!-- Data no horario de brasilia -->
-        <input type="date" class="form-control" id="arrival_date" value="<?=  date('Y-m-d') ?>">
+        <input type="date" class="form-control" id="arrival_date" value="<?= date('Y-m-d') ?>">
     </div>
 
     <!-- Mostrar total selecionado pelo checkbox (atraves da soma do campo quantidade entregue) -->

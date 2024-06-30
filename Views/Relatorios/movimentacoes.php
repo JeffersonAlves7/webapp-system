@@ -44,7 +44,7 @@ require "Components/Header.php"
     </div>
 
 
-    <div class="table-responsive">
+    <div class="table-responsive" style="max-height: 60vh; min-height: 100px">
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
