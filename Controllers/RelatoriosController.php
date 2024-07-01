@@ -50,32 +50,22 @@ class RelatoriosController extends _Controller
         $page = 1;
         $limit = 30;
         $porcentagem = 0.50;
-        $quantidadeDePaginas = 1;
 
-        // if (isset($_GET["page"]) && !empty($_GET["page"])) {
-        //     $page = $_GET["page"];
-        // }
-
-        // if (isset($_GET["limit"]) && !empty($_GET["limit"])) {
-        //     $limit = $_GET["limit"];
-        // }
+        if (isset($_GET["page"]) && !empty($_GET["page"])) {
+            $page = $_GET["page"];
+        }
 
         if (isset($_COOKIE["porcentagemParaAlerta"]) && !empty($_GET["porcentagemParaAlerta"])) {
             $porcentagem = $_COOKIE["porcentagemParaAlerta"];
         }
 
-        // $quantidadeDePaginasCookie = "Relatorios:estoqueMinimo:quantidadeDePaginas";
-        // if (isset($_COOKIE[$quantidadeDePaginasCookie]) && !empty($_COOKIE[$quantidadeDePaginasCookie])) {
-        //     $quantidadeDePaginas = $_COOKIE[$quantidadeDePaginasCookie];
-        // }
-
-        $dados = $this->relatorios->estoqueMinimo($page, $limit, $porcentagem, $quantidadeDePaginas);
+        $dados = $this->relatorios->estoqueMinimo($page, $limit, $porcentagem);
 
         $this->view("Relatorios/estoqueMinimo", [
             "dados" => $dados["dados"],
-            "quantidadeDePaginas" => $dados["quantidadeDePaginas"],
             "page" => $page,
-            "porcentagem" => $porcentagem,
+            "pageCount" => $dados["pageCount"],
+            "porcentagem" => $porcentagem
         ]);
     }
 
@@ -102,7 +92,11 @@ class RelatoriosController extends _Controller
             $limit
         );
 
-        $this->view("Relatorios/movimentacoes", ["dados" => $dados]);
+        $this->view("Relatorios/movimentacoes", [
+            "dados" => $dados,
+            "page" => $page,
+
+        ]);
     }
 
     public function comparativoDeVendas()

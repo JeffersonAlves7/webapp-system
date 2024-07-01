@@ -43,7 +43,7 @@ class Relatorios extends Model
         return $result;
     }
 
-    public function estoqueMinimo($page = 1, $limit = 30, $porcentagem = 0.50, $quantidadeDePaginas = false)
+    public function estoqueMinimo($page = 1, $limit = 30, $porcentagem = 0.50)
     {
         $offset = ($page - 1) * $limit;
 
@@ -67,29 +67,27 @@ class Relatorios extends Model
         $result = $stmt->get_result();
 
         // Get the total number of records
-        if ($quantidadeDePaginas == false) {
-            $sqlTotal = "SELECT COUNT(*) as total
-            FROM products p
-                INNER JOIN quantity_in_stock qs ON qs.product_ID = p.ID AND qs.stock_ID = 1
-                INNER JOIN transactions t ON t.type_ID = 1 AND t.product_ID = p.ID
-                WHERE (qs.quantity + qs.quantity_in_reserve) < ? * t.quantity
-            ";
+        $sqlTotal = "SELECT COUNT(*) as total
+        FROM products p
+            INNER JOIN quantity_in_stock qs ON qs.product_ID = p.ID AND qs.stock_ID = 1
+            INNER JOIN transactions t ON t.type_ID = 1 AND t.product_ID = p.ID
+            WHERE (qs.quantity + qs.quantity_in_reserve) < ? * t.quantity
+        ";
 
-            $stmtTotal = $this->db->prepare($sqlTotal);
-            $stmtTotal->bind_param("d", $porcentagem);
+        $stmtTotal = $this->db->prepare($sqlTotal);
+        $stmtTotal->bind_param("d", $porcentagem);
 
-            $stmtTotal->execute();
-            $resultTotal = $stmtTotal->get_result();
-            $rowTotal = $resultTotal->fetch_assoc();
+        $stmtTotal->execute();
+        $resultTotal = $stmtTotal->get_result();
+        $rowTotal = $resultTotal->fetch_assoc();
 
-            $totalPages = ceil($rowTotal['total'] / $limit);
-        } else {
-            $totalPages = $quantidadeDePaginas;
-        }
+        $pageCount = ceil($rowTotal['total'] / $limit);
+
+        $resultData = $result->fetch_all(MYSQLI_ASSOC);
 
         return [
-            "dados" => $result,
-            "totalPages" => $totalPages
+            "dados" => $resultData,
+            "pageCount" => $pageCount
         ];
     }
 
