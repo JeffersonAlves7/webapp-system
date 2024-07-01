@@ -15,12 +15,13 @@ class Relatorios extends Model
             tt.type as `TIPO`,
             t.client_name as `CLIENTE`,
             t.operator_ID as `OPERADOR`,
-            if(t.to_stock_ID IS NULL, t.from_stock_ID, t.to_stock_ID) as `ORIGEM`,
+            s.name as `ORIGEM`,
             t.observation as `OBSERVACAO`,
             t.created_at as `DATA`
         FROM `transactions` t
             INNER JOIN `transaction_types` tt ON tt.ID = t.type_ID
             INNER JOIN `products` p ON p.ID = t.product_ID
+            INNER JOIN `stocks` s ON s.ID = t.from_stock_ID
             WHERE
                 DATE(t.created_at) = ?
                 AND
@@ -116,7 +117,7 @@ class Relatorios extends Model
         $sqlMain = "SELECT 
                 p.code AS 'CODIGO', 
                 SUM(t.quantity) AS 'SAIDAS',
-                (SUM(t.quantity) / ?) * 100 AS 'PERCENTUAL',
+                ROUND((SUM(t.quantity) / ?) * 100, 2) AS 'PERCENTUAL',
                 qs.total_stock AS 'ESTOQUE'
             FROM 
                 products p 

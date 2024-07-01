@@ -22,7 +22,7 @@ require "Components/Header.php"
     </div>
 
     <form class="d-flex mb-3 gap-4" style="max-width: 400px;">
-        <input type="month" class="form-control" id="data-movimentacao" name="data-movimentacao" value="<?= date("Y-m") ?>">
+        <input type="month" class="form-control" id="data-movimentacao" name="dataMovimentacao" value="<?= date("Y-m") ?>">
         <button class="btn btn-custom" id="btn-pesquisar">Pesquisar</button>
     </form>
 
@@ -73,6 +73,41 @@ require "Components/Header.php"
                 ?>
         </table>
     </div>
+
+    <?php if ($pageCount > 1) : ?>
+        <?php
+        function isButtonDisabled($condition)
+        {
+            return $condition ? 'disabled' : '';
+        }
+
+        $currentPage = $_GET['page'] ?? 1;
+        $prevPage = $currentPage - 1;
+        $nextPage = $currentPage + 1;
+        $isPrevDisabled = !isset($_GET["page"]) || intval($_GET["page"]) <= 1;
+        $isNextDisabled = !isset($transacoes) || !$transacoes->num_rows > 0 || $currentPage >= $pageCount;
+        ?>
+
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
+            <form method="GET" class="d-flex align-items-center">
+                <input type="hidden" name="page" value="<?= $prevPage ?>">
+                <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
+                <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isPrevDisabled) ?> title="Voltar">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+            </form>
+
+            <span class="text-center">Página <?= $currentPage ?> de <?= $pageCount ?></span>
+
+            <form method="GET">
+                <input type="hidden" name="page" value="<?= $nextPage ?>">
+                <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
+                <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isNextDisabled) ?> title="Avançar">
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    <?php endif; ?>
 </main>
 
 <?php
