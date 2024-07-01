@@ -196,6 +196,11 @@ require "Components/Header.php";
             <form method="GET" class="d-flex align-items-center">
                 <input type="hidden" name="page" value="<?= $prevPage ?>">
                 <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
+                <input type="hidden" name="alerta" value="<?= $_COOKIE["alerta"] ?? 20 ?>">
+                <input type="hidden" name="codigo" value="<?= $_COOKIE["codigo"] ?? "" ?>">
+                <input type="hidden" name="importadora" value="<?= $_GET["importadora"] ?? "" ?>">
+                <input type="hidden" name="orderBy" value="<?= $_GET["orderBy"] ?? "" ?>">
+                <input type="hidden" name="orderType" value="<?= $_GET["orderType"] ?? "" ?>">
                 <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isPrevDisabled) ?> title="Voltar">
                     <i class="bi bi-arrow-left"></i>
                 </button>
@@ -206,6 +211,11 @@ require "Components/Header.php";
             <form method="GET">
                 <input type="hidden" name="page" value="<?= $nextPage ?>">
                 <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
+                <input type="hidden" name="alerta" value="<?= $_COOKIE["alerta"] ?? 20 ?>">
+                <input type="hidden" name="codigo" value="<?= $_COOKIE["codigo"] ?? "" ?>">
+                <input type="hidden" name="importadora" value="<?= $_GET["importadora"] ?? "" ?>">
+                <input type="hidden" name="orderBy" value="<?= $_GET["orderBy"] ?? "" ?>">
+                <input type="hidden" name="orderType" value="<?= $_GET["orderType"] ?? "" ?>">
                 <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isNextDisabled) ?> title="Avançar">
                     <i class="bi bi-arrow-right"></i>
                 </button>

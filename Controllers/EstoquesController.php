@@ -76,7 +76,17 @@ class EstoquesController extends _Controller
         $produtos = $productsData["products"];
         $pageCount = $productsData["pageCount"];
 
-        include_once "Views/Estoques.php";
+        return $this->view(
+            "Estoques",
+            [
+                "estoques" => $stocks,
+                "produtos" => $produtos,
+                "page" => $page,
+                "pageCount" => $pageCount,
+                "sucesso" => $sucesso,
+                "mensagem_erro" => $mensagem_erro
+            ]
+        );
     }
 
     public function getAll()
