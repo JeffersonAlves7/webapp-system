@@ -1,6 +1,13 @@
 // Botao de voltar
 const buttonToGoBack = document.getElementById("go-back");
 buttonToGoBack?.addEventListener("click", () => {
+  // Se o elemento tiver um data-url, redireciona para ele
+  const dataUrl = buttonToGoBack.getAttribute("data-url");
+  if (dataUrl) {
+    window.location = dataUrl;
+    return;
+  }
+
   // As vezes acontece de o historico voltar para a mesma pagina
   // Para evitar isso, verificamos se a pagina anterior é a mesma
   if (window.history.length > 1) {
