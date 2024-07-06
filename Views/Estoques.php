@@ -14,8 +14,8 @@ require "Components/Header.php";
         </form>
 
         <?php
-        if (isset($stocks) && $stocks->num_rows > 0) {
-            while ($estoque = $stocks->fetch_assoc()) {
+        if (isset($estoques) && $estoques->num_rows > 0) {
+            while ($estoque = $estoques->fetch_assoc()) {
                 $name = $estoque["name"];
                 $ID = $estoque["ID"];
                 $active = (isset($_GET["estoque"]) && $_GET["estoque"] == "$ID" ? "active" : "");
