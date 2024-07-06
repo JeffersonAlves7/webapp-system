@@ -26,15 +26,15 @@ class Container extends Model
         ORDER BY `created_at` DESC LIMIT $limit OFFSET $offset";
         $result = $this->db->query($sql);
 
-        $containers = [];
+        $containers = $result->fetch_all(MYSQLI_ASSOC);
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $containers[] = $row;
-            }
-        }
+        $queryPageCount = $this->db->query("SELECT COUNT(*) as count FROM lote_container WHERE $where");
+        $pageCount = ceil($queryPageCount->fetch_assoc()["count"] / $limit);
 
-        return $containers;
+        return [
+            "dados" => $containers,
+            "pageCount" => $pageCount
+        ];
     }
 
     public function produtosById($container_ID, int $page = 1, int $limit = 50, $where = 1)
@@ -76,7 +76,7 @@ class Container extends Model
         $stmt->bind_param("issi", $quantity, $arrival_date, $container_ID, $product_ID);
         $stmt->execute();
     }
-    
+
     public function delete($container_ID)
     {
         $this->db->query("DELETE FROM `lote_container` WHERE `ID` = $container_ID");

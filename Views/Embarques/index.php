@@ -89,7 +89,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
         <button type="submit" hidden></button>
     </form>
 
-    <form method="post" enctype="multipart/form-data" class="mb-3" action="/embarques/importar">
+    <form method="post" enctype="multipart/form-data" class="mb-3 mt-3" action="/embarques/importar">
         <div class="row g-3">
             <div class="col-md-6">
                 <input type="file" name="file" class="form-control" accept=".xlsx, .csv" required>
@@ -101,6 +101,45 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
             </div>
         </div>
     </form>
+
+    <?php if ($pageCount > 1) : ?>
+        <?php
+        function isButtonDisabled($condition)
+        {
+            return $condition ? 'disabled' : '';
+        }
+
+        $currentPage = $_GET['page'] ?? 1;
+        $prevPage = $currentPage - 1;
+        $nextPage = $currentPage + 1;
+        $isPrevDisabled = !isset($_GET["page"]) || intval($_GET["page"]) <= 1;
+        $isNextDisabled = !isset($containers) || count($containers) <= 0 || $currentPage >= $pageCount;
+        ?>
+
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
+            <form method="GET" class="d-flex align-items-center">
+                <input type="hidden" name="page" value="<?= $prevPage ?>">
+                <input type="hidden" name="search" value="<?= $search ?>">
+                <input type="hidden" name="start_date" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : "" ?>">
+                <input type="hidden" name="end_date" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : "" ?>">
+                <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isPrevDisabled) ?> title="Voltar">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+            </form>
+
+            <span class="text-center">Página <?= $currentPage ?> de <?= $pageCount ?></span>
+
+            <form method="GET">
+                <input type="hidden" name="page" value="<?= $nextPage ?>">
+                <input type="hidden" name="search" value="<?= $search ?>">
+                <input type="hidden" name="start_date" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : "" ?>">
+                <input type="hidden" name="end_date" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : "" ?>">
+                <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isNextDisabled) ?> title="Avançar">
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    <?php endif; ?>
 
     <!-- Modal para confirmar delecao do container -->
     <div class="modal fade" id="deleteContainerModal" tabindex="-1" aria-labelledby="deleteContainerModalLabel" aria-hidden="true">

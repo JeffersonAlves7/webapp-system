@@ -88,10 +88,11 @@ class EmbarquesController extends _Controller
             $where .= " AND `created_at` BETWEEN '$start_date 00:00:00' AND '$start_date 23:59:59'";
         }
 
-        $containers = $this->containerModel->getAll($page, where: $where);
+        $result = $this->containerModel->getAll($page, where: $where);
 
         $this->view("Embarques/Index", [
-            "containers" => $containers,
+            "containers" => $result["dados"],
+            "pageCount" => $result["pageCount"],
             "page" => $page,
             "sucesso" => $sucesso,
             "mensagem_erro" => $mensagem_erro
