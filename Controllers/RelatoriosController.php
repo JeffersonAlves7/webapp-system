@@ -1,6 +1,6 @@
 <?php
 require_once "Controllers/_Controller.php";
-require_once "Utils/PhpPDF.php";
+require_once "Utils/PdfGenerator.php";
 require_once "Models/Relatorios.php";
 
 class RelatoriosController extends _Controller
@@ -107,21 +107,25 @@ class RelatoriosController extends _Controller
             header("Content-Type: application/json");
 
             $dataMovimentacao = $_POST["dataMovimentacao"];
-            $results = $this->relatorios->movimentacoes($dataMovimentacao);
 
-            $headers = [
-                "Código",
-                "Saídas",
-                "Percentual",
-                "Estoque Atual",
-            ];
+            $page = 1;
 
-            $arrayData = [];
-            $movimentacoes = $results["dados"];
+            $results = $this->relatorios->movimentacoes($dataMovimentacao, $page, 1000000);
 
-            print_r($arrayData);
+            $dados = $results["dados"];
+            $pageCount = $results["pageCount"];
 
-            $pdf = PhpPDF::arrayToPdf(
+            if (empty($dados)) {
+                echo json_encode(["erro" => "Nenhum dado encontrado"]);
+                exit;
+            }
+
+            for ($i = 2; $i <= $pageCount; $i++) {
+                $results = $this->relatorios->movimentacoes($dataMovimentacao, $i, 1000000);
+                $dados = array_merge($dados, $results["dados"]);
+            }
+
+            $pdf = PdfGenerator::generatePdf(
                 ['Código', 'Saídas', 'Percentual', 'Estoque Atual'],
                 array_map(function ($movimentacao) {
                     return [
@@ -130,15 +134,11 @@ class RelatoriosController extends _Controller
                         $movimentacao["PERCENTUAL"] . "%",
                         $movimentacao["ESTOQUE"]
                     ];
-                }, $movimentacoes)
+                }, $dados),
+                "Movimentacoes-$dataMovimentacao.pdf"
             );
 
-            header("Content-Type: application/pdf");
-            header('Content-Disposition: attachment; filename="movimentacoes.pdf"');
-            header("Cache-Control: max-age=0");
-
-            $pdf->save("php://output");
-            return; 
+            return;
         }
     }
 

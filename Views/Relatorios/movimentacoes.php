@@ -16,7 +16,7 @@ require "Components/Header.php"
             <h1 style="margin: 0;">Relatório de Movimentações</h1>
         </div>
 
-        <form action="/relatorios/exportarMovimentacoes" method="POST" id="formExportar">
+        <form action="/relatorios/exportarMovimentacoes" method="POST" id="formExportar" target="_blank">
             <button class="btn btn-custom" id="btn-saidas-diarias" type="submit">Exportar em massa</button>
         </form>
     </div>
