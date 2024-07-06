@@ -31,6 +31,7 @@ require "Components/Header.php";
         </div>
 
         <button type="submit" class="btn btn-custom">Pesquisar</button>
+
         <button type="button" class="btn btn-custom" id="exportar">
             Exportar
         </button>
@@ -77,7 +78,11 @@ require "Components/Header.php";
         const dataFim = document.getElementById("data-fim").value;
         const produto = document.getElementById("produto").value;
 
-        window.location.href = `?&action=exportarTransferencias&data-inicio=${dataInicio}&data-fim=${dataFim}&code=${produto}`;
+        const newLink = document.createElement("a");
+        newLink.href = `?&action=exportarTransferencias&data-inicio=${dataInicio}&data-fim=${dataFim}&code=${produto}`;
+        newLink.target = "_blank";
+        newLink.click();
+        newLink.remove();
     });
 </script>
 

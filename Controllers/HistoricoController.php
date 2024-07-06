@@ -1,7 +1,7 @@
 <?php
 require_once "Models/Historico.php";
 require_once "Controllers/_Controller.php";
-require_once "Utils/PhpPDF.php";
+require_once "Utils/PdfGenerator.php";
 
 class HistoricoController extends _Controller
 {
@@ -48,7 +48,7 @@ class HistoricoController extends _Controller
 
         if (isset($_GET["action"]) && $_GET["action"] == "exportarTransferencias") {
             $transferencias = $this->historicoModel->getTransferencias($where);
-            $pdf = PhpPDF::arrayToPdf(
+            $pdf = PdfGenerator::generatePdf(
                 ['Produto', 'Quantidade', 'Origem', 'Destino', 'Data', 'Observação'],
                 array_map(function ($transferencia) {
                     return [
@@ -59,15 +59,10 @@ class HistoricoController extends _Controller
                         date("d/m/Y H:i", strtotime($transferencia["created_at"])),
                         $transferencia["observation"],
                     ];
-                }, $transferencias)
+                }, $transferencias),
+                "historicoTransferencias.pdf"
             );
 
-            header('Content-Type: application/pdf');
-            header('Content-Disposition: attachment; filename="transferencias.pdf"');
-            header('Cache-Control: max-age=0');
-
-            $pdf->save('php://output');
-            header('Location: /?');
             return;
         }
 

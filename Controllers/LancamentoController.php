@@ -269,7 +269,7 @@ class LancamentoController extends _Controller
                 }, $this->lancamentoModel->getTransferenciasPendentes(
                     "`transferences`.`ID` IN ($idsString)"
                 )),
-                "Transferências Pendentes"
+                "Transferências Pendentes.pdf"
             );
         }
     }
