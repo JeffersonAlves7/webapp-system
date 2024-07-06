@@ -33,7 +33,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
     </form>
 
     <!-- Tabela -->
-    <form method="get" class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+    <form method="get" class="table-responsive" style="max-height: 40vh; min-height: 150px; overflow-y: auto;">
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0;">
                 <tr>
