@@ -1,5 +1,6 @@
 <?php
 require_once "Controllers/_Controller.php";
+require_once "Utils/PhpPDF.php";
 require_once "Models/Relatorios.php";
 
 class RelatoriosController extends _Controller
@@ -98,6 +99,47 @@ class RelatoriosController extends _Controller
             "page" => $page,
             "pageCount" => $movimentacoes["pageCount"],
         ]);
+    }
+
+    public function exportarMovimentacoes()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            header("Content-Type: application/json");
+
+            $dataMovimentacao = $_POST["dataMovimentacao"];
+            $results = $this->relatorios->movimentacoes($dataMovimentacao);
+
+            $headers = [
+                "Código",
+                "Saídas",
+                "Percentual",
+                "Estoque Atual",
+            ];
+
+            $arrayData = [];
+            $movimentacoes = $results["dados"];
+
+            print_r($arrayData);
+
+            $pdf = PhpPDF::arrayToPdf(
+                ['Código', 'Saídas', 'Percentual', 'Estoque Atual'],
+                array_map(function ($movimentacao) {
+                    return [
+                        $movimentacao["CODIGO"],
+                        $movimentacao["SAIDAS"],
+                        $movimentacao["PERCENTUAL"] . "%",
+                        $movimentacao["ESTOQUE"]
+                    ];
+                }, $movimentacoes)
+            );
+
+            header("Content-Type: application/pdf");
+            header('Content-Disposition: attachment; filename="movimentacoes.pdf"');
+            header("Cache-Control: max-age=0");
+
+            $pdf->save("php://output");
+            return; 
+        }
     }
 
     public function comparativoDeVendas()

@@ -16,11 +16,13 @@ require "Components/Header.php"
             <h1 style="margin: 0;">Relatório de Movimentações</h1>
         </div>
 
-        <button class="btn btn-custom" id="btn-saidas-diarias">Exportar em massa</button>
+        <form action="/relatorios/exportarMovimentacoes" method="POST" id="formExportar">
+            <button class="btn btn-custom" id="btn-saidas-diarias" type="submit">Exportar em massa</button>
+        </form>
     </div>
 
     <form class="d-flex mb-3 gap-4" style="max-width: 400px;">
-        <input type="month" class="form-control" id="data-movimentacao" name="dataMovimentacao" value="<?= date("Y-m") ?>">
+        <input type="month" class="form-control" id="data-movimentacao" name="dataMovimentacao" value="<?= $_GET["dataMovimentacao"] ?? date("Y-m") ?>" required>
         <button class="btn btn-custom" id="btn-pesquisar">Pesquisar</button>
     </form>
 
@@ -108,6 +110,21 @@ require "Components/Header.php"
     <?php endif; ?>
 </main>
 
+<script>
+    const formExportar = document.getElementById("formExportar");
+    formExportar.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const dataMovimentacao = document.getElementById("data-movimentacao").value;
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "dataMovimentacao";
+        input.value = dataMovimentacao;
+
+        formExportar.appendChild(input);
+        formExportar.submit();
+    });
+</script>
 <?php
 $content = ob_get_clean();
 include "Components/Template.php";
