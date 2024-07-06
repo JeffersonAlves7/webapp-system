@@ -2,7 +2,7 @@
 require_once "Models/Lancamento.php";
 require_once "Models/Estoque.php";
 require_once "Controllers/_Controller.php";
-require_once "Utils/PhpPDF.php";
+require_once "Utils/PdfGenerator.php";
 
 class LancamentoController extends _Controller
 {
@@ -254,33 +254,23 @@ class LancamentoController extends _Controller
             $transferenciasIds = json_decode($_POST["transference-ids"]);
             $idsString = implode(",", $transferenciasIds);
 
-            $transferencias = $this->lancamentoModel->getTransferenciasPendentes(
-                "`transferences`.`ID` IN ($idsString)"
-            );
-            $data = array();
-
-            foreach ($transferencias as $transferencia) {
-                $data[] = array(
-                    $transferencia['code'],
-                    $transferencia['importer'],
-                    $transferencia['description'],
-                    $transferencia['quantity'],
-                    $transferencia['from_stock_name'],
-                    $transferencia['to_stock_name'],
-                    $transferencia['observation']
-                );
-            }
-
-            $pdf = PhpPDF::arrayToPdf(
+            PdfGenerator::generatePdf(
                 array('Produto', 'Importadora', 'Descrição', 'Quantidade', 'Origem', 'Destino', 'Observação'),
-                $data
+                array_map(function ($transferencia) {
+                    return [
+                        $transferencia['code'],
+                        $transferencia['importer'],
+                        $transferencia['description'],
+                        $transferencia['quantity'],
+                        $transferencia['from_stock_name'],
+                        $transferencia['to_stock_name'],
+                        $transferencia['observation']
+                    ];
+                }, $this->lancamentoModel->getTransferenciasPendentes(
+                    "`transferences`.`ID` IN ($idsString)"
+                )),
+                "Transferências Pendentes"
             );
-
-            header('Content-Type: application/pdf');
-            header('Content-Disposition: attachment; filename="relatorio.pdf"');
-            header('Cache-Control: max-age=0');
-
-            $pdf->save('php://output');
         }
     }
 
