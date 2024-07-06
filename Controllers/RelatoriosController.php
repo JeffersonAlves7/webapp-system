@@ -74,7 +74,7 @@ class RelatoriosController extends _Controller
         // Exemplo: ?dataMovimentacao=2021-09
         $dataMovimentacao = null;
         $page = 1;
-        $limit = 30;
+        $limit = 7;
 
         if (isset($_GET["dataMovimentacao"]) && !empty($_GET["dataMovimentacao"])) {
             $dataMovimentacao = $_GET["dataMovimentacao"];
@@ -86,16 +86,17 @@ class RelatoriosController extends _Controller
             $page = $_GET["page"];
         }
 
-        $dados = $this->relatorios->movimentacoes(
+        $movimentacoes = $this->relatorios->movimentacoes(
             $dataMovimentacao,
             $page,
             $limit
         );
 
-        $this->view("Relatorios/movimentacoes", [
-            "dados" => $dados,
-            "page" => $page,
 
+        $this->view("Relatorios/movimentacoes", [
+            "dados" => $movimentacoes["dados"],
+            "page" => $page,
+            "pageCount" => $movimentacoes["pageCount"],
         ]);
     }
 

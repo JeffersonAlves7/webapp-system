@@ -7,8 +7,6 @@ require "Components/Header.php"
 
 
 <main>
-
-
     <div class="d-flex w-100 justify-content-between mt-4 mb-3">
         <div class="d-flex gap-4 align-items-center">
             <button id="go-back" class="btn btn-custom" data-url="/relatorios">
@@ -43,7 +41,6 @@ require "Components/Header.php"
         </div>
     </div>
 
-
     <div class="table-responsive" style="max-height: 60vh; min-height: 100px">
         <table class="table table-striped table-hover">
             <thead>
@@ -55,9 +52,11 @@ require "Components/Header.php"
                 </tr>
             </thead>
             <tbody>
-                <?php
-                while ($row = $dados->fetch_assoc()) {
-                ?>
+                <?php if (empty($dados)) : ?>
+                    <tr>
+                        <td colspan="4" class="text-center">Nenhum dado encontrado</td>
+                    <?php else : ?>
+                        <?php foreach ($dados as $row) : ?>
                     <tr>
                         <td><?= $row["CODIGO"] ?></td>
                         <td><?= $row["SAIDAS"] ?></td>
@@ -68,9 +67,8 @@ require "Components/Header.php"
                         </td>
                         <td><?= $row["ESTOQUE"] ?></td>
                     </tr>
-                <?php
-                }
-                ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </table>
     </div>
 
@@ -85,13 +83,13 @@ require "Components/Header.php"
         $prevPage = $currentPage - 1;
         $nextPage = $currentPage + 1;
         $isPrevDisabled = !isset($_GET["page"]) || intval($_GET["page"]) <= 1;
-        $isNextDisabled = !isset($transacoes) || !$transacoes->num_rows > 0 || $currentPage >= $pageCount;
+        $isNextDisabled = !isset($dados) || !(count($dados) > 0) || $currentPage >= $pageCount;
         ?>
 
         <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
             <form method="GET" class="d-flex align-items-center">
                 <input type="hidden" name="page" value="<?= $prevPage ?>">
-                <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
+                <input type="hidden" name="dataMovimentacao" value="<?= $_GET["dataMovimentacao"] ?? "" ?>">
                 <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isPrevDisabled) ?> title="Voltar">
                     <i class="bi bi-arrow-left"></i>
                 </button>
@@ -101,7 +99,7 @@ require "Components/Header.php"
 
             <form method="GET">
                 <input type="hidden" name="page" value="<?= $nextPage ?>">
-                <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
+                <input type="hidden" name="dataMovimentacao" value="<?= $_GET["dataMovimentacao"] ?? "" ?>">
                 <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isNextDisabled) ?> title="Avançar">
                     <i class="bi bi-arrow-right"></i>
                 </button>

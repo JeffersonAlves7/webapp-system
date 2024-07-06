@@ -140,14 +140,55 @@ class Relatorios extends Model
                 SAIDAS DESC
             LIMIT ? OFFSET ?;";
 
+        $sqlTotalPages = "SELECT COUNT(*) as total
+                FROM products p 
+            INNER JOIN 
+                transactions t ON t.product_ID = p.ID 
+            INNER JOIN (
+                SELECT 
+                    product_ID, 
+                    SUM(quantity) + SUM(quantity_in_reserve) AS total_stock
+                FROM 
+                    quantity_in_stock
+                GROUP BY 
+                    product_ID
+            ) qs ON qs.product_ID = p.ID
+            WHERE 
+                t.type_ID = 2 
+                AND t.created_at >= CONCAT(?, '-01 00:00:00') 
+                AND t.created_at < CONCAT(DATE_ADD(CONCAT(?, '-01'), INTERVAL 1 MONTH), ' 00:00:00')
+            GROUP BY 
+                p.ID;";
+
+        $stmtTotalPages = $this->db->prepare($sqlTotalPages);
+        $stmtTotalPages->bind_param("ss", $dataMovimentacao, $dataMovimentacao);
+        $stmtTotalPages->execute();
+
+        $resultTotalPages = $stmtTotalPages->get_result();
 
         $stmtMain = $this->db->prepare($sqlMain);
         $stmtMain->bind_param("dssii", $rowTotal['total'], $dataMovimentacao, $dataMovimentacao, $limit, $offset);
         $stmtMain->execute();
 
-        $results = $stmtMain->get_result();
+        // return array of results
+        $resultMain = $stmtMain->get_result();
 
-        return $results;
+        if ($resultMain->num_rows == 0) {
+            $dados = [];
+        } else {
+            $dados = $resultMain->fetch_all(MYSQLI_ASSOC);
+        }
+        $resultMain->close();
+
+        $rowTotalPages = $resultTotalPages->fetch_assoc();
+        $pageCount = ceil($rowTotalPages['total'] / $limit);
+
+        $resultTotalPages->close();
+
+        return [
+            "dados" => $dados,
+            "pageCount" => $pageCount
+        ];
     }
 
     public function comparativoDeVendas($meses)
