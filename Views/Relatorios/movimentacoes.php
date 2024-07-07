@@ -5,7 +5,6 @@ ob_start();
 require "Components/Header.php"
 ?>
 
-
 <main>
     <div class="d-flex w-100 justify-content-between mt-4 mb-3">
         <div class="d-flex gap-4 align-items-center">
