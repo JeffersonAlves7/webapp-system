@@ -46,6 +46,49 @@ class RelatoriosController extends _Controller
         $this->view("Relatorios/saidasDiarias", ["dados" => $dados]);
     }
 
+    public function exportarSaidasDiarias()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            header("Content-Type: application/json");
+
+            $dataSaida = $_POST["dataSaida"];
+            $cliente = $_POST["cliente"];
+
+            $where = "1";
+
+            if (!empty($cliente)) {
+                $where = "t.client_name LIKE '%$cliente%'";
+            }
+
+            $dados = $this->relatorios->saidasDiarias($where, $dataSaida);
+            $dados = $dados->fetch_all(MYSQLI_ASSOC);
+
+            if (empty($dados)) {
+                echo json_encode(["erro" => "Nenhum dado encontrado"]);
+                exit;
+            }
+
+            $pdf = PdfGenerator::generatePdf(
+                ['Código', 'Quantidade', 'Operação', 'Cliente', 'Operador', 'Origem', 'Data', 'Observação'],
+                array_map(function ($saida) {
+                    return [
+                        $saida["code"],
+                        $saida["QUANTIDADE"],
+                        $saida["TIPO"],
+                        $saida["CLIENTE"],
+                        $saida["OPERADOR"],
+                        $saida["ORIGEM"],
+                        $saida["DATA"],
+                        $saida["OBSERVACAO"]
+                    ];
+                }, $dados),
+                "SaidasDiarias-$dataSaida.pdf"
+            );
+
+            return;
+        }
+    }
+
     public function estoqueMinimo()
     {
         $page = 1;

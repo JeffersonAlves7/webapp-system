@@ -5,7 +5,6 @@ ob_start();
 require "Components/Header.php"
 ?>
 
-
 <main>
     <div class="d-flex w-100 justify-content-between mt-4 mb-3">
         <div class="d-flex gap-4 align-items-center">
@@ -16,7 +15,9 @@ require "Components/Header.php"
             <h1 style="margin: 0;">Relatório de Saídas Diárias</h1>
         </div>
 
-        <button class="btn btn-custom" id="btn-saidas-diarias">Exportar em massa</button>
+        <form action="/relatorios/exportarSaidasDiarias" method="POST" id="formExportar" target="_blank">
+            <button class="btn btn-custom" id="btn-saidas-diarias" type="submit">Exportar em massa</button>
+        </form>
     </div>
 
     <form class="d-flex mb-3 gap-4" style="max-width: 500px;">
@@ -57,6 +58,36 @@ require "Components/Header.php"
         </table>
     </div>
 </main>
+
+<script>
+    const formExportar = document.getElementById("formExportar");
+    const dataSaida = document.getElementById("data-saida");
+    const pesquisaCliente = document.getElementById("pesquisa-cliente");
+
+    formExportar.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        if (!formExportar.querySelector("input[name='dataSaida']")) {
+            const dataSaidaInput = document.createElement("input");
+            dataSaidaInput.type = "hidden";
+            dataSaidaInput.name = "dataSaida";
+            dataSaidaInput.value = dataSaida.value;
+
+            formExportar.appendChild(dataSaidaInput);
+        }
+
+        if (!formExportar.querySelector("input[name='cliente']")) {
+            const clienteInput = document.createElement("input");
+            clienteInput.type = "hidden";
+            clienteInput.name = "cliente";
+            clienteInput.value = pesquisaCliente.value;
+
+            formExportar.appendChild(clienteInput);
+        }
+
+        formExportar.submit();
+    });
+</script>
 
 <?php
 $content = ob_get_clean();
