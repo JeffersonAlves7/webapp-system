@@ -16,7 +16,7 @@ require "Components/Header.php"
             <h1 style="margin: 0;">Relatório de Entradas dos Últimos 12 meses</h1>
         </div>
 
-        <button class="btn btn-custom" id="btn-saidas-diarias">Exportar em massa</button>
+        <!-- <button class="btn btn-custom" id="btn-saidas-diarias">Exportar em massa</button> -->
     </div>
 
     <div class="d-flex gap-4" id="chartSpace">
