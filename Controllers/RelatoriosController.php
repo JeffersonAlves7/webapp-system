@@ -93,14 +93,14 @@ class RelatoriosController extends _Controller
     {
         $page = 1;
         $limit = 30;
-        $porcentagem = 0.50;
+        $porcentagem = 0.20;
 
         if (isset($_GET["page"]) && !empty($_GET["page"])) {
             $page = $_GET["page"];
         }
 
-        if (isset($_COOKIE["porcentagemParaAlerta"]) && !empty($_GET["porcentagemParaAlerta"])) {
-            $porcentagem = $_COOKIE["porcentagemParaAlerta"];
+        if (isset($_COOKIE["alerta"]) && !empty($_COOKIE["alerta"])) {
+            $porcentagem = $_COOKIE["alerta"];
         }
 
         $dados = $this->relatorios->estoqueMinimo($page, $limit, $porcentagem);

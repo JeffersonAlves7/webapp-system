@@ -22,7 +22,7 @@ require "Components/Header.php"
 
     <p>
         Porcentagem de alerta: <span id="porcentagem-alerta" style="font-weight: bold;">
-            <?= isset($_COOKIE["porcentagemParaAlerta"]) && !empty($_GET["porcentagemParaAlerta"]) ? $_GET["porcentagemParaAlerta"] : "50" ?> %
+            <?= isset($_COOKIE["alerta"]) && !empty($_COOKIE["alerta"]) ? $_COOKIE["alerta"] : "20" ?> %
         </span>
     </p>
 
