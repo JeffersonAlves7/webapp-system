@@ -8,7 +8,7 @@ require "Components/Header.php";
 
 <main>
     <div class="d-flex gap-4 align-items-center">
-        <button id="go-back" class="btn btn-custom">
+        <button id="go-back" class="btn btn-custom" data-url="/painel">
             <i class="bi bi-arrow-left"></i>
         </button>
 
