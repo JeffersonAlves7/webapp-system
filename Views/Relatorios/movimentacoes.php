@@ -112,16 +112,20 @@ require "Components/Header.php"
 
 <script>
     const formExportar = document.getElementById("formExportar");
+    const dataMovimentacao = document.getElementById("data-movimentacao");
+
     formExportar.addEventListener("submit", (event) => {
         event.preventDefault();
 
-        const dataMovimentacao = document.getElementById("data-movimentacao").value;
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "dataMovimentacao";
-        input.value = dataMovimentacao;
+        if (!formExportar.querySelector("input[name='dataMovimentacao']")) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "dataMovimentacao";
+            input.value = dataMovimentacao.value;
 
-        formExportar.appendChild(input);
+            formExportar.appendChild(input);
+        }
+
         formExportar.submit();
     });
 </script>
