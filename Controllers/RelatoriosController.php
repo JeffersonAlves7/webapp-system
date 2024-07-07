@@ -113,6 +113,44 @@ class RelatoriosController extends _Controller
         ]);
     }
 
+    public function exportarEstoqueMinimo()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            header("Content-Type: application/json");
+
+            $page = 1;
+            $limit = 1000000;
+            $porcentagem = 0.50;
+
+            if (isset($_COOKIE["porcentagemParaAlerta"]) && !empty($_GET["porcentagemParaAlerta"])) {
+                $porcentagem = $_COOKIE["porcentagemParaAlerta"];
+            }
+
+            $dados = $this->relatorios->estoqueMinimo($page, $limit, $porcentagem);
+            $dados = $dados["dados"];
+
+            if (empty($dados)) {
+                echo json_encode(["erro" => "Nenhum dado encontrado"]);
+                exit;
+            }
+
+            $pdf = PdfGenerator::generatePdf(
+                ['Código', 'Quantidade de Entrada', 'Saldo Atual', 'Quantidade de Alerta'],
+                array_map(function ($estoque) {
+                    return [
+                        $estoque["CODIGO"],
+                        $estoque["ENTRADA"],
+                        $estoque["SALDO"],
+                        $estoque["QUANTIDADE DE ALERTA"]
+                    ];
+                }, $dados),
+                "EstoqueMinimo.pdf"
+            );
+
+            return;
+        }
+    }
+
     public function movimentacoes()
     {
         // Exemplo: ?dataMovimentacao=2021-09
