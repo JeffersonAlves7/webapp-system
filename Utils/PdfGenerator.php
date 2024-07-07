@@ -29,7 +29,8 @@ class PdfGenerator
         foreach ($data as $row) {
             $html .= '<tr>';
             foreach ($row as $cell) {
-                $html .= '<td>' . htmlspecialchars($cell) . '</td>';
+                $cell_value = empty($cell) ? 'N/A' : htmlspecialchars($cell);
+                $html .= '<td>' . $cell_value . '</td>';
             }
             $html .= '</tr>';
         }
