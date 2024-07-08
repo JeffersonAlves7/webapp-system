@@ -292,6 +292,39 @@ class LancamentoController extends _Controller
         ]);
     }
 
+    public function exportarConferirTransferencias()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $dados = $this->lancamentoModel->getTransferenciasPendentes();
+
+            if(empty($dados['transferencias'])) {
+                $_SESSION['mensagem_erro'] = "Não há transferências pendentes para exportar!";
+                header("Location: /lancamento/conferirTransferencias");
+                exit();
+            }
+
+            $transferencias = $dados['transferencias'];
+
+
+
+            PhpExporter::exportToExcel(
+                array('Produto', 'Importadora', 'Descrição', 'Quantidade', 'Origem', 'Destino', 'Observação'),
+                array_map(function ($transferencia) {
+                    return [
+                        $transferencia['code'],
+                        $transferencia['importer'],
+                        $transferencia['description'],
+                        $transferencia['quantity'],
+                        $transferencia['from_stock_name'],
+                        $transferencia['to_stock_name'],
+                        $transferencia['observation']
+                    ];
+                }, $transferencias),
+                "Transferências Pendentes.pdf"
+            );
+        }
+    }
+
     public function confirmarTransferencias()
     {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {

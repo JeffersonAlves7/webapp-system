@@ -13,7 +13,7 @@ require "Components/Header.php";
 
         <h1 class="mt-4 mb-3"><?= $pageTitle ?> - Transferências</h1>
     </div>
-    
+
     <form class="d-flex gap-4 my-4" id="form-filtro">
         <div class="input-group">
             <label for="data-inicio" class="input-group-text">Data de início</label>
@@ -33,7 +33,7 @@ require "Components/Header.php";
         <button type="submit" class="btn btn-custom">Pesquisar</button>
 
         <button type="button" class="btn btn-custom" id="exportar">
-            Exportar
+            Exportar em Massa
         </button>
     </form>
 

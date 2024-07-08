@@ -6,12 +6,25 @@ require "Components/Header.php";
 ?>
 
 <main class="container position-relative">
-    <div class="d-flex gap-4 align-items-center">
-        <button id="go-back" class="btn btn-custom">
-            <i class="bi bi-arrow-left"></i>
-        </button>
+    <div class="d-flex w-100 justify-content-between mt-4 mb-3">
+        <div class="d-flex gap-4 align-items-center">
+            <button id="go-back" class="btn btn-custom" data-url="/lancamento/transferencia">
+                <i class="bi bi-arrow-left"></i>
+            </button>
 
-        <h1 class="mt-4 mb-3">Conferir transferências</h1>
+            <h1 class="mt-4 mb-3">Conferir transferências</h1>
+        </div>
+
+        <form action="/lancamento/exportarConferirTransferencias" method="POST" id="form-export" target="_blank">
+            <button type="submit" class="btn btn-success fill-button">
+                Exportar
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-pdf" viewBox="0 0 16 16">
+                    <path d="M6.5 0a.5.5 0 0 1 .5.5V3h-1V.5a.5.5 0 0 1 .5-.5z" />
+                    <path fill-rule="evenodd" d="M0 1.5A1.5 1.5 0 0 1 1.5 0h8.793a.5.5 0 0 1 .354.146l2.561 2.561a.5.5 0 0 1 .146.353V14.5a1.5 1.5 0 0 1-1.5 1.5H1.5A1.5 1.5 0 0 1 0 14.5V1.5z" />
+                    <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h8.793a.5.5 0 0 1 .354.146l2.561 2.561a.5.5 0 0 1 .146.353V14.5a1.5 1.5 0 0 1-1.5 1.5H1.5A1.5 1.5 0 0 1 0 14.5V1.5z" />
+                </svg>
+            </button>
+        </form>
     </div>
 
     <?php require "Components/StatusMessage.php";
