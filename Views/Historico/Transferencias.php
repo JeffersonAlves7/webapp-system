@@ -14,26 +14,32 @@ require "Components/Header.php";
         <h1 class="mt-4 mb-3"><?= $pageTitle ?> - Transferências</h1>
     </div>
 
-    <form class="d-flex gap-4 my-4" id="form-filtro">
-        <div class="input-group">
+    <!-- Adicionando uma classe adicional para controle de responsividade -->
+    <form class="d-flex flex-wrap gap-4 my-4" id="form-filtro">
+        <!-- Campos de entrada -->
+
+        <div class="input-group" style="max-width: 300px;">
             <label for="data-inicio" class="input-group-text">Data de início</label>
             <input type="date" id="data-inicio" class="form-control" name="data-inicio" value="<?= $_GET["data-inicio"] ?? "" ?>">
         </div>
 
-        <div class="input-group">
+        <div class="input-group" style="max-width: 300px;">
             <label for="data-fim" class="input-group-text">Data de fim</label>
             <input type="date" id="data-fim" class="form-control" name="data-fim" value="<?= $_GET["data-fim"] ?? "" ?>">
         </div>
 
-        <div class="input-group">
+        <div class="input-group" style="max-width: 300px;">
             <label for="produto" class="input-group-text">Produto</label>
             <input type="text" id="produto" class="form-control" name="produto" value="<?= $_GET["code"] ?? "" ?>">
         </div>
 
-        <button type="submit" class="btn btn-custom">Pesquisar</button>
+        <!-- Botões, agora com ícones e texto ajustado -->
+        <button type="submit" class="btn btn-custom" title="Pesquisar">
+            <i class="bi bi-search"></i>
+        </button>
 
         <button type="button" class="btn btn-custom" id="exportar">
-            Exportar em Massa
+            <i class="bi bi-file-earmark-excel"></i> Exportar
         </button>
     </form>
 
@@ -74,6 +80,7 @@ require "Components/Header.php";
 <script>
     const exportar = document.getElementById("exportar");
     exportar.addEventListener("click", () => {
+
         const dataInicio = document.getElementById("data-inicio").value;
         const dataFim = document.getElementById("data-fim").value;
         const produto = document.getElementById("produto").value;
