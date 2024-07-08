@@ -252,7 +252,7 @@ require "Components/Header.php";
 //                     </div>
 //                     <div class="modal-footer">
 //                         <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-//                         <button type="button" class="btn btn-primary" onclick="confirmNewStock()">Salvar</button>
+//                         <button type="button" class="btn btn-custom" onclick="confirmNewStock()">Salvar</button>
 //                     </div>
 //                 </form>
 //             </div>

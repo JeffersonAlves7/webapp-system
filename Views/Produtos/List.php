@@ -180,7 +180,7 @@ ob_start();
                     </div>
                     <div class="modal-footer">
                         <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        <button type="submit" class="btn btn-custom">Salvar</button>
                     </div>
                 </form>
             </div>
@@ -226,7 +226,7 @@ ob_start();
                     </div>
                     <div class="modal-footer">
                         <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        <button type="submit" class="btn btn-custom">Salvar</button>
                     </div>
                 </form>
             </div>

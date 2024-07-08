@@ -95,7 +95,7 @@ ob_start();
             <input type="hidden" name="client" value="<?= isset($_GET["client"]) ? $_GET["client"] : "" ?>">
             <input type="hidden" name="code" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
             <input type="hidden" name="page" value="<?= ($_GET['page'] ?? 1) - 1; ?>">
-            <button class="btn btn-primary" <?php if (!isset($_GET["page"]) || intval($_GET["page"]) <= 1) {
+            <button class="btn btn-custom" <?php if (!isset($_GET["page"]) || intval($_GET["page"]) <= 1) {
                                                 echo "disabled";
                                             } ?>>Voltar</button>
         </form>
@@ -105,7 +105,7 @@ ob_start();
             <input type="hidden" name="client" value="<?= isset($_GET["client"]) ? $_GET["client"] : "" ?>">
             <input type="hidden" name="code" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
             <input type="hidden" name="page" value="<?= ($_GET['page'] ?? 1) + 1; ?>">
-            <button class="btn btn-primary" <?php if (!isset($reserves) || !$reserves->num_rows > 0) {
+            <button class="btn btn-custom" <?php if (!isset($reserves) || !$reserves->num_rows > 0) {
                                                 echo "disabled";
                                             } ?>>Próxima</button>
         </form>

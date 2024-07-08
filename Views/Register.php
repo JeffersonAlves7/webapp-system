@@ -19,7 +19,7 @@ ob_start();
             <input type="password" name="password" id="user-password" class="form-control" placeholder="******" required>
         </div>
         <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
+            <button type="submit" class="btn btn-custom btn-lg">Entrar</button>
         </div>
         <p class="mt-3 text-center">Já possuí conta? <a href="/auth/login">Faça seu login!</a></p>
     </form>

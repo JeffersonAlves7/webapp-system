@@ -101,7 +101,7 @@ require "Components/Header.php";
     <?php if (!empty($transferencias)) : ?>
         <div class="d-flex gap-4">
             <form action="/lancamento/confirmarTransferencias" method="post" id="form-confirm">
-                <button type="submit" class="btn btn-primary">Confirmar</button>
+                <button type="submit" class="btn btn-custom">Confirmar</button>
             </form>
             <form action="/lancamento/cancelarTransferencias" method="post" id="form-cancel">
                 <button type="submit" class="btn btn-danger">Cancelar</button>

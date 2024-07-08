@@ -36,7 +36,7 @@ require "Components/Header.php";
                         <td>
                             <div class="d-flex gap-2">
                                 <?php if ($group["ID"] == 1) : ?>
-                                    <button class="btn btn-primary" disabled>
+                                    <button class="btn btn-custom" disabled>
                                         <i class="bi bi-shield"></i>
                                     </button>
                                 <?php else : ?>
@@ -71,7 +71,7 @@ require "Components/Header.php";
                         <label for="groupName" class="form-label">Nome do grupo</label>
                         <input type="text" class="form-control" id="groupName" name="groupName" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="submit" class="btn btn-custom">Salvar</button>
                 </form>
             </div>
         </div>
@@ -130,7 +130,7 @@ require "Components/Header.php";
                         </table>
                     </div>
                     <input type="hidden" name="group_ID" id="group_ID">
-                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <button type="submit" class="btn btn-custom">Salvar</button>
                 </form>
             </div>
         </div>
