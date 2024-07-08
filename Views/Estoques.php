@@ -67,7 +67,7 @@ require "Components/Header.php";
     <!-- Tabela -->
     <div class="table-responsive" style="max-height: 55vh; min-height: 200px">
         <table class="table table-striped">
-            <thead class="thead-dark" style="position: sticky; top: 0; z-index">
+            <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000">
                 <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"] || $_GET["estoque"] == 1) : ?>
                     <tr>
                         <th>

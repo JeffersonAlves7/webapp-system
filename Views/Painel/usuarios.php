@@ -16,7 +16,7 @@ require "Components/Header.php";
     </div>
 
     <table class="table table-striped">
-        <thead class="thead-dark" style="position: sticky; top: 0; z-index">
+        <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000">
             <tr>
                 <th>Nome</th>
                 <th>Email</th>

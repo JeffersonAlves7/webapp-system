@@ -48,7 +48,7 @@ require "Components/Header.php";
 
     <div class="table-responsive">
         <table class="table table-striped">
-            <thead class="thead-dark" style="position: sticky; top: 0; z-index">
+            <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000">
                 <tr>
                     <th>
                         <input type="checkbox" id="selecionar-todos">
