@@ -28,7 +28,7 @@ require "Components/Header.php";
 
     <div class="table-responsive" style="max-height: 60vh; min-height: 100px">
         <table class="table table-striped" style="min-width:max-content">
-            <thead class="thead-dark" style="position: sticky; top: 0;">
+            <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000;">
                 <tr>
                     <th>
                         <label>

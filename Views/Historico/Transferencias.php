@@ -44,7 +44,7 @@ require "Components/Header.php";
     </form>
 
     <table class="table table-striped">
-        <thead class="thead-dark" style="position: sticky; top: 0;">
+        <thead class="thead-dark" style="position: sticky; top: 0; z-index">
             <tr>
                 <th>Produto</th>
                 <th>Quantidade</th>

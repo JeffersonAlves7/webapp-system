@@ -14,7 +14,7 @@ require "Components/Header.php";
 
     <div class="table-responsive" style="max-height: 60vh; min-height: 100px">
         <table class="table table-striped" style="min-width:max-content">
-            <thead class="thead-dark" style="position: sticky; top: 0;">
+            <thead class="thead-dark" style="position: sticky; top: 0; z-index">
                 <tr>
                     <th>Código</th>
                     <th>Importadora</th>
@@ -79,9 +79,9 @@ require "Components/Header.php";
 
                                         if ($row['arrival_date']) {
                                             if ($days_late > 0) {
-                                                echo "Chegou dia " . $row['arrival_date'] . " " . $days_late . " dia(s) atrasado.";
+                                                echo "Chegou dia " . $row['arrival_date'] . " - <b>" . $days_late . " dia(s)</b> atrasado.";
                                             } else {
-                                                echo "Chegou dia " . $row['arrival_date'] . " " . abs($days_late) . " dia(s) adiantado.";
+                                                echo "Chegou dia " . $row['arrival_date'] . " - <b>" . abs($days_late) . " dia(s)</b> adiantado.";
                                             }
                                         } else {
                                             if ($days_late == 0) {

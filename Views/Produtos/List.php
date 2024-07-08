@@ -16,7 +16,7 @@ ob_start();
 
     <form method="get" class="table-responsive" style="max-height: 400px; overflow-y: auto;">
         <table class="table table-striped">
-            <thead class="thead-dark" style="position: sticky; top: 0;">
+            <thead class="thead-dark" style="position: sticky; top: 0; z-index">
                 <tr>
                     <th><i class="bi bi-tag"></i> Código</th>
                     <th><i class="bi bi-barcode"></i> EAN</th>

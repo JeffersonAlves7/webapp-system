@@ -39,7 +39,7 @@ ob_start();
         <input type="hidden" name="estoque" value="<?= isset($_GET["estoque"]) ? $_GET["estoque"] : "" ?>">
 
         <table class="table table-striped">
-            <thead class="thead-dark" style="position: sticky; top: 0;">
+            <thead class="thead-dark" style="position: sticky; top: 0; z-index">
                 <tr>
                     <th colspan="2"><input type="search" class="form-control" name="code" placeholder="Filtrar por código" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
                     <th colspan="2"><input type="search" class="form-control" name="client" placeholder="Filtrar por cliente" value="<?= isset($_GET["client"]) ? $_GET["client"] : "" ?>"></th>

@@ -22,7 +22,7 @@ require "Components/Header.php";
 
     <div class="table-responsive" style="max-height: 60vh; min-height: 100px">
         <table class="table table-striped" id="table-groups">
-            <thead class="thead-dark" style="position: sticky; top: 0;">
+            <thead class="thead-dark" style="position: sticky; top: 0; z-index">
                 <tr>
                     <th>Nome</th>
                     <th>Ações</th>

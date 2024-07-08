@@ -99,7 +99,7 @@ ob_start();
 
     <div class="table-responsive" style="height: 50vh; min-height: 100px">
         <table class="table table-striped">
-            <thead class="thead-dark" style="position: sticky; top: 0;">
+            <thead class="thead-dark" style="position: sticky; top: 0; z-index">
                 <tr>
                     <th>Tipo</th>
                     <th>Quantidade</th>
