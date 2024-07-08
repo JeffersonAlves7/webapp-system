@@ -76,14 +76,12 @@ class ReservasController extends _Controller
             exit(0);
         }
 
-        $this->verifyWritePermission();
         $this->verifyDeletePermission();
 
         $ID = $_POST["ID"];
 
-        echo "Reserve cancelada com sucesso!";
         $this->reservaModel->delete($ID);
-        header("Refresh: 1; url=/reservas");
+        header("Location: /reservas");
     }
 
     public function confirmar()
@@ -96,8 +94,7 @@ class ReservasController extends _Controller
 
         $ID = $_POST["ID"];
 
-        echo "Reserve confirmada com sucesso!";
         $this->reservaModel->confirm($ID);
-        header("Refresh: 1; url=/reservas");
+        header("Location: /reservas");
     }
 }
