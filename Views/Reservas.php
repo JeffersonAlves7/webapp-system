@@ -89,27 +89,38 @@ ob_start();
         <button type="submit" hidden></button>
     </form>
 
-    <div class="d-flex justify-content-between mt-3">
-        <form method="GET">
-            <input type="hidden" name="estoque" value="<?= isset($_GET["estoque"]) ? $_GET["estoque"] : "" ?>">
-            <input type="hidden" name="client" value="<?= isset($_GET["client"]) ? $_GET["client"] : "" ?>">
-            <input type="hidden" name="code" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
-            <input type="hidden" name="page" value="<?= ($_GET['page'] ?? 1) - 1; ?>">
-            <button class="btn btn-custom" <?php if (!isset($_GET["page"]) || intval($_GET["page"]) <= 1) {
-                                                echo "disabled";
-                                            } ?>>Voltar</button>
-        </form>
+    <?php if ($pageCount > 1) : ?>
+        <?php
+        function isButtonDisabled($condition)
+        {
+            return $condition ? 'disabled' : '';
+        }
 
-        <form method="GET">
-            <input type="hidden" name="estoque" value="<?= isset($_GET["estoque"]) ? $_GET["estoque"] : "" ?>">
-            <input type="hidden" name="client" value="<?= isset($_GET["client"]) ? $_GET["client"] : "" ?>">
-            <input type="hidden" name="code" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
-            <input type="hidden" name="page" value="<?= ($_GET['page'] ?? 1) + 1; ?>">
-            <button class="btn btn-custom" <?php if (!isset($reserves) || !$reserves->num_rows > 0) {
-                                                echo "disabled";
-                                            } ?>>Próxima</button>
-        </form>
-    </div>
+        $currentPage = $_GET['page'] ?? 1;
+        $prevPage = $currentPage - 1;
+        $nextPage = $currentPage + 1;
+        $isPrevDisabled = !isset($_GET["page"]) || intval($_GET["page"]) <= 1;
+        $isNextDisabled = !isset($reservas) || $reservas->num_rows <= 0 || $currentPage >= $pageCount;
+        ?>
+
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
+            <form method="GET" class="d-flex align-items-center">
+                <input type="hidden" name="page" value="<?= $prevPage ?>">
+                <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isPrevDisabled) ?> title="Voltar">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+            </form>
+
+            <span class="text-center">Página <?= $currentPage ?> de <?= $pageCount ?></span>
+
+            <form method="GET">
+                <input type="hidden" name="page" value="<?= $nextPage ?>">
+                <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isNextDisabled) ?> title="Avançar">
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    <?php endif; ?>
 </main>
 
 <!-- Modal para confirmar cancelamento da reserva -->

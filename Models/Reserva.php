@@ -35,7 +35,14 @@ class Reserva extends Model
 
         $reserves = $this->db->query($sql);
 
-        return $reserves;
+        $pageCountSql = "SELECT COUNT(*) AS count FROM reserves WHERE $where";
+        $pageCount = $this->db->query($pageCountSql)->fetch_assoc()['count'];
+        $pageCount = ceil($pageCount / $limit);
+
+        return [
+            "reserves" => $reserves,
+            "pageCount" => $pageCount
+        ];
     }
 
     public function delete($id)

@@ -213,7 +213,6 @@ class ProdutosController extends _Controller
             header("Location: /");
         }
 
-
         $stocks = $this->estoquesModel->getAll();
         $produto = $result->fetch_assoc();
         $quantidade_em_estoque = $this->productModel->quantityInStockById($id);

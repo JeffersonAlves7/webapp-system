@@ -65,9 +65,13 @@ class ReservasController extends _Controller
         }
 
         $stocks = $this->estoquesModel->getAll();
-        $reserves = $this->reservaModel->getAll($page, 50, $where);
+        $dados = $this->reservaModel->getAll($page, 50, $where);
 
-        include_once "Views/Reservas.php";
+        $this->view("Reservas", [
+            "stocks" => $stocks,
+            "reserves" => $dados["reserves"],
+            "pageCount" => $dados["pageCount"]
+        ]);
     }
 
     public function cancelar()

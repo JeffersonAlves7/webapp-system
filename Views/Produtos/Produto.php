@@ -15,8 +15,6 @@ ob_start();
         $quantidade_reservada += $dados["quantity_in_reserve"];
     }
 
-    $disponivel_para_venda = $quantidade_total - $quantidade_reservada;
-
     $quantidade_em_estoque->data_seek(0);
 
     function generateDescription($description)
@@ -43,40 +41,61 @@ ob_start();
         <h1 class="mt-4 mb-3"><?= $produto["code"] ?> - <?= generateDescription($produto['description']) ?></h1>
     </div>
 
-    <div class="" style="max-width: 500px;">
-        <table>
+    <!-- Botão para minimizar/maximizar a tabela -->
+    <div class="d-flex gap-4 align-items-center">
+        <button id="toggleTableBtn" class="btn btn-custom mb-2">
+            <i class="bi bi-arrows-angle-contract"></i> Minimizar
+        </button>
+        <p>Resumo do estoque</p>
+    </div>
+
+    <div class="table-responsive" id="stockTable" style="max-width: 600px; display: table;">
+        <table class="table table-striped table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Estoque</th>
+                    <th>Disponível</th>
+                    <th>Reservado</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
             <tbody>
                 <?php while ($dados = $quantidade_em_estoque->fetch_assoc()) : ?>
                     <tr>
-                        <td><?= $dados["stock_name"]; ?> total: <?= $dados["quantity"]; ?></td>
-                        <td><?= $dados["stock_name"]; ?> reservado: <?= $dados["quantity_in_reserve"]; ?></td>
+                        <td><?= $dados["stock_name"]; ?></td>
+                        <td><?= $dados["quantity"]; ?></td>
+                        <td><?= $dados["quantity_in_reserve"]; ?></td>
+                        <td><?= $dados["quantity"] + $dados["quantity_in_reserve"]; ?></td>
                     </tr>
                 <?php endwhile; ?>
-                <tr>
-                    <td>Total Disponível: <?= $quantidade_total; ?></td>
-                    <td>Total Reservado: <?= $quantidade_reservada; ?></td>
+                <tr class="font-weight-bold">
+                    <td>Total</td>
+                    <td><?= $quantidade_total; ?></td>
+                    <td><?= $quantidade_reservada; ?></td>
+                    <td><?= $quantidade_total + $quantidade_reservada; ?></td>
                 </tr>
-                <tr>
-                    <td>Disponível para venda: <?= $disponivel_para_venda; ?></td>
+                <tr class="font-weight-bold">
+                    <td colspan="3">Disponível para venda</td>
+                    <td><?= $quantidade_total; ?></td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <!-- Adicionar lancamento -->
-    <form method="get" action="/lancamento" class="mt-3" id="form-lancamento">
-        <input type="hidden" name="product_ID" value="<?= $produto["ID"] ?>" />
-        <input type="hidden" name="product_code" value="<?= $produto["code"] ?>" />
-        <input type="hidden" name="product_importer" value="<?= $produto["importer"] ?>" />
-        <!-- Button submit com um icone de + e um texto aoo lado escrito "Incluir novo lancamento -->
-        <button type="submit" class="btn btn-custom">
-            <i class="bi bi-plus"></i>
-            Incluir novo lançamento
-        </button>
-    </form>
-    </td>
 
     <!-- Estoques -->
     <div class="d-flex gap-3 mt-3 mb-3">
+        <!-- Adicionar lancamento -->
+        <form method="get" action="/lancamento" id="form-lancamento">
+            <input type="hidden" name="product_ID" value="<?= $produto["ID"] ?>" />
+            <input type="hidden" name="product_code" value="<?= $produto["code"] ?>" />
+            <input type="hidden" name="product_importer" value="<?= $produto["importer"] ?>" />
+            <!-- Button submit com um icone de + e um texto aoo lado escrito "Incluir novo lancamento -->
+            <button type="submit" class="btn btn-custom">
+                <i class="bi bi-plus"></i>
+                Incluir novo lançamento
+            </button>
+        </form>
+
         <form method="get">
             <button type="submit" class="btn btn-custom <?= isset($_GET["estoque"]) && $_GET["estoque"] != '' ? "" : "active" ?>">Geral</button>
         </form>
@@ -97,7 +116,7 @@ ob_start();
         ?>
     </div>
 
-    <div class="table-responsive" style="height: 50vh; min-height: 100px">
+    <div class="table-responsive" style="height: 50vh; min-height: 100px;">
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000">
                 <tr>
@@ -250,6 +269,21 @@ ob_start();
                 window.location.href = `/lancamento/${type}?product_ID=${productID}&product_code=${productCode}&product_importer=${productImporter}`;
             });
         });
+    });
+
+    // Script to toggle table visibility
+    document.getElementById('toggleTableBtn').addEventListener('click', function() {
+        var table = document.getElementById('stockTable');
+        const htmlMaximize = '<i class="bi bi-arrows-fullscreen"></i> Maximizar';
+        const htmlMinimize = '<i class="bi bi-arrows-angle-contract"></i> Minimizar';
+
+        if (table.style.display === 'none') {
+            table.style.display = 'table';
+            this.innerHTML = htmlMinimize;
+        } else {
+            table.style.display = 'none';
+            this.innerHTML = htmlMaximize;
+        }
     });
 </script>
 
