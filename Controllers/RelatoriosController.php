@@ -1,6 +1,6 @@
 <?php
 require_once "Controllers/_Controller.php";
-require_once "Utils/PdfGenerator.php";
+require_once "Utils/PhpExporter.php";
 require_once "Models/Relatorios.php";
 
 class RelatoriosController extends _Controller
@@ -68,7 +68,7 @@ class RelatoriosController extends _Controller
                 exit;
             }
 
-            $pdf = PdfGenerator::generatePdf(
+            $pdf = PhpExporter::exportToExcel(
                 ['Código', 'Quantidade', 'Operação', 'Cliente', 'Operador', 'Origem', 'Data', 'Observação'],
                 array_map(function ($saida) {
                     return [
@@ -134,7 +134,7 @@ class RelatoriosController extends _Controller
                 exit;
             }
 
-            $pdf = PdfGenerator::generatePdf(
+            $pdf = PhpExporter::exportToExcel(
                 ['Código', 'Quantidade de Entrada', 'Saldo Atual', 'Quantidade de Alerta'],
                 array_map(function ($estoque) {
                     return [
@@ -206,7 +206,7 @@ class RelatoriosController extends _Controller
                 $dados = array_merge($dados, $results["dados"]);
             }
 
-            $pdf = PdfGenerator::generatePdf(
+            $pdf = PhpExporter::exportToExcel(
                 ['Código', 'Saídas', 'Percentual', 'Estoque Atual'],
                 array_map(function ($movimentacao) {
                     return [

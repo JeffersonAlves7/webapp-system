@@ -2,7 +2,7 @@
 require_once "Models/Lancamento.php";
 require_once "Models/Estoque.php";
 require_once "Controllers/_Controller.php";
-require_once "Utils/PdfGenerator.php";
+require_once "Utils/PhpExporter.php";
 
 class LancamentoController extends _Controller
 {
@@ -254,7 +254,7 @@ class LancamentoController extends _Controller
             $transferenciasIds = json_decode($_POST["transference-ids"]);
             $idsString = implode(",", $transferenciasIds);
 
-            PdfGenerator::generatePdf(
+            PhpExporter::exportToExcel(
                 array('Produto', 'Importadora', 'Descrição', 'Quantidade', 'Origem', 'Destino', 'Observação'),
                 array_map(function ($transferencia) {
                     return [

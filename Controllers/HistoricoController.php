@@ -1,7 +1,7 @@
 <?php
 require_once "Models/Historico.php";
 require_once "Controllers/_Controller.php";
-require_once "Utils/PdfGenerator.php";
+require_once "Utils/PhpExporter.php";
 
 class HistoricoController extends _Controller
 {
@@ -48,7 +48,7 @@ class HistoricoController extends _Controller
 
         if (isset($_GET["action"]) && $_GET["action"] == "exportarTransferencias") {
             $transferencias = $this->historicoModel->getTransferencias($where);
-            $pdf = PdfGenerator::generatePdf(
+            $pdf = PhpExporter::exportToExcel(
                 ['Produto', 'Quantidade', 'Origem', 'Destino', 'Data', 'Observação'],
                 array_map(function ($transferencia) {
                     return [
