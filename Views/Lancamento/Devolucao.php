@@ -90,7 +90,7 @@ require "Components/Header.php";
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Enviar</button>
+                    <button type="submit" class="btn btn-custom">Enviar</button>
                 </form>
             </div>
         </div>
