@@ -156,7 +156,7 @@ class RelatoriosController extends _Controller
         // Exemplo: ?dataMovimentacao=2021-09
         $dataMovimentacao = null;
         $page = 1;
-        $limit = 7;
+        $limit = 30;
 
         if (isset($_GET["dataMovimentacao"]) && !empty($_GET["dataMovimentacao"])) {
             $dataMovimentacao = $_GET["dataMovimentacao"];

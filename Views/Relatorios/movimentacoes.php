@@ -44,7 +44,7 @@ require "Components/Header.php"
 
     <div class="table-responsive" style="max-height: 60vh; min-height: 100px">
         <table class="table table-striped table-hover">
-            <thead>
+            <thead class="thead-dark" style="position: sticky; top: 0;">
                 <tr>
                     <th>Código</th>
                     <th>Saídas</th>
@@ -62,7 +62,7 @@ require "Components/Header.php"
                         <td><?= $row["CODIGO"] ?></td>
                         <td><?= $row["SAIDAS"] ?></td>
                         <td>
-                            <span class="badge bg-<?= $row["PERCENTUAL"] >= 80 ? "success" : ($row["PERCENTUAL"] >= 15 ? "warning" : "danger") ?> p-3">
+                            <span class="badge bg-<?= $row["PERCENTUAL"] >= 80 ? "success" : ($row["PERCENTUAL"] >= 15 ? "warning" : "danger") ?> " style="color: black; width: 70px; height: 30px; display: flex; align-items: center; justify-content: center">
                                 <?= $row["PERCENTUAL"] ?>%
                             </span>
                         </td>
