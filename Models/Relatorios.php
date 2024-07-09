@@ -11,26 +11,25 @@ class Relatorios extends Model
 
         $sql = "SELECT 
             p.code, 
-            SUM(t.quantity) as `QUANTIDADE`,
-            tt.type as `TIPO`,
-            t.client_name as `CLIENTE`,
-            t.operator_ID as `OPERADOR`,
-            s.name as `ORIGEM`,
-            t.observation as `OBSERVACAO`,
-            t.created_at as `DATA`
+            SUM(t.quantity) AS `QUANTIDADE`,
+            tt.type AS `TIPO`,
+            t.client_name AS `CLIENTE`,
+            t.operator_ID AS `OPERADOR`,
+            COALESCE(s_from.name, s_to.name) AS `ORIGEM`,
+            t.observation AS `OBSERVACAO`,
+            t.created_at AS `DATA`
         FROM `transactions` t
-            INNER JOIN `transaction_types` tt ON tt.ID = t.type_ID
             INNER JOIN `products` p ON p.ID = t.product_ID
-            INNER JOIN `stocks` s ON s.ID = t.from_stock_ID
-            WHERE
-                DATE(t.created_at) = ?
-                AND
-                tt.type IN ('Saída', 'Devolução')
-                AND $where
-            GROUP BY t.client_name, t.type_ID
-            ORDER BY t.created_at DESC; 
+            LEFT JOIN `stocks` s_from ON s_from.ID = t.from_stock_ID AND t.type_ID = 2
+            LEFT JOIN `stocks` s_to ON s_to.ID = t.to_stock_ID AND t.type_ID = 4
+            INNER JOIN `transaction_types` tt ON tt.ID = t.type_ID
+        WHERE
+            DATE(t.created_at) = ?
+            AND t.type_ID IN (2, 4)
+            AND $where
+        GROUP BY t.ID
+        ORDER BY t.created_at DESC;
         ";
-
 
         $stmt = $this->db->prepare($sql);
         $stmt->bind_param("s", $dataSaida);
