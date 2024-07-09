@@ -90,7 +90,7 @@ class EmbarquesController extends _Controller
 
         $result = $this->containerModel->getAll($page, where: $where);
 
-        $this->view("Embarques/Index", [
+        $this->view("Embarques/index", [
             "containers" => $result["dados"],
             "pageCount" => $result["pageCount"],
             "page" => $page,

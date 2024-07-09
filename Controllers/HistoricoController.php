@@ -24,7 +24,7 @@ class HistoricoController extends _Controller
 
     public function index()
     {
-        $this->view("Historico/Index");
+        $this->view("Historico/index");
     }
 
     public function transferencias()
