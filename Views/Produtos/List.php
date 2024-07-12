@@ -16,7 +16,7 @@ ob_start();
 
     <?php $productsExist = isset($products) && $products->num_rows > 0; ?>
 
-    <form method="get" class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+    <form method="get" class="table-responsive" style="max-height: 60vh; min-height: 200px">
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000">
                 <tr>
