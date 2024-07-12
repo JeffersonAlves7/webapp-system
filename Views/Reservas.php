@@ -35,7 +35,7 @@ ob_start();
         ?>
     </div>
 
-    <form method="get" class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+    <form method="get" class="table-responsive" style="max-height: 60vh; overflow-y: auto;">
         <input type="hidden" name="estoque" value="<?= isset($_GET["estoque"]) ? $_GET["estoque"] : "" ?>">
 
         <table class="table table-striped">

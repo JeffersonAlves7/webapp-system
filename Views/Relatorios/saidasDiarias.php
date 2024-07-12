@@ -26,7 +26,7 @@ require "Components/Header.php"
         <button class="btn btn-custom" id="btn-pesquisar">Pesquisar</button>
     </form>
 
-    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+    <div class="table-responsive" style="max-height: 60vh; overflow-y: auto;">
         <table class="table table-striped">
             <thead>
                 <tr>
