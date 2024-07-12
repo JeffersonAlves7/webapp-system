@@ -15,6 +15,11 @@ class Database
         if ($this->conn->connect_error) {
             die("Erro de conexão com o banco de dados: " . $this->conn->connect_error);
         }
+
+        // Set timezone for this session
+        if (!$this->conn->query("SET time_zone = 'America/Sao_Paulo';")) {
+            die("Erro ao definir o fuso horário: " . $this->conn->error);
+        }
     }
 
     public static function getInstance()
