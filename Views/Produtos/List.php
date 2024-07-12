@@ -14,6 +14,8 @@ ob_start();
         </button>
     </div>
 
+    <?php $productsExist = isset($products) && $products->num_rows > 0; ?>
+
     <form method="get" class="table-responsive" style="max-height: 400px; overflow-y: auto;">
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000">
@@ -42,26 +44,6 @@ ob_start();
                 </tr>
             </thead>
 
-            <?php
-            function generateDescription($description)
-            {
-                if (!isset($description)) {
-                    return '';
-                }
-
-                $size = 25;
-
-                $shortDescription = substr($description, 0, $size);
-                if (strlen($description) > $size) {
-                    $shortDescription .= '... <a href="#" class="toggle-description" data-full-description="' . htmlspecialchars($description) . '">Ver mais</a>';
-                }
-
-                return $shortDescription;
-            }
-
-            $productsExist = isset($products) && $products->num_rows > 0;
-            ?>
-
             <tbody>
                 <?php if ($productsExist) : ?>
                     <?php while ($row = $products->fetch_assoc()) : ?>
@@ -73,8 +55,8 @@ ob_start();
                             </td>
                             <td><i class='bi bi-barcode'></i> <?= htmlspecialchars($row["ean"] ?? '-') ?></td>
                             <td><i class='bi bi-shop'></i> <?= htmlspecialchars($row["importer"] ?? '-') ?></td>
-                            <td><?= generateDescription($row["description"]) ?></td>
-                            <td><?= generateDescription($row["chinese_description"]) ?></td>
+                            <td><?= $row["description"] ?></td>
+                            <td><?= $row["chinese_description"] ?></td>
                             <td>
                                 <button type='button' class='btn btn-edit' data-bs-toggle='modal' data-bs-target='#updateProductModal' data-id='<?= htmlspecialchars($row["ID"]) ?>' data-code='<?= htmlspecialchars($row["code"]) ?>' data-ean='<?= $row["ean"] ? htmlspecialchars($row["ean"]) : '' ?>' data-importer='<?= htmlspecialchars($row["importer"]) ?>' data-description='<?= $row["description"] ? htmlspecialchars($row["description"]) : '' ?>' data-chinese-description='<?= $row["chinese_description"] ? htmlspecialchars($row["chinese_description"]) : '' ?>'>
                                     <i class='bi bi-pencil-square text-primary'></i>

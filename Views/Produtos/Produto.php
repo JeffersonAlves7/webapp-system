@@ -16,29 +16,13 @@ ob_start();
     }
 
     $quantidade_em_estoque->data_seek(0);
-
-    function generateDescription($description)
-    {
-        if (!isset($description)) {
-            return '';
-        }
-
-        $size = 15;
-
-        $shortDescription = substr($description, 0, $size);
-        if (strlen($description) > $size) {
-            $shortDescription .= '... <a href="#" class="toggle-description" data-full-description="' . htmlspecialchars($description) . '">Ver mais</a>';
-        }
-
-        return $shortDescription;
-    }
     ?>
 
     <div class="d-flex gap-4 align-items-center">
         <button id="go-back" class="btn btn-custom">
             <i class="bi bi-arrow-left"></i>
         </button>
-        <h1 class="mt-4 mb-3"><?= $produto["code"] ?> - <?= generateDescription($produto['description']) ?></h1>
+        <h1 class="mt-4 mb-3"><?= $produto["code"] ?> - <?= $produto['description'] ?></h1>
     </div>
 
     <!-- Botão para minimizar/maximizar a tabela -->

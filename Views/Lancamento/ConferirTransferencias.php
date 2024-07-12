@@ -27,24 +27,7 @@ require "Components/Header.php";
         </form>
     </div>
 
-    <?php require "Components/StatusMessage.php";
-
-    function generateDescription($description)
-    {
-        if (!isset($description)) {
-            return '';
-        }
-
-        $size = 20;
-
-        $shortDescription = substr($description, 0, $size);
-        if (strlen($description) > $size) {
-            $shortDescription .= '... <a href="#" class="toggle-description" data-full-description="' . htmlspecialchars($description) . '">Ver mais</a>';
-        }
-
-        return $shortDescription;
-    }
-    ?>
+    <?php require "Components/StatusMessage.php"; ?>
 
     <div class="table-responsive">
         <table class="table table-striped">
@@ -70,7 +53,7 @@ require "Components/Header.php";
                         <td><input type="checkbox" name="is-checked" value="<?= $transferencia["ID"] ?>"></td>
                         <td><?= $transferencia["code"] ?></td>
                         <td><?= $transferencia["importer"] ?></td>
-                        <td><?= generateDescription($transferencia["description"]) ?></td>
+                        <td><?= $transferencia["description"] ?></td>
                         <td><?= $transferencia["quantity"] ?></td>
                         <td>
                             <div class="d-flex" style="width: 150px;">
