@@ -226,6 +226,7 @@ class ProdutosController extends _Controller
         $transacoesData = $this->transacaoModel->getAllByProductId($id, $page, $where);
         $transacoes = $transacoesData["transactions"];
         $pageCount = $transacoesData["pageCount"];
+
         require_once "Views/Produtos/Produto.php";
     }
 

@@ -41,6 +41,7 @@ ob_start();
                     <th>Disponível</th>
                     <th>Reservado</th>
                     <th>Total</th>
+                    <th>Localização</th>
                 </tr>
             </thead>
             <tbody>
@@ -50,6 +51,7 @@ ob_start();
                         <td><?= $dados["quantity"]; ?></td>
                         <td><?= $dados["quantity_in_reserve"]; ?></td>
                         <td><?= $dados["quantity"] + $dados["quantity_in_reserve"]; ?></td>
+                        <td><?= $dados["location"]; ?></td>
                     </tr>
                 <?php endwhile; ?>
                 <tr class="font-weight-bold">
@@ -57,6 +59,7 @@ ob_start();
                     <td><?= $quantidade_total; ?></td>
                     <td><?= $quantidade_reservada; ?></td>
                     <td><?= $quantidade_total + $quantidade_reservada; ?></td>
+                    <td></td>
                 </tr>
                 <tr class="font-weight-bold">
                     <td colspan="3">Disponível para venda</td>
