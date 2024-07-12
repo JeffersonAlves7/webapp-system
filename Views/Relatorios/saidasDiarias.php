@@ -20,8 +20,10 @@ require "Components/Header.php"
         </form>
     </div>
 
-    <form class="d-flex mb-3 gap-4" style="max-width: 500px;">
-        <input type="date" id="data-saida" class="form-control" value="<?= isset($_GET["dataSaida"]) && !empty($_GET["dataSaida"]) ? $_GET["dataSaida"] : date("Y-m-d") ?>" name="dataSaida">
+    <form class="d-flex mb-3 gap-4" style="max-width: 800px;">
+        <input type="date" id="data-inicio" class="form-control" value="<?= isset($_GET["dataInicio"]) && !empty($_GET["dataInicio"]) ? $_GET["dataInicio"] : date("Y-m-d") ?>" name="dataInicio">
+        <input type="date" id="data-fim" class="form-control" value="<?= isset($_GET["dataFim"]) && !empty($_GET["dataFim"]) ? $_GET["dataFim"] : date("Y-m-d") ?>" name="dataFim">
+
         <input type="text" id="pesquisa-cliente" class="form-control" value="<?= isset($_GET["cliente"]) && !empty($_GET["cliente"]) ? $_GET["cliente"] : "" ?>" placeholder="Pesquisar por cliente" name="cliente">
         <button class="btn btn-custom" id="btn-pesquisar">Pesquisar</button>
     </form>

@@ -29,19 +29,29 @@ class RelatoriosController extends _Controller
 
     public function saidasDiarias()
     {
-        $dataSaida = null;
+        $dataInicio = null;
+        $dataFim = null;
         $where = "1";
 
-        if (isset($_GET["dataSaida"]) && !empty($_GET["dataSaida"])) {
-            $dataSaida = $_GET["dataSaida"];
+        if (!empty($dataInicio) && !empty($dataFim)) {
+            $where .= " AND DATE(t.created_at) BETWEEN '$dataInicio' AND '$dataFim'";
+        } else {
+            if (isset($_GET["dataInicio"]) && !empty($_GET["dataInicio"])) {
+                $dataInicio = $_GET["dataInicio"];
+                $where .= " AND DATE(t.created_at) >= '$dataInicio'";
+            }
+            if (isset($_GET["dataFim"]) && !empty($_GET["dataFim"])) {
+                $dataFim = $_GET["dataFim"];
+                $where .= " AND DATE(t.created_at) <= '$dataFim'";
+            }
         }
 
         if (isset($_GET["cliente"]) && !empty($_GET["cliente"])) {
             $cliente = $_GET["cliente"];
-            $where = "t.client_name LIKE '%$cliente%'";
+            $where .= " AND t.client_name LIKE '%$cliente%'";
         }
 
-        $dados = $this->relatorios->saidasDiarias($where, $dataSaida);
+        $dados = $this->relatorios->saidasDiarias($where);
 
         $this->view("Relatorios/saidasDiarias", ["dados" => $dados]);
     }

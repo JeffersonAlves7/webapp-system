@@ -5,10 +5,6 @@ class Relatorios extends Model
 {
     public function saidasDiarias($where = "1", $dataSaida = null)
     {
-        if ($dataSaida == null) {
-            $dataSaida = date("Y-m-d");
-        }
-
         $sql = "SELECT 
             p.code, 
             SUM(t.quantity) AS `QUANTIDADE`,
@@ -24,20 +20,15 @@ class Relatorios extends Model
             LEFT JOIN `stocks` s_to ON s_to.ID = t.to_stock_ID AND t.type_ID = 4
             INNER JOIN `transaction_types` tt ON tt.ID = t.type_ID
         WHERE
-            DATE(t.created_at) = ?
-            AND t.type_ID IN (2, 4)
+            t.type_ID IN (2, 4)
             AND $where
         GROUP BY t.ID
-        ORDER BY t.created_at DESC;
+        ORDER BY t.created_at ASC;
         ";
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("s", $dataSaida);
-        $stmt->execute();
 
-        $result = $stmt->get_result();
+        $result = $this->db->query($sql);
 
-        $stmt->close();
 
         return $result;
     }
