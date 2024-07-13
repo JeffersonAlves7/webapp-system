@@ -280,6 +280,77 @@ class ImporterController extends _Controller
         header("Location: /lancamento/transferencias");
     }
 
+    public function importarReservas()
+    {
+        // Colunas da planilha de reservas: ean, Código, Importadora, Quantidade, Origem, Destino/Cliente, Dia de Retirada, Observação
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            try {
+                $this->verifyWritePermission();
+
+                $file = $_FILES['file'];
+                $rows = PhpExcel::read(($file['tmp_name']));
+
+                if (count($rows) == 0) {
+                    $_SESSION['mensagem_erro'] = "Nenhum dado encontrado na planilha!";
+                    header("Location: " . $_SERVER["REQUEST_URI"]);
+                    exit();
+                }
+
+                echo PhpExcel::formatAsTable($rows);
+
+                array_shift($rows); // Remove o cabeçalho
+
+                $products = [];
+
+                foreach ($rows as $row) {
+                    // $ean = $row[0];
+                    $code = $row[1];
+                    $importer = $this->validateImporter($row[2]);
+                    $quantity = $row[3];
+                    $stock = $this->validateStock($row[4]);
+                    $client = $row[5];
+                    $rescue_date = $this->validateDate($row[6]);
+                    $observation = $row[7];
+
+                    $product = $this->importerModel->getProductByCodeAndImporter($code, $importer);
+
+                    if (!$product) {
+                        $_SESSION['mensagem_erro'] = "Produto não encontrado: $code - $importer";
+                        header("Location: " . $_SERVER["REQUEST_URI"]);
+                        exit();
+                    }
+
+                    $productQuantity = $this->importerModel->getProductQuantity($product['ID'], $stock);
+
+                    if ($productQuantity['quantity'] < $quantity) {
+                        $_SESSION['mensagem_erro'] = "Quantidade insuficiente para o produto: $code - $importer";
+                        header("Location: " . $_SERVER["REQUEST_URI"]);
+                        exit();
+                    }
+
+                    $products[] = [
+                        "product_ID" => $product['ID'],
+                        "stock" => $productQuantity['stock_ID'],
+                        "quantity" => $quantity,
+                        "client" => $client,
+                        "rescue_date" => $rescue_date,
+                        "observation" => $observation
+                    ];
+                }
+
+                $this->lancamentoModel->criarReservaEmMassa($products);
+                $_SESSION['sucesso'] = true;
+            } catch (Exception $e) {
+                $_SESSION['mensagem_erro'] = $e->getMessage();
+                header("Location: " . $_SERVER["REQUEST_URI"]);
+                exit();
+            }
+        }
+
+        header("Location: /lancamento/reserva");
+    }
+
     private function validateStock($stock)
     {
         if (!$stock) {
@@ -322,5 +393,26 @@ class ImporterController extends _Controller
             header("Location: " . $_SERVER["REQUEST_URI"]);
             exit();
         }
+    }
+
+    private function validateDate($date_string)
+    {
+        // A data sempre vem no formato dd/mm/aaaa ou dd-mm-aaaa
+        // Precisa retornar a data compativel com o banco de dados
+        // utilize regex para validar a data
+
+        $date = DateTime::createFromFormat('d/m/Y', $date_string);
+
+        if (!$date) {
+            $date = DateTime::createFromFormat('d-m-Y', $date_string);
+        }
+
+        if (!$date) {
+            $_SESSION['mensagem_erro'] = "Data inválida! ". $date_string;
+            header("Location: " . $_SERVER["REQUEST_URI"]);
+            exit();
+        }
+
+        return $date->format('Y-m-d');
     }
 }
