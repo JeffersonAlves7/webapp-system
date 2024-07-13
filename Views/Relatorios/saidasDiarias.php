@@ -5,6 +5,20 @@ ob_start();
 require "Components/Header.php"
 ?>
 
+<style>
+    /* Fixar tamanho das colunas da tabela */
+    table {
+        table-layout: fixed;
+    }
+
+    table th {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+</style>
+
 <main>
     <div class="d-flex w-100 justify-content-between mt-4 mb-3">
         <div class="d-flex gap-4 align-items-center">
@@ -30,7 +44,7 @@ require "Components/Header.php"
 
     <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
         <table class="table table-striped">
-            <thead>
+            <thead class="table-light" style="position: sticky; top: 0;">
                 <tr>
                     <th>Código</th>
                     <th>Quantidade</th>
@@ -58,18 +72,20 @@ require "Components/Header.php"
                 <?php endwhile; ?>
             </tbody>
 
-            <tfoot class="table-light" style="position: sticky; bottom: 0;">
+            <tfoot style="position: sticky; bottom: 0;">
                 <tr>
-                    <td>
+                    <td colspan="2">
                         <p>Total de Produtos: <span id="total-produtos"></span></p>
                     </td>
-                    <td>
+                    <td colspan="2">
                         <p>Total de Saídas: <span id="total-saidas"></span></p>
                     </td>
-                    <td>
+                    <td colspan="2">
                         <p>Total de Devoluções: <span id="total-devolucoes"></span></p>
                     </td>
-                    <td colspan="5"></td>
+                    <td colspan="2">
+                        <p>Total de Linhas: <?= $dados->num_rows ?></p>
+                    </td>
                 </tr>
             </tfoot>
         </table>
