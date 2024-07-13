@@ -75,7 +75,8 @@ class EmbarquesController extends _Controller
             $where .= " AND `name` LIKE '%$search%'";
         }
 
-        if(isset($_GET["product_code"]) && !empty($_GET["product_code"])) {
+        $product_code = null;
+        if (isset($_GET["product_code"]) && !empty($_GET["product_code"])) {
             $product_code = htmlspecialchars($_GET["product_code"]);
         }
 

@@ -18,7 +18,7 @@ class Container extends Model
 
         $offset = ($page - 1) * $limit;
 
-        if (!$product_code) {
+        if (!$product_code || $product_code == "" || $product_code == null) {
             $sql =  "SELECT 
                 *, 
                 (SELECT COUNT(*) FROM products_in_container WHERE container_ID = lote_container.ID) as total,
@@ -39,6 +39,7 @@ class Container extends Model
                 code LIKE '$product_code%'
                 OR `ean` LIKE '$product_code%'
             ")->fetch_all(MYSQLI_ASSOC);
+
             $product_IDS = array_map(function ($product) {
                 return $product["ID"];
             }, $product_IDS);
@@ -50,6 +51,8 @@ class Container extends Model
                 ];
             }
 
+            $product_IDS = implode(",", $product_IDS);
+
             // -- (SELECT quantity FROM products_in_container WHERE container_ID = lc.ID AND product_ID = $product_ID) as quantity,
             // -- (SELECT in_stock FROM products_in_container WHERE container_ID = lc.ID AND product_ID = $product_ID) as in_stock
 
@@ -60,10 +63,9 @@ class Container extends Model
             FROM lote_container lc
             INNER JOIN products_in_container pc ON pc.container_ID = lc.ID 
             WHERE
-                pc.product_ID IN (" . implode(",", $product_IDS) . ")
+                pc.product_ID IN ($product_IDS)
                 AND $where
-            ORDER BY lc.`created_at` 
-            DESC LIMIT $limit OFFSET $offset";
+            ORDER BY lc.`created_at` DESC LIMIT $limit OFFSET $offset";
 
             $result = $this->db->query($sql);
             $containers = $result->fetch_all(MYSQLI_ASSOC);
@@ -71,7 +73,7 @@ class Container extends Model
             $queryPageCount = $this->db->query("SELECT COUNT(*) as count FROM lote_container lc
             INNER JOIN products_in_container pc ON pc.container_ID = lc.ID 
             WHERE
-                pc.product_ID IN (" . implode(",", $product_IDS) . ")
+                pc.product_ID IN ($product_IDS)
                 AND $where");
             $pageCount = ceil($queryPageCount->fetch_assoc()["count"] / $limit);
         }

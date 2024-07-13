@@ -6,6 +6,13 @@ require "Components/Header.php";
 
 $search = isset($_GET['search']) ? $_GET['search'] : "";
 ?>
+
+<style>
+    table {
+        table-layout: fixed;
+    }
+</style>
+
 <main>
     <h1 class="mt-4 mb-3"><?= $pageTitle ?></h1>
 
