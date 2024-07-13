@@ -144,7 +144,10 @@ require "Components/Header.php";
                         <button type="button" class="btn btn-custom">Baixar planilha</button>
                     </a>
 
-                    <button type="button" class="btn btn-custom" data-bs-dismiss="modal">Importar planilha</button>
+                    <form method="post" action="/importer/importarTransferencias" enctype="multipart/form-data">
+                        <input type="file" name="file" id="file" class="d-none" accept=".xlsx">
+                        <label for="file" class="btn btn-custom">Importar planilha</label>
+                    </form>
                 </div>
             </div>
         </div>
@@ -175,6 +178,10 @@ require "Components/Header.php";
             } catch {}
             event.preventDefault(); // Impede o envio do formulário se os estoques forem iguais
         }
+    });
+
+    document.getElementById('file').addEventListener('change', function() {
+        this.form.submit();
     });
 </script>
 

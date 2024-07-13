@@ -215,6 +215,71 @@ class ImporterController extends _Controller
         header("Location: /lancamento/devolucao");
     }
 
+    public function importarTransferencias()
+    {
+        // Colunas da planilha de transferencias: ean, Código, Importadora, Quantidade, Estoque Origem, Estoque Destino, Localização, Observação
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            try {
+                $this->verifyWritePermission();
+
+                $file = $_FILES['file'];
+                $rows = PhpExcel::read(($file['tmp_name']));
+
+                if (count($rows) == 0) {
+                    $_SESSION['mensagem_erro'] = "Nenhum dado encontrado na planilha!";
+                    header("Location: " . $_SERVER["REQUEST_URI"]);
+                    exit();
+                }
+
+                echo PhpExcel::formatAsTable($rows);
+
+                array_shift($rows); // Remove o cabeçalho
+
+                $products = [];
+
+                foreach ($rows as $row) {
+                    // $ean = $row[0];
+                    $code = $row[1];
+                    $importer = $this->validateImporter($row[2]);
+                    $quantity = $row[3];
+                    $stock_origin = $this->validateStock($row[4]);
+                    $stock_destination = $this->validateStock($row[5]);
+                    $location = $row[6];
+                    $observation = $row[7];
+
+                    $product = $this->importerModel->getProductByCodeAndImporter($code, $importer);
+
+                    if (!$product) {
+                        $_SESSION['mensagem_erro'] = "Produto não encontrado: $code - $importer";
+                        header("Location: " . $_SERVER["REQUEST_URI"]);
+                        exit();
+                    }
+
+                    $stockOrigin = $this->importerModel->getStockByName($stock_origin);
+                    $stockDestination = $this->importerModel->getStockByName($stock_destination);
+
+                    $products[] = [
+                        "product_ID" => $product['ID'],
+                        "quantity" => $quantity,
+                        "from_stock" => $stockOrigin['ID'],
+                        "to_stock" => $stockDestination['ID'],
+                        "location" => $location,
+                        "observation" => $observation
+                    ];
+                }
+
+                $this->lancamentoModel->criarTransferenciaEmMassa($products);
+                $_SESSION['sucesso'] = true;
+            } catch (Exception $e) {
+                $_SESSION['mensagem_erro'] = $e->getMessage();
+                header("Location: " . $_SERVER["REQUEST_URI"]);
+                exit();
+            }
+        }
+
+        header("Location: /lancamento/transferencias");
+    }
+
     private function validateStock($stock)
     {
         if (!$stock) {

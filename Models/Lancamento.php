@@ -290,6 +290,26 @@ class Lancamento
             VALUES ($product_ID, $quantidade, $estoque_origem_ID, $estoque_destino_ID, '$localizacao', '$observacao')");
     }
 
+    public function criarTransferenciaEmMassa(
+        $products
+    ) {
+        foreach ($products as $product) {
+            $product_ID = $product['product_ID'];
+            $quantity = $product['quantity'];
+            $from_stock_ID = $product['from_stock'];
+            $to_stock_ID = $product['to_stock'];
+            $location = $product['location'];
+            $observation = $product['observation'];
+
+            $query = "INSERT INTO `transferences` (`product_ID`, `quantity`, `from_stock_ID`, `to_stock_ID`, `location`, `observation`) 
+            VALUES ($product_ID, $quantity, $from_stock_ID, $to_stock_ID, '$location', '$observation')";
+
+            echo $query;
+
+            $this->db->query($query);
+        }
+    }
+
     public function confirmarTransferencias(
         $transference_IDs
     ) {

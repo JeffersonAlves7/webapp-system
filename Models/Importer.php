@@ -48,4 +48,18 @@ class Importer
             return null;
         }
     }
+
+    public function getStockByName($stock_name)
+    {
+        $sql = "SELECT * FROM `stocks` s
+        WHERE s.`name` = '$stock_name'";
+
+        $result = $this->db->query($sql);
+
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        } else {
+            return null;
+        }
+    }
 }
