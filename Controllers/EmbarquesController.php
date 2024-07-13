@@ -69,15 +69,20 @@ class EmbarquesController extends _Controller
             $page = (int) $_GET["page"];
         }
 
-        $where = "1 = 1 ";
-        if (isset($_GET["search"])) {
+        $where = "1";
+        if (isset($_GET["search"]) && !empty($_GET["search"])) {
             $search = htmlspecialchars($_GET["search"]);
-            $where .= " AND `name` LIKE '%$search%'";
+            $where .= " AND lc.`name` LIKE '%$search%'";
         }
 
-        $product_code = null;
         if (isset($_GET["product_code"]) && !empty($_GET["product_code"])) {
             $product_code = htmlspecialchars($_GET["product_code"]);
+            $where .= " AND p.`code` LIKE '$product_code%' OR p.`ean` LIKE '$product_code%'";
+        }
+
+        if (isset($_GET["status"]) && !empty($_GET["status"])) {
+            $status = htmlspecialchars($_GET["status"]);
+            $where .= " AND pc.`in_stock` = $status";
         }
 
         if (
@@ -86,17 +91,21 @@ class EmbarquesController extends _Controller
         ) {
             $start_date = htmlspecialchars($_GET["start_date"]);
             $end_date = htmlspecialchars($_GET["end_date"]);
-            $where .= " AND `created_at` BETWEEN '$start_date' AND '$end_date'";
+            $where .= " AND lc.`created_at` BETWEEN '$start_date' AND '$end_date'";
         } else if (isset($_GET["start_date"]) && !empty($_GET["start_date"])) {
             $start_date = htmlspecialchars($_GET["start_date"]);
-            $where .= " AND `created_at` BETWEEN '$start_date 00:00:00' AND '$start_date 23:59:59'";
+            $where .= " AND lc.`created_at` BETWEEN '$start_date 00:00:00' AND '$start_date 23:59:59'";
         }
 
-        $result = $this->containerModel->getAll($page, where: $where, product_code: $product_code);
+        $productsData = $this->containerModel->getAllProducts($page, where: $where);
+        $products = $productsData["products"];
+        $pageCount = $productsData["pageCount"];
 
         $this->view("Embarques/index", [
-            "containers" => $result["dados"],
-            "pageCount" => $result["pageCount"],
+            "products" => $products,
+            // "container_ID" => $container_ID,
+            // "containers" => $result["dados"],
+            "pageCount" => $pageCount,
             "page" => $page,
             "sucesso" => $sucesso,
             "mensagem_erro" => $mensagem_erro
@@ -211,36 +220,6 @@ class EmbarquesController extends _Controller
         }
 
         header("Refresh: 0; URL = /embarques");
-    }
-
-    public function produtos($container_ID)
-    {
-        $mensagem_erro = isset($_SESSION['mensagem_erro']) ? $_SESSION['mensagem_erro'] : "";
-        unset($_SESSION['mensagem_erro']);
-
-        $sucesso = isset($_SESSION['sucesso']) ? $_SESSION['sucesso'] : false;
-        unset($_SESSION['sucesso']);
-
-        $page = 1;
-
-        if (isset($_GET["page"])) {
-            $page = (int) $_GET["page"];
-        }
-
-        $where = "1 = 1 ";
-
-        // $result_container = $this->containerModel->byId($container_ID);
-        $productsData = $this->containerModel->produtosById($container_ID, $page, where: $where);
-        $products = $productsData["products"];
-        $pageCount = $productsData["pageCount"];
-
-        $this->view("Embarques/Produtos", [
-            "products" => $products,
-            "container_ID" => $container_ID,
-            "pageCount" => $pageCount,
-            "sucesso" => $sucesso,
-            "mensagem_erro" => $mensagem_erro
-        ]);
     }
 
     public function conferir($container_ID)

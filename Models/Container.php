@@ -6,7 +6,7 @@ class Container extends Model
 {
     private $MAX_LIMIT = 100;
 
-    public function getAll(int $page = 1, int $limit = 50, $where = 1, $product_code = null)
+    public function getAllProducts(int $page = 1, int $limit = 50, $where = 1)
     {
         if ($page <= 0) {
             $page = 1;
@@ -18,68 +18,24 @@ class Container extends Model
 
         $offset = ($page - 1) * $limit;
 
-        if (!$product_code || $product_code == "" || $product_code == null) {
-            $sql =  "SELECT 
-                *, 
-                (SELECT COUNT(*) FROM products_in_container WHERE container_ID = lote_container.ID) as total,
-                (SELECT COUNT(*) FROM products_in_container WHERE container_ID = lote_container.ID AND in_stock = 1) as conferidos
-            FROM lote_container
-            WHERE $where 
-            ORDER BY `created_at` DESC LIMIT $limit OFFSET $offset";
+        $sql =  "SELECT 
+        pc.*, p.`code`, p.`importer`, p.`ean`, lc.`name` as container_name,
+        lc.ID as container_ID
+        FROM products_in_container pc
+        INNER JOIN products p ON p.ID = pc.product_ID
+        INNER JOIN lote_container lc ON lc.ID = pc.container_ID
+        WHERE $where
+        ORDER BY pc.`created_at` DESC LIMIT $limit OFFSET $offset";
 
-            $result = $this->db->query($sql);
-            $containers = $result->fetch_all(MYSQLI_ASSOC);
+        $products = $this->db->query($sql);
 
-            $queryPageCount = $this->db->query("SELECT COUNT(*) as count FROM lote_container ls WHERE $where");
-            $pageCount = ceil($queryPageCount->fetch_assoc()["count"] / $limit);
-        } else {
-            // Utilizar trim para remover espaços em branco
-            $product_code = trim($product_code);
-            $product_IDS = $this->db->query("SELECT ID FROM products WHERE 
-                code LIKE '$product_code%'
-                OR `ean` LIKE '$product_code%'
-            ")->fetch_all(MYSQLI_ASSOC);
-
-            $product_IDS = array_map(function ($product) {
-                return $product["ID"];
-            }, $product_IDS);
-
-            if (count($product_IDS) == 0) {
-                return [
-                    "dados" => [],
-                    "pageCount" => 0
-                ];
-            }
-
-            $product_IDS = implode(",", $product_IDS);
-
-            // -- (SELECT quantity FROM products_in_container WHERE container_ID = lc.ID AND product_ID = $product_ID) as quantity,
-            // -- (SELECT in_stock FROM products_in_container WHERE container_ID = lc.ID AND product_ID = $product_ID) as in_stock
-
-            $sql =  "SELECT 
-                lc.*,
-                (SELECT COUNT(*) FROM products_in_container WHERE container_ID = lc.ID) as total,
-                (SELECT COUNT(*) FROM products_in_container WHERE container_ID = lc.ID AND in_stock = 1) as conferidos
-            FROM lote_container lc
-            INNER JOIN products_in_container pc ON pc.container_ID = lc.ID 
-            WHERE
-                pc.product_ID IN ($product_IDS)
-                AND $where
-            ORDER BY lc.`created_at` DESC LIMIT $limit OFFSET $offset";
-
-            $result = $this->db->query($sql);
-            $containers = $result->fetch_all(MYSQLI_ASSOC);
-
-            $queryPageCount = $this->db->query("SELECT COUNT(*) as count FROM lote_container lc
-            INNER JOIN products_in_container pc ON pc.container_ID = lc.ID 
-            WHERE
-                pc.product_ID IN ($product_IDS)
-                AND $where");
-            $pageCount = ceil($queryPageCount->fetch_assoc()["count"] / $limit);
-        }
+        $pageCount = ceil($this->db->query("SELECT COUNT(*) as count FROM products_in_container  pc
+        INNER JOIN products p ON p.ID = pc.product_ID
+        INNER JOIN lote_container lc ON lc.ID = pc.container_ID
+        WHERE $where")->fetch_assoc()["count"] / $limit);
 
         return [
-            "dados" => $containers,
+            "products" => $products,
             "pageCount" => $pageCount
         ];
     }
