@@ -25,6 +25,12 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
             <input type="date" class="form-control" name="end_date" placeholder="Data de término" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : "" ?>">
         </div>
 
+        <!-- Filtro por código do produto -->
+        <div class="col-md-3">
+            <label for="product_code" class="form-label">Código do produto</label>
+            <input type="text" class="form-control" name="product_code" placeholder="Ex.: AB1445" value="<?= isset($_GET['product_code']) ? $_GET['product_code'] : "" ?>">
+        </div>
+
         <div class="col-md-3 d-flex justify-content-start align-items-end">
             <button type="submit" class="btn btn-custom">
                 <i class="bi bi-search"></i> Buscar
@@ -123,6 +129,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                 <input type="hidden" name="search" value="<?= $search ?>">
                 <input type="hidden" name="start_date" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : "" ?>">
                 <input type="hidden" name="end_date" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : "" ?>">
+                <input type="hidden" name="product_code" value="<?= isset($_GET['product_code']) ? $_GET['product_code'] : "" ?>">
                 <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isPrevDisabled) ?> title="Voltar">
                     <i class="bi bi-arrow-left"></i>
                 </button>
@@ -135,6 +142,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                 <input type="hidden" name="search" value="<?= $search ?>">
                 <input type="hidden" name="start_date" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : "" ?>">
                 <input type="hidden" name="end_date" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : "" ?>">
+                <input type="hidden" name="product_code" value="<?= isset($_GET['product_code']) ? $_GET['product_code'] : "" ?>">
                 <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isNextDisabled) ?> title="Avançar">
                     <i class="bi bi-arrow-right"></i>
                 </button>

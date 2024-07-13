@@ -56,7 +56,6 @@ class EmbarquesController extends _Controller
         }
     }
 
-
     public function index()
     {
         $mensagem_erro = isset($_SESSION['mensagem_erro']) ? $_SESSION['mensagem_erro'] : "";
@@ -76,6 +75,10 @@ class EmbarquesController extends _Controller
             $where .= " AND `name` LIKE '%$search%'";
         }
 
+        if(isset($_GET["product_code"]) && !empty($_GET["product_code"])) {
+            $product_code = htmlspecialchars($_GET["product_code"]);
+        }
+
         if (
             isset($_GET["start_date"]) && !empty($_GET["start_date"])
             && isset($_GET["end_date"]) && !empty($_GET["end_date"])
@@ -88,7 +91,7 @@ class EmbarquesController extends _Controller
             $where .= " AND `created_at` BETWEEN '$start_date 00:00:00' AND '$start_date 23:59:59'";
         }
 
-        $result = $this->containerModel->getAll($page, where: $where);
+        $result = $this->containerModel->getAll($page, where: $where, product_code: $product_code);
 
         $this->view("Embarques/index", [
             "containers" => $result["dados"],
