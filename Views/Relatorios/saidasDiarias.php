@@ -69,13 +69,25 @@ require "Components/Header.php"
     formExportar.addEventListener("submit", (e) => {
         e.preventDefault();
 
-        if (!formExportar.querySelector("input[name='dataSaida']")) {
-            const dataSaidaInput = document.createElement("input");
-            dataSaidaInput.type = "hidden";
-            dataSaidaInput.name = "dataSaida";
-            dataSaidaInput.value = dataSaida.value;
+        // Repita a logica mas agora para dataInicio e dataFim
+        const dataInicio = document.getElementById("data-inicio");
+        if (!formExportar.querySelector("input[name='dataInicio']")) {
+            const dataInicioInput = document.createElement("input");
+            dataInicioInput.type = "hidden";
+            dataInicioInput.name = "dataInicio";
+            dataInicioInput.value = dataInicio.value;
 
-            formExportar.appendChild(dataSaidaInput);
+            formExportar.appendChild(dataInicioInput);
+        }
+
+        const dataFim = document.getElementById("data-fim");
+        if (!formExportar.querySelector("input[name='dataFim']")) {
+            const dataFimInput = document.createElement("input");
+            dataFimInput.type = "hidden";
+            dataFimInput.name = "dataFim";
+            dataFimInput.value = dataFim.value;
+
+            formExportar.appendChild(dataFimInput);
         }
 
         if (!formExportar.querySelector("input[name='cliente']")) {

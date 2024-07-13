@@ -65,16 +65,36 @@ class RelatoriosController extends _Controller
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Content-Type: application/json");
 
-            $dataSaida = $_POST["dataSaida"];
+            $dataInicio = $_POST["dataInicio"];
+            $dataFim = $_POST["dataFim"];
             $cliente = $_POST["cliente"];
 
             $where = "1";
 
-            if (!empty($cliente)) {
-                $where = "t.client_name LIKE '%$cliente%'";
+
+            if (!empty($dataInicio) && !empty($dataFim)) {
+                $where .= " AND DATE(t.created_at) BETWEEN '$dataInicio' AND '$dataFim'";
+            } else if (isset($_GET["dataInicio"]) || isset($_GET["dataFim"])) {
+                if (isset($_GET["dataInicio"]) && !empty($_GET["dataInicio"])) {
+                    $dataInicio = $_GET["dataInicio"];
+                    $where .= " AND DATE(t.created_at) >= '$dataInicio'";
+                }
+                if (isset($_GET["dataFim"]) && !empty($_GET["dataFim"])) {
+                    $dataFim = $_GET["dataFim"];
+                    $where .= " AND DATE(t.created_at) <= '$dataFim'";
+                }
+            } else {
+                $dataInicio = date("Y-m-d");
+
+                $where .= " AND DATE(t.created_at) = '$dataInicio'";
             }
 
-            $dados = $this->relatorios->saidasDiarias($where, $dataSaida);
+            if (isset($_GET["cliente"]) && !empty($_GET["cliente"])) {
+                $cliente = $_GET["cliente"];
+                $where .= " AND t.client_name LIKE '%$cliente%'";
+            }
+
+            $dados = $this->relatorios->saidasDiarias($where);
             $dados = $dados->fetch_all(MYSQLI_ASSOC);
 
             if (empty($dados)) {
@@ -96,7 +116,7 @@ class RelatoriosController extends _Controller
                         $saida["OBSERVACAO"]
                     ];
                 }, $dados),
-                "SaidasDiarias-$dataSaida.pdf"
+                "SaidasDiarias-$dataInicio-$dataFim"
             );
 
             return;
