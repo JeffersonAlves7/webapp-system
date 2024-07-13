@@ -35,7 +35,7 @@ class RelatoriosController extends _Controller
 
         if (!empty($dataInicio) && !empty($dataFim)) {
             $where .= " AND DATE(t.created_at) BETWEEN '$dataInicio' AND '$dataFim'";
-        } else {
+        } else if (isset($_GET["dataInicio"]) || isset($_GET["dataFim"])) {
             if (isset($_GET["dataInicio"]) && !empty($_GET["dataInicio"])) {
                 $dataInicio = $_GET["dataInicio"];
                 $where .= " AND DATE(t.created_at) >= '$dataInicio'";
@@ -44,6 +44,10 @@ class RelatoriosController extends _Controller
                 $dataFim = $_GET["dataFim"];
                 $where .= " AND DATE(t.created_at) <= '$dataFim'";
             }
+        } else {
+            $dataInicio = date("Y-m-d");
+
+            $where .= " AND DATE(t.created_at) = '$dataInicio'";
         }
 
         if (isset($_GET["cliente"]) && !empty($_GET["cliente"])) {
