@@ -26,8 +26,18 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
             </div>
 
             <div class="col-md-3">
-                <label for="product_code" class="form-label">Código ou Ean do produto</label>
+                <label for="product_code" class="form-label">Código ou EAN do produto</label>
                 <input type="text" class="form-control" name="product_code" placeholder="Ex.: AB1445" value="<?= isset($_GET['product_code']) ? $_GET['product_code'] : "" ?>">
+            </div>
+
+            <div class="col-md-3">
+                <label for="importer" class="form-label">Importadora</label>
+                <select class="form-select" name="importer">
+                    <option value="">Todas</option>
+                    <option value="ATTUS" <?= isset($_GET['importer']) && $_GET['importer'] == 'ATTUS' ? 'selected' : '' ?>>ATTUS</option>
+                    <option value="ATTUS_BLOOM" <?= isset($_GET['importer']) && $_GET['importer'] == 'ATTUS_BLOOM' ? 'selected' : '' ?>>ATTUS_BLOOM</option>
+                    <option value="ALPHA_YNFINITY" <?= isset($_GET['importer']) && $_GET['importer'] == 'ALPHA_YNFINITY' ? 'selected' : '' ?>>ALPHA_YNFINITY</option>
+                </select>
             </div>
 
             <div class="col-md-3">
@@ -174,6 +184,15 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                     </tr>
                 <?php endif; ?>
             </tbody>
+
+            <tfoot style="position: sticky; bottom: -5px; z-index: 1000" class="bg-light">
+                <!-- Aqui vai ter informacoes do total de embarques retornados e tambem do total de caixas -->
+                <tr>
+                    <td colspan="4" class="text-center">Total de Embarques: <?= $totalProducts ?></td>
+                    <td class="text-center">Total de Caixas: <?= $totalBoxes ?></td>
+                    <td colspan="6"></td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 
@@ -281,7 +300,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
             form.style.display = 'none';
             this.innerHTML = htmlMaximize;
             // Mudar height da tabela para 70vh
-            document.querySelector('.table-responsive').style.maxHeight = '60vh'; 
+            document.querySelector('.table-responsive').style.maxHeight = '60vh';
         }
     });
 

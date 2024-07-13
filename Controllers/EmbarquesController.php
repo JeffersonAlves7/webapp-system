@@ -108,7 +108,9 @@ class EmbarquesController extends _Controller
             "pageCount" => $pageCount,
             "page" => $page,
             "sucesso" => $sucesso,
-            "mensagem_erro" => $mensagem_erro
+            "mensagem_erro" => $mensagem_erro,
+            "totalBoxes" => $productsData["totalBoxes"],
+            "totalProducts" => $productsData["totalProducts"]
         ]);
     }
 

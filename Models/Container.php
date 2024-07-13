@@ -29,14 +29,29 @@ class Container extends Model
 
         $products = $this->db->query($sql);
 
-        $pageCount = ceil($this->db->query("SELECT COUNT(*) as count FROM products_in_container  pc
+        // $sql = "SELECT COUNT(*) as count FROM products_in_container  pc
+        // INNER JOIN products p ON p.ID = pc.product_ID
+        // INNER JOIN lote_container lc ON lc.ID = pc.container_ID
+        // WHERE $where"
+
+        // SQL para pegar pagina, total de produtos a partir do filtro e tambem a soma da quantidade de produtos
+        $sql = "SELECT COUNT(*) as count, SUM(pc.`quantity`) as totalProducts, SUM(pc.`quantity_expected`) as totalBoxes FROM products_in_container  pc
         INNER JOIN products p ON p.ID = pc.product_ID
         INNER JOIN lote_container lc ON lc.ID = pc.container_ID
-        WHERE $where")->fetch_assoc()["count"] / $limit);
+        WHERE $where";
+
+        $result = $this->db->query($sql);
+        $row = $result->fetch_assoc();
+
+        $totalProducts = $row["totalProducts"];
+        $totalBoxes = $row["totalBoxes"];
+        $pageCount = ceil($row["count"] / $limit);
 
         return [
             "products" => $products,
-            "pageCount" => $pageCount
+            "pageCount" => $pageCount,
+            "totalProducts" => $totalProducts,
+            "totalBoxes" => $totalBoxes
         ];
     }
 
