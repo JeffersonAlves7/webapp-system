@@ -57,6 +57,21 @@ require "Components/Header.php"
                     </tr>
                 <?php endwhile; ?>
             </tbody>
+
+            <tfoot class="table-light" style="position: sticky; bottom: 0;">
+                <tr>
+                    <td>
+                        <p>Total de Produtos: <span id="total-produtos"></span></p>
+                    </td>
+                    <td>
+                        <p>Total de Saídas: <span id="total-saidas"></span></p>
+                    </td>
+                    <td>
+                        <p>Total de Devoluções: <span id="total-devolucoes"></span></p>
+                    </td>
+                    <td colspan="5"></td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </main>
@@ -101,6 +116,62 @@ require "Components/Header.php"
 
         formExportar.submit();
     });
+
+    // window.onload(() => {
+    document.addEventListener("DOMContentLoaded", () => {
+        // Carregar os totais
+        const totalProdutos = document.getElementById("total-produtos");
+        const totalSaidas = document.getElementById("total-saidas");
+        const totalDevolucoes = document.getElementById("total-devolucoes");
+
+        // Pegar todos os valores da tbody onde estão as saídas
+        const tbodySaidas = document.getElementById("tbody-saidas-diarias");
+        const saidas = tbodySaidas.querySelectorAll("tr");
+        // Pegar todas as colunas e transformar em um json
+        const saidasJson = Array.from(saidas).map(saida => {
+            const colunas = saida.querySelectorAll("td");
+            return {
+                codigo: colunas[0].innerText,
+                quantidade: colunas[1].innerText,
+                tipo: colunas[2].innerText,
+                cliente: colunas[3].innerText,
+                operador: colunas[4].innerText,
+                origem: colunas[5].innerText,
+                data: colunas[6].innerText,
+                observacao: colunas[7].innerText
+            }
+        });
+
+        // Calcular os totais
+        const totalSaidasValue = saidasJson.reduce((acc, saida) => {
+            if (saida.tipo === "Saída") {
+                acc += parseInt(saida.quantidade);
+            }
+
+            return acc;
+        }, 0);
+
+        const totalDevolucoesValue = saidasJson.reduce((acc, saida) => {
+            if (saida.tipo === "Devolução") {
+                acc += parseInt(saida.quantidade);
+            }
+
+            return acc;
+        }, 0);
+
+        const totalProdutosValue = saidasJson.reduce((acc, saida) => {
+            if (!acc.includes(saida.codigo)) {
+                acc.push(saida.codigo);
+            }
+
+            return acc;
+        }, []).length;
+
+
+        totalProdutos.innerText = totalProdutosValue;
+        totalSaidas.innerText = totalSaidasValue;
+        totalDevolucoes.innerText = totalDevolucoesValue;
+    })
 </script>
 
 <?php
