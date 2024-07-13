@@ -16,17 +16,31 @@ class Product extends Model
         }
 
         $offset = ($page - 1) * $limit;
-        $sql =  "SELECT p.*, (
-            SELECT lc.name FROM products_in_container pc 
-            INNER JOIN lote_container lc ON lc.ID = pc.container_ID
-            WHERE pc.product_ID = p.ID
-            ORDER BY pc.ID DESC
-            LIMIT 1
-        ) as container_name
-        FROM products  p
-        WHERE $where ORDER BY `ID` DESC LIMIT $limit OFFSET $offset";
+ 
+        // $sql =  "SELECT p.*, (
+        //     SELECT lc.name FROM products_in_container pc 
+        //     INNER JOIN lote_container lc ON lc.ID = pc.container_ID
+        //     WHERE pc.product_ID = p.ID
+        //     ORDER BY pc.ID DESC
+        //     LIMIT 1
+        // ) as container_name
+        // FROM products  p
+        // WHERE $where ORDER BY `ID` DESC LIMIT $limit OFFSET $offset";
+
+        // Faça a mesma query porem o produto tem que ter um inner join para conseguir o container_name
+        // ele tem que pegar apenas o ultimo container que o produto foi inserido
+        $sql = "SELECT p.*, lc.name as container_name FROM products p
+        INNER JOIN products_in_container pc ON pc.product_ID = p.ID 
+        INNER JOIN lote_container lc ON lc.ID = pc.container_ID
+        WHERE $where ORDER BY pc.ID DESC LIMIT $limit OFFSET $offset
+        ";
+
         $products = $this->db->query($sql);
-        $pageCount = ceil($this->db->query("SELECT COUNT(*) as count FROM products WHERE $where")->fetch_assoc()["count"] / $limit);
+        // $pageCount = ceil($this->db->query("SELECT COUNT(*) as count FROM products WHERE $where")->fetch_assoc()["count"] / $limit);
+        $pageCount = ceil($this->db->query("SELECT COUNT(*) as count FROM products p 
+        INNER JOIN products_in_container pc ON pc.product_ID = p.ID
+        INNER JOIN lote_container lc ON lc.ID = pc.container_ID
+        WHERE $where")->fetch_assoc()["count"] / $limit);
 
         return array(
             "products" => $products,

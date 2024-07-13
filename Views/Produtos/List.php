@@ -34,6 +34,7 @@ ob_start();
                 </tr>
                 <tr>
                     <th>
+                        <input type="search" class="form-control" name="container" placeholder="Container" value="<?= isset($_GET["container"]) ? $_GET["container"] : "" ?>">
                     </th>
                     <th>
                         <select class="form-select" name="importer" id="importer" style="min-width: 220px;">
@@ -44,8 +45,12 @@ ob_start();
                         </select>
                     </th>
                     <th><input type="search" class="form-control" name="code" placeholder="Código" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
-                    <th><input type="search" class="form-control" name="description" placeholder="Descrição" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>"></th>
-                    <th colspan="3"><input type="search" class="form-control" name="chinese_description" placeholder="Descrição em Chinês" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>"></th>
+                    <th>
+                        <input type="search" class="form-control" name="description" placeholder="Descrição" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>">
+                    </th>
+                    <th><input type="search" class="form-control" name="chinese_description" placeholder="Descrição em Chinês" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>"></th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
 

@@ -153,19 +153,22 @@ class ProdutosController extends _Controller
 
         $where = "1 = 1 ";
         if (isset($_GET["importer"]) && $_GET["importer"] != "") {
-            $where .= "AND importer LIKE \"%" . htmlspecialchars($_GET["importer"]) . "%\"";
+            $where .= " AND importer LIKE \"%" . htmlspecialchars($_GET["importer"]) . "%\"";
         }
         if (isset($_GET["code"]) && $_GET["code"] != "") {
-            $where .= "AND `code` LIKE \"%" . htmlspecialchars($_GET["code"]) . "%\"";
+            $where .= " AND `code` LIKE \"%" . htmlspecialchars($_GET["code"]) . "%\"";
         }
         if (isset($_GET["ean"]) && $_GET["ean"] != "") {
-            $where .= "AND ean LIKE \"%" . htmlspecialchars($_GET["ean"]) . "%\"";
+            $where .= " AND ean LIKE \"%" . htmlspecialchars($_GET["ean"]) . "%\"";
         }
         if (isset($_GET["description"]) && $_GET["description"] != "") {
-            $where .= "AND `description` LIKE \"%" . htmlspecialchars($_GET["description"]) . "%\"";
+            $where .= " AND `description` LIKE \"%" . htmlspecialchars($_GET["description"]) . "%\"";
         }
         if (isset($_GET["chinese_description"]) && $_GET["chinese_description"] != "") {
-            $where .= "AND chinese_description LIKE \"%" . htmlspecialchars($_GET["chinese_description"]) . "%\"";
+            $where .= " AND chinese_description LIKE \"%" . htmlspecialchars($_GET["chinese_description"]) . "%\"";
+        }
+        if(isset($_GET["container"]) && $_GET["container"] != "") {
+            $where .= " AND lc.name LIKE '" . $_GET["container"] . "%'";
         }
 
         $productResponse = $this->productModel->getAll($page, where: $where);
