@@ -89,7 +89,7 @@ require "Components/Header.php";
             <form action="/lancamento/cancelarTransferencias" method="post" id="form-cancel">
                 <button type="submit" class="btn btn-danger">Cancelar</button>
             </form>
-            <form action="/lancamento/exportarTransferencias" method="post" id="form-export" onsubmit="handleFormExportSubmit(event)">
+            <form action="/lancamento/exportarConferirTransferencias" method="post" id="form-export" onsubmit="handleFormExportSubmit(event)" target="_blank">
                 <button type="submit" class="btn btn-success">Exportar</button>
             </form>
         </div>
