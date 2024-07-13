@@ -5,31 +5,6 @@ ob_start();
 
 <?php require "Components/Header.php" ?>
 
-<style>
-    /* Quero que a primeira coluna da tabela tenha uma largura maxima, pois quando o container do produto eh muito grande a coluna fica muito larga... */
-
-    table {
-        table-layout: fixed;
-    }
-
-    table th:first-child,
-    table td:first-child {
-        max-width: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    /* A ultima e a penultima tambem sao apenas icones e podem ser diminuidas  */
-    /* Esses seriam os icones de deletar e de editar */
-    table th:nth-last-child(1),
-    table td:nth-last-child(1),
-    table th:nth-last-child(2),
-    table td:nth-last-child(2) {
-        width: 50px;
-    }
-</style>
-
 <main>
     <h1 class="mt-4 mb-3">Produtos</h1>
 
