@@ -16,7 +16,15 @@ class Product extends Model
         }
 
         $offset = ($page - 1) * $limit;
-        $sql =  "SELECT * FROM products WHERE $where ORDER BY `ID` DESC LIMIT $limit OFFSET $offset";
+        $sql =  "SELECT p.*, (
+            SELECT lc.name FROM products_in_container pc 
+            INNER JOIN lote_container lc ON lc.ID = pc.container_ID
+            WHERE pc.product_ID = p.ID
+            ORDER BY pc.ID DESC
+            LIMIT 1
+        ) as container_name
+        FROM products  p
+        WHERE $where ORDER BY `ID` DESC LIMIT $limit OFFSET $offset";
         $products = $this->db->query($sql);
         $pageCount = ceil($this->db->query("SELECT COUNT(*) as count FROM products WHERE $where")->fetch_assoc()["count"] / $limit);
 

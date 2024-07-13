@@ -5,6 +5,31 @@ ob_start();
 
 <?php require "Components/Header.php" ?>
 
+<style>
+    /* Quero que a primeira coluna da tabela tenha uma largura maxima, pois quando o container do produto eh muito grande a coluna fica muito larga... */
+
+    table {
+        table-layout: fixed;
+    }
+
+    table th:first-child,
+    table td:first-child {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* A ultima e a penultima tambem sao apenas icones e podem ser diminuidas  */
+    /* Esses seriam os icones de deletar e de editar */
+    table th:nth-last-child(1),
+    table td:nth-last-child(1),
+    table th:nth-last-child(2),
+    table td:nth-last-child(2) {
+        width: 50px;
+    }
+</style>
+
 <main>
     <h1 class="mt-4 mb-3">Produtos</h1>
 
@@ -20,27 +45,34 @@ ob_start();
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000">
                 <tr>
-                    <th><i class="bi bi-tag"></i> Código</th>
-                    <th><i class="bi bi-barcode"></i> EAN</th>
+                    <th>
+                        <i class="bi bi-box"></i>
+                        Container
+                    </th>
                     <th><i class="bi bi-shop"></i> Importadora</th>
+                    <th><i class="bi bi-tag"></i> Código</th>
                     <th><i class="bi bi-file-text"></i> Descrição</th>
                     <th><i class="bi bi-file-earmark-text"></i> Descrição em Chinês</th>
                     <th></th>
                     <th></th>
                 </tr>
                 <tr>
-                    <th><input type="search" class="form-control" name="code" placeholder="Filtrar por código" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
-                    <th><input type="search" class="form-control" name="ean" placeholder="Filtrar por EAN" value="<?= isset($_GET["ean"]) ? $_GET["ean"] : "" ?>"></th>
+                    <th>
+                        <p style="margin: 0;">
+                            Filtros:
+                        </p>
+                    </th>
                     <th>
                         <select class="form-select" name="importer" id="importer" style="min-width: 220px;">
-                            <option value="">Selecione uma opção</option>
+                            <option value="">Todos</option>
                             <option value="ATTUS" <?= (isset($_GET["importer"]) && $_GET["importer"] == "ATTUS") ? "selected" : "" ?>>ATTUS</option>
                             <option value="ATTUS_BLOOM" <?= (isset($_GET["importer"]) && $_GET["importer"] == "ATTUS_BLOOM") ? "selected" : "" ?>>ATTUS_BLOOM</option>
                             <option value="ALPHA_YNFINITY" <?= (isset($_GET["importer"]) && $_GET["importer"] == "ALPHA_YNFINITY") ? "selected" : "" ?>>ALPHA_YNFINITY</option>
                         </select>
                     </th>
-                    <th><input type="search" class="form-control" name="description" placeholder="Filtrar por descrição" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>"></th>
-                    <th colspan="3"><input type="search" class="form-control" name="chinese_description" placeholder="Filtrar por descrição em Chinês" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>"></th>
+                    <th><input type="search" class="form-control" name="code" placeholder="Código" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
+                    <th><input type="search" class="form-control" name="description" placeholder="Descrição" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>"></th>
+                    <th colspan="3"><input type="search" class="form-control" name="chinese_description" placeholder="Descrição em Chinês" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>"></th>
                 </tr>
             </thead>
 
@@ -49,12 +81,14 @@ ob_start();
                     <?php while ($row = $products->fetch_assoc()) : ?>
                         <tr>
                             <td>
+                                <?= $row["container_name"] ?? '-' ?>
+                            </td>
+                            <td><i class='bi bi-shop'></i> <?= htmlspecialchars($row["importer"] ?? '-') ?></td>
+                            <td>
                                 <a href='/produtos/byId/<?= htmlspecialchars($row["ID"]) ?>' title='Ver mais' class="d-flex gap-2">
                                     <i class='bi bi-tag'></i> <?= htmlspecialchars($row["code"]) ?>
                                 </a>
                             </td>
-                            <td><i class='bi bi-barcode'></i> <?= htmlspecialchars($row["ean"] ?? '-') ?></td>
-                            <td><i class='bi bi-shop'></i> <?= htmlspecialchars($row["importer"] ?? '-') ?></td>
                             <td><?= $row["description"] ?></td>
                             <td><?= $row["chinese_description"] ?></td>
                             <td>
@@ -239,41 +273,43 @@ ob_start();
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll('.btn-edit').forEach(function(button) {
-            button.addEventListener('click', function() {
-                var productId = this.getAttribute('data-id');
-                var code = this.getAttribute('data-code');
-                var ean = this.getAttribute('data-ean');
-                var importer = this.getAttribute('data-importer');
-                var description = this.getAttribute('data-description');
-                var chineseDescription = this.getAttribute('data-chinese-description');
+    document.querySelectorAll('.btn-edit').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var productId = this.getAttribute('data-id');
+            var code = this.getAttribute('data-code');
+            var ean = this.getAttribute('data-ean');
+            var importer = this.getAttribute('data-importer');
+            var description = this.getAttribute('data-description');
+            var chineseDescription = this.getAttribute('data-chinese-description');
 
-                document.getElementById('productId').value = productId;
-                document.getElementById('update-code').value = code;
-                document.getElementById('update-ean').value = ean;
-                document.getElementById('update-importer').value = importer;
-                document.getElementById('update-description').value = description;
-                document.getElementById('update-chineseDescription').value = chineseDescription;
+            document.getElementById('productId').value = productId;
+            document.getElementById('update-code').value = code;
+            document.getElementById('update-ean').value = ean;
+            document.getElementById('update-importer').value = importer;
+            document.getElementById('update-description').value = description;
+            document.getElementById('update-chineseDescription').value = chineseDescription;
 
-                document.querySelectorAll('.form-control').forEach(function(input) {
-                    input.classList.remove('modified');
-                });
+            document.querySelectorAll('.form-control').forEach(function(input) {
+                input.classList.remove('modified');
             });
         });
+    });
 
-        document.querySelectorAll('#updateProductModal .form-control').forEach(function(input) {
-            input.addEventListener('input', function() {
-                this.classList.add('modified');
-            });
+    document.querySelectorAll('#updateProductModal .form-control').forEach(function(input) {
+        input.addEventListener('input', function() {
+            this.classList.add('modified');
         });
+    });
 
-        document.querySelectorAll('.btn-delete').forEach(function(button) {
-            button.addEventListener('click', function() {
-                var productId = this.getAttribute('data-id');
-                document.getElementById('deleteProductId').value = productId;
-            });
+    document.querySelectorAll('.btn-delete').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var productId = this.getAttribute('data-id');
+            document.getElementById('deleteProductId').value = productId;
         });
+    });
+
+    document.getElementById('importer').addEventListener('change', function() {
+        this.form.submit();
     });
 </script>
 <?php
