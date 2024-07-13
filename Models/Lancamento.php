@@ -163,6 +163,51 @@ class Lancamento
         self::createTransaction($this->db, $product_ID, $stock_ID, null, "Saída", $quantidade, $nome_cliente, $observacao);
     }
 
+    public function criarSaidaEmMassa(
+        $products
+    ) {
+        $this->db->beginTransaction(); // Inicia a transação
+
+        try {
+            foreach ($products as $product) {
+                $product_ID = $product['product_ID'];
+                $quantidade = $product['quantity'];
+                $stock_ID = $product['stock'];
+                $nome_cliente = $product['client'];
+                $observacao = $product['observation'];
+
+                $result = $this->db->query(
+                    "SELECT * FROM `quantity_in_stock` 
+                    WHERE `product_ID` = $product_ID AND `stock_ID` = $stock_ID"
+                );
+
+                if ($result->num_rows == 0) {
+                    throw new Exception("Quantidade insuficiente do produto no estoque selecionado");
+                }
+
+                $row = $result->fetch_assoc();
+                if ($row["quantity"] < (int) $quantidade) {
+                    throw new Exception("Quantidade insuficiente do produto no estoque selecionado");
+                }
+
+                // Alterando quantidade do produto no estoque
+                $this->db->query(
+                    "UPDATE `quantity_in_stock` 
+                    SET `quantity` = `quantity` - $quantidade 
+                    WHERE `ID` = " . $row["ID"]
+                );
+
+                // Criando Transação do tipo Saída para esse produto e estoque
+                self::createTransaction($this->db, $product_ID, $stock_ID, null, "Saída", $quantidade, $nome_cliente, $observacao);
+            }
+
+            $this->db->commit(); // Confirma a transação
+        } catch (Exception $e) {
+            $this->db->rollback(); // Reverte a transação em caso de erro
+            throw $e; // Lança a exceção para cima
+        }
+    }
+
     public function criarTransferencia(
         $product_ID,
         $quantidade,
