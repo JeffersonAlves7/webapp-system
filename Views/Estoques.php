@@ -192,7 +192,7 @@ require "Components/Header.php";
         $isNextDisabled = !isset($produtos) || !count($produtos) > 0 || $currentPage >= $pageCount;
         ?>
 
-        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mt-2" style="max-width: 250px; margin: 0 auto;">
             <form method="GET" class="d-flex align-items-center">
                 <input type="hidden" name="page" value="<?= $prevPage ?>">
                 <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
