@@ -35,7 +35,10 @@ class Container extends Model
         // WHERE $where"
 
         // SQL para pegar pagina, total de produtos a partir do filtro e tambem a soma da quantidade de produtos
-        $sql = "SELECT COUNT(*) as count, SUM(pc.`quantity`) as totalProducts, SUM(pc.`quantity_expected`) as totalBoxes FROM products_in_container  pc
+        $sql = "SELECT 
+            COUNT(*) as count, 
+            SUM(pc.`quantity_expected`) as totalBoxes 
+        FROM products_in_container  pc
         INNER JOIN products p ON p.ID = pc.product_ID
         INNER JOIN lote_container lc ON lc.ID = pc.container_ID
         WHERE $where";
@@ -43,14 +46,13 @@ class Container extends Model
         $result = $this->db->query($sql);
         $row = $result->fetch_assoc();
 
-        $totalProducts = $row["totalProducts"];
         $totalBoxes = $row["totalBoxes"];
         $pageCount = ceil($row["count"] / $limit);
 
         return [
             "products" => $products,
             "pageCount" => $pageCount,
-            "totalProducts" => $totalProducts,
+            "totalProducts" => $row["count"],
             "totalBoxes" => $totalBoxes
         ];
     }
