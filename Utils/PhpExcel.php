@@ -5,6 +5,7 @@
 require_once "vendor/autoload.php";
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class PhpExcel
 {
@@ -24,7 +25,15 @@ class PhpExcel
                     break;
                 }
 
-                $cells[] = $cell->getValue();
+                $value = $cell->getValue();
+
+                // Verifica se o valor é um número e trata-o como uma data se for necessário
+                if (is_numeric($value) && $value > 0 && Date::isDateTime($cell)) {
+                    $date = Date::excelToDateTimeObject($value);
+                    $value = $date->format('d/m/Y'); // Formato de data desejado
+                }
+
+                $cells[] = $value;
             }
 
             if (count(array_filter($cells)) == 0) {
