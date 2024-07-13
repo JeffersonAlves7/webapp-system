@@ -33,9 +33,6 @@ ob_start();
                 </tr>
                 <tr>
                     <th>
-                        <p style="margin: 0;">
-                            Filtros:
-                        </p>
                     </th>
                     <th>
                         <select class="form-select" name="importer" id="importer" style="min-width: 220px;">
