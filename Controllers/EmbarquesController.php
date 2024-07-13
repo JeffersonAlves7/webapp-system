@@ -85,7 +85,7 @@ class EmbarquesController extends _Controller
             $where .= " AND p.`importer` = '$importer'";
         }
 
-        if (isset($_GET["status"]) && !empty($_GET["status"])) {
+        if (isset($_GET["status"]) && $_GET["status"] != "") {
             $status = htmlspecialchars($_GET["status"]);
             $where .= " AND pc.`in_stock` = $status";
         }

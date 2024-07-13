@@ -44,8 +44,8 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                 <label for="status" class="form-label">Status</label>
                 <select class="form-select" name="status">
                     <option value="">Todos</option>
-                    <option value="1" <?= isset($_GET['status']) && $_GET['status'] == 'in_stock' ? 'selected' : '' ?>>Em Estoque</option>
-                    <option value="0" <?= isset($_GET['status']) && $_GET['status'] == 'in_transit' ? 'selected' : '' ?>>Em Trânsito</option>
+                    <option value="1" <?= isset($_GET['status']) && $_GET['status'] == '1' ? 'selected' : '' ?>>Em Estoque</option>
+                    <option value="0" <?= isset($_GET['status']) && $_GET['status'] == '0' ? 'selected' : '' ?>>Em Trânsito</option>
                 </select>
             </div>
         </div>
