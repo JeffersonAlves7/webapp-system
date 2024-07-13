@@ -432,6 +432,49 @@ class Lancamento
         self::createTransaction($this->db, $produto_ID, null, $estoque_destino_ID, "Devolução", $quantidade, $cliente, $observacao);
     }
 
+    public function criarDevolucaoEmMassa(
+        $products
+    ) {
+        $this->db->beginTransaction();
+
+        try {
+            foreach ($products as $product) {
+                $product_ID = $product['product_ID'];
+                $quantity = $product['quantity'];
+                $stock_ID = $product['stock'];
+                $client = $product['client'];
+                $observation = $product['observation'];
+
+                $result = $this->db->query(
+                    "SELECT * FROM `quantity_in_stock` 
+                    WHERE `product_ID` = $product_ID AND `stock_ID` = $stock_ID"
+                );
+
+                // Se não existir, criar registro
+                if ($result->num_rows == 0) {
+                    $this->db->query("INSERT INTO quantity_in_stock (`product_ID`, `stock_ID`, `quantity`) VALUES ($product_ID, $stock_ID, $quantity)");
+                } else {
+                    // Se existir, atualizar a quantidade
+                    $row = $result->fetch_assoc();
+                    $estoque_destino_quantidade_ID = $row["ID"];
+                    $nova_quantidade = $row["quantity"] + $quantity;
+                    $this->db->query(
+                        "UPDATE `quantity_in_stock` 
+                    SET `quantity` = $nova_quantidade
+                    WHERE `ID` = $estoque_destino_quantidade_ID"
+                    );
+                }
+
+                self::createTransaction($this->db, $product_ID, null, $stock_ID, "Devolução", $quantity, $client, $observation);
+            }
+
+            $this->db->commit();
+        } catch (Exception $e) {
+            $this->db->rollback();
+            throw $e;
+        }
+    }
+
     public static function createTransaction($db, $product_ID, $from_stock_ID, $to_stock_ID, $type_ID, $quantity, $client_name = null, $observation = null)
     {
         // Check if the transaction type exists, if not, create it

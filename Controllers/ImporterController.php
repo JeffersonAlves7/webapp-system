@@ -153,6 +153,68 @@ class ImporterController extends _Controller
         header("Location: /lancamento/entrada");
     }
 
+    public function importarDevolucao()
+    {
+        // Colunas da planilha de devolucao: ean, codigo, importadora, quantidade, origem/cliente, estoque, observacao
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            try {
+                $this->verifyWritePermission();
+
+                $file = $_FILES['file'];
+                $rows = PhpExcel::read(($file['tmp_name']));
+
+                if (count($rows) == 0) {
+                    $_SESSION['mensagem_erro'] = "Nenhum dado encontrado na planilha!";
+                    header("Location: " . $_SERVER["REQUEST_URI"]);
+                    exit();
+                }
+
+                echo PhpExcel::formatAsTable($rows);
+
+                array_shift($rows); // Remove o cabeçalho
+
+                $products = [];
+
+                foreach ($rows as $row) {
+                    // $ean = $row[0];
+                    $code = $row[1];
+                    $importer = $this->validateImporter($row[2]);
+                    $quantity = $row[3];
+                    $client = $row[4];
+                    $stock = $this->validateStock($row[5]);
+                    $observation = $row[6];
+
+                    $product = $this->importerModel->getProductByCodeAndImporter($code, $importer);
+
+                    if (!$product) {
+                        $_SESSION['mensagem_erro'] = "Produto não encontrado: $code - $importer";
+                        header("Location: " . $_SERVER["REQUEST_URI"]);
+                        exit();
+                    }
+
+                    $productQuantity = $this->importerModel->getProductQuantity($product['ID'], $stock);
+
+                    $products[] = [
+                        "product_ID" => $product['ID'],
+                        "quantity" => $quantity,
+                        "stock" => $productQuantity['stock_ID'],
+                        "client" => $client,
+                        "observation" => $observation
+                    ];
+                }
+
+                $this->lancamentoModel->criarDevolucaoEmMassa($products);
+                $_SESSION['sucesso'] = true;
+            } catch (Exception $e) {
+                $_SESSION['mensagem_erro'] = $e->getMessage();
+                header("Location: " . $_SERVER["REQUEST_URI"]);
+                exit();
+            }
+        }
+
+        header("Location: /lancamento/devolucao");
+    }
+
     private function validateStock($stock)
     {
         if (!$stock) {
