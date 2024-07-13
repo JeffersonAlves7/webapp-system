@@ -59,7 +59,7 @@ class ImporterController extends _Controller
                     $client = $row[5];
                     $observation = $row[6];
 
-                    $product = $this->importerModel->getProductByCodeAndImporter($code, $importer, $stock);
+                    $product = $this->importerModel->getProductByCodeAndImporter($code, $importer);
 
                     if (!$product) {
                         $_SESSION['mensagem_erro'] = "Produto não encontrado: $code - $importer";
@@ -120,12 +120,12 @@ class ImporterController extends _Controller
                 foreach ($rows as $row) {
                     // $ean = $row[0];
                     $code = $row[1];
-                    $importer = $this->validateImporter($row[2]);
-                    $quantity = $row[3];
-                    $stock = $this->validateStock($row[4]);
+                    $quantity = $row[2];
+                    $lote_container = $row[3];
+                    $importer = $this->validateImporter($row[4]);
                     $observation = $row[5];
 
-                    $product = $this->importerModel->getProductByCodeAndImporter($code, $importer, $stock);
+                    $product = $this->importerModel->getProductByCodeAndImporter($code, $importer);
 
                     if (!$product) {
                         $_SESSION['mensagem_erro'] = "Produto não encontrado: $code - $importer";
@@ -136,7 +136,7 @@ class ImporterController extends _Controller
                     $products[] = [
                         "product_ID" => $product['ID'],
                         "quantity" => $quantity,
-                        "stock" => $stock,
+                        "lote_container" => $lote_container,
                         "observation" => $observation
                     ];
                 }
