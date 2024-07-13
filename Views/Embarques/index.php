@@ -312,6 +312,22 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
         var deleteContainerLink = document.getElementById('deleteContainerLink');
         deleteContainerLink.href = "/embarques/deletar/" + container_ID;
     });
+
+    // Todos os selects de dentro do formulario, quando alterados, devem apresentar um submit automatico
+    document.querySelectorAll('form select').forEach(select => {
+        select.addEventListener('change', function() {
+            this.form.submit();
+        });
+    });
+
+    // Todos os inputs de dentro do formulario, quando apertar enter, devem apresentar um submit automatico
+    document.querySelectorAll('form input').forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                this.form.submit();
+            }
+        });
+    });
 </script>
 
 
