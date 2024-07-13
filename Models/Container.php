@@ -35,8 +35,10 @@ class Container extends Model
         } else {
             // Utilizar trim para remover espaços em branco
             $product_code = trim($product_code);
-            echo "-$product_code-";
-            $product_IDS = $this->db->query("SELECT ID FROM products WHERE code LIKE '$product_code%'")->fetch_all(MYSQLI_ASSOC);
+            $product_IDS = $this->db->query("SELECT ID FROM products WHERE 
+                code LIKE '$product_code%'
+                OR `ean` LIKE '$product_code%'
+            ")->fetch_all(MYSQLI_ASSOC);
             $product_IDS = array_map(function ($product) {
                 return $product["ID"];
             }, $product_IDS);

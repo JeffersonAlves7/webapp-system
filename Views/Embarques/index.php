@@ -27,7 +27,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
 
         <!-- Filtro por código do produto -->
         <div class="col-md-3">
-            <label for="product_code" class="form-label">Código do produto</label>
+            <label for="product_code" class="form-label">Código ou Ean do produto</label>
             <input type="text" class="form-control" name="product_code" placeholder="Ex.: AB1445" value="<?= isset($_GET['product_code']) ? $_GET['product_code'] : "" ?>">
         </div>
 
