@@ -16,7 +16,6 @@ require "Components/Header.php"
         overflow: hidden;
         text-overflow: ellipsis;
     }
-
 </style>
 
 <main>
@@ -84,7 +83,7 @@ require "Components/Header.php"
                         <p>Total de Devoluções: <span id="total-devolucoes"></span></p>
                     </td>
                     <td colspan="2">
-                        <p>Total de Linhas: <?= $dados->num_rows ?></p>
+                        <p>Total de Movimentações: <span id="total-movimentacoes"></span></p>
                     </td>
                 </tr>
             </tfoot>
@@ -139,6 +138,7 @@ require "Components/Header.php"
         const totalProdutos = document.getElementById("total-produtos");
         const totalSaidas = document.getElementById("total-saidas");
         const totalDevolucoes = document.getElementById("total-devolucoes");
+        const totalMovimentacoes = document.getElementById("total-movimentacoes");
 
         // Pegar todos os valores da tbody onde estão as saídas
         const tbodySaidas = document.getElementById("tbody-saidas-diarias");
@@ -187,6 +187,7 @@ require "Components/Header.php"
         totalProdutos.innerText = totalProdutosValue;
         totalSaidas.innerText = totalSaidasValue;
         totalDevolucoes.innerText = totalDevolucoesValue;
+        totalMovimentacoes.innerText = totalSaidasValue + totalDevolucoesValue;
     })
 </script>
 
