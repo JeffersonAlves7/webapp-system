@@ -173,6 +173,17 @@ require "Components/Header.php";
                     </tr>
                 <?php endif; ?>
             </tbody>
+
+            <tfoot class="bg-light" style="position: sticky; bottom: -5px; z-index: 1000;">
+                <!-- Aqui no tfoot vai ter a informacao de total de produtos e de caixas -->
+                <tr>
+                    <?= isset($_GET["estoque"]) && $_GET["estoque"] != 1 && !empty($_GET["estoque"]) ? "<td colspan='9'>" : "<td colspan='10'>" ?>
+                    <?php if (isset($totalProdutos) && isset($totalCaixas)) : ?>
+                        <strong>Total de produtos: <?= $totalProdutos ?> | Total de caixas: <?= $totalCaixas ?></strong>
+                    <?php endif; ?>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 

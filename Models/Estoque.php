@@ -30,8 +30,10 @@ class Estoque extends Model
             p.importer as importadora,
             (SUM(qis.quantity) + SUM(qis.quantity_in_reserve)) as saldo_atual
             FROM `products` p
-            JOIN `quantity_in_stock` qis ON p.ID = qis.product_ID
-            WHERE $where $stock_sql
+            INNER JOIN `quantity_in_stock` qis ON p.ID = qis.product_ID
+            WHERE (
+                SELECT COUNT(*) FROM `transactions` t2 WHERE t2.product_ID = p.ID  LIMIT 1
+            ) > 0 AND $where $stock_sql
             GROUP BY p.ID
             ORDER BY $order
             LIMIT ? OFFSET ?";
@@ -42,32 +44,37 @@ class Estoque extends Model
         if ($stock_ID) {
             array_unshift($params, $stock_ID);
         }
+
         $stmt->bind_param(str_repeat('i', count($params)), ...$params);
 
         // Executar a consulta
         $stmt->execute();
         $produtos_result = $stmt->get_result();
-
-        $produtos = [];
-        while ($produto = $produtos_result->fetch_assoc()) {
-            $produtos[] = $produto;
-        }
+        $produtos = $produtos_result->fetch_all(MYSQLI_ASSOC);
 
         // Obter contagem total de páginas
-        $total_count_sql = "SELECT COUNT(DISTINCT p.ID) as count
+        $total_count_sql = "SELECT COUNT(DISTINCT p.ID) as count,
+                            SUM(qis.quantity) as saldo_total
                             FROM `products` p
-                            JOIN `quantity_in_stock` qis ON p.ID = qis.product_ID
-                            WHERE $where $stock_sql";
+                            INNER JOIN `quantity_in_stock` qis ON p.ID = qis.product_ID
+                            WHERE 
+                            (
+                                SELECT COUNT(*) FROM `transactions` t2 WHERE t2.product_ID = p.ID  LIMIT 1
+                            ) > 0 AND $where $stock_sql";
+
         $stmt = $this->db->prepare($total_count_sql);
         if ($stock_ID) {
             $stmt->bind_param('i', $stock_ID);
         }
+
         $stmt->execute();
         $total_count_result = $stmt->get_result();
-        $total_count = $total_count_result->fetch_assoc()['count'];
+        $total_count_result = $total_count_result->fetch_assoc();
+        $total_count = $total_count_result['count'];
+        $saldo_total = $total_count_result['saldo_total'];
         $pageCount = ceil($total_count / $limit);
 
-        // Buscar informações adicionais para os produtos fora do loop principal
+        // Buscar informações adicionais para produtos fora do loop principal
         $product_ids = array_column($produtos, 'ID');
         if (!empty($product_ids)) {
             $product_ids_placeholder = implode(',', array_fill(0, count($product_ids), '?'));
@@ -132,7 +139,9 @@ class Estoque extends Model
 
         return [
             "products" => $produtos,
-            "pageCount" => $pageCount
+            "pageCount" => $pageCount,
+            "total_count" => $total_count,
+            "saldo_total" => $saldo_total
         ];
     }
 }

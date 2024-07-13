@@ -73,18 +73,18 @@ class EstoquesController extends _Controller
 
         $stocks = $this->estoquesModel->getAll();
         $productsData = $this->estoquesModel->getProductsByStock($estoque_ID, $page, limit: 30, alert: $alert, where: $where, order: $orderBy . " " . $orderType);
-        $produtos = $productsData["products"];
-        $pageCount = $productsData["pageCount"];
 
         return $this->view(
             "Estoques",
             [
                 "estoques" => $stocks,
-                "produtos" => $produtos,
+                "produtos" => $productsData["products"],
                 "page" => $page,
-                "pageCount" => $pageCount,
+                "pageCount" => $productsData["pageCount"],
                 "sucesso" => $sucesso,
-                "mensagem_erro" => $mensagem_erro
+                "mensagem_erro" => $mensagem_erro,
+                "totalProdutos"  => $productsData["total_count"],
+                "totalCaixas" => $productsData["saldo_total"],
             ]
         );
     }
