@@ -90,16 +90,43 @@ require "Components/Header.php";
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-custom">Enviar</button>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="submit" class="btn btn-custom">Enviar</button>
+
+                        <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#importModal">
+                            Importar
+                            <i class="bi bi-file-earmark-arrow-up"></i>
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </main>
 
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-custom text-white">
+                <h5 class="modal-title" id="importModalLabel">Importar Planilha</h5>
+                <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Escolha uma opção:</p>
+                <div class="d-flex justify-content-between">
+                    <a href="/public/Templates/devolucao.xlsx" download>
+                        <button type="button" class="btn btn-custom">Baixar planilha</button>
+                    </a>
+
+                    <button type="button" class="btn btn-custom" data-bs-dismiss="modal">Importar planilha</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="/public/lancamento.js"></script>
-<script>
-</script>
 
 <?php
 $content = ob_get_clean();
