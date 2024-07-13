@@ -200,6 +200,53 @@ class Lancamento
         }
     }
 
+    public function criarReservaEmMassa(
+        $products
+    ) {
+        $this->db->beginTransaction(); // Inicia a transação
+
+        try {
+            foreach ($products as $product) {
+                $product_ID = $product['product_ID'];
+                $stock_ID = $product['stock'];
+                $quantity = $product['quantity'];
+                $client_name = $product['client'];
+                $rescue_date = $product['rescue_date'];
+                $observation = $product['observation'];
+
+                // Verificar se tem quantidade suficiente do produto para reservar
+                $results = $this->db->query("SELECT * FROM quantity_in_stock WHERE 
+                    stock_ID = $stock_ID 
+                    AND product_ID = $product_ID 
+                    AND quantity >= $quantity");
+
+                if ($results->num_rows > 0) {
+                    //cria registro na tabela reserva e altera quantidade na tabela stock
+                    $sql = "INSERT into `reserves` (product_ID, stock_ID, quantity, client_name, rescue_date) VALUES ($product_ID,
+                        $stock_ID,
+                        $quantity,
+                        '$client_name',
+                        '$rescue_date')";
+
+                    $this->db->query($sql);
+
+                    $this->db->query("UPDATE quantity_in_stock 
+                        SET quantity_in_reserve = quantity_in_reserve + $quantity, quantity = quantity - $quantity 
+                        WHERE stock_ID = $stock_ID AND product_ID = $product_ID");
+
+                    // $this->createTransaction($product_ID, $stock_ID, null, "Reserva", $quantity, $observation);
+                } else {
+                    throw new Exception("O produto não possuí quantidade suficiente para reserva em estoque!");
+                }
+            }
+
+            $this->db->commit();
+        } catch (Exception $e) {
+            $this->db->rollback();
+            throw $e;
+        }
+    }
+
     public function criarSaida(
         $product_ID,
         $quantidade,
