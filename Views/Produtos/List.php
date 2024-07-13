@@ -21,8 +21,9 @@ ob_start();
             <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000">
                 <tr>
                     <th>
-                        <i class="bi bi-box"></i>
-                        Container
+                        <div class="d-flex gap-2">
+                            <i class="bi bi-box"></i> Container
+                        </div>
                     </th>
                     <th><i class="bi bi-shop"></i> Importadora</th>
                     <th><i class="bi bi-tag"></i> Código</th>
