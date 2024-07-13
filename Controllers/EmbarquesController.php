@@ -80,6 +80,11 @@ class EmbarquesController extends _Controller
             $where .= " AND p.`code` LIKE '$product_code%' OR p.`ean` LIKE '$product_code%'";
         }
 
+        if (isset($_GET["importer"]) && !empty($_GET["importer"])) {
+            $importer = htmlspecialchars($_GET["importer"]);
+            $where .= " AND p.`importer` = '$importer'";
+        }
+
         if (isset($_GET["status"]) && !empty($_GET["status"])) {
             $status = htmlspecialchars($_GET["status"]);
             $where .= " AND pc.`in_stock` = $status";
