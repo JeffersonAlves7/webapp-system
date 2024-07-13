@@ -130,7 +130,6 @@ require "Components/Header.php";
 
 <script src="/public/lancamento.js"></script>
 <script>
-    // Funcao para importar planilha saida
     document.getElementById('file').addEventListener('change', function() {
         this.form.submit();
     });
