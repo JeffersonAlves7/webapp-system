@@ -269,7 +269,7 @@ class LancamentoController extends _Controller
                 }, $this->lancamentoModel->getTransferenciasPendentes(
                     "`transferences`.`ID` IN ($idsString)"
                 )),
-                "Transferências Pendentes.pdf"
+                "Transferências Pendentes Data " . date('d-m-Y H:i:s')
             );
         }
     }
@@ -297,15 +297,13 @@ class LancamentoController extends _Controller
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $dados = $this->lancamentoModel->getTransferenciasPendentes();
 
-            if(empty($dados['transferencias'])) {
+            if (empty($dados['transferencias'])) {
                 $_SESSION['mensagem_erro'] = "Não há transferências pendentes para exportar!";
                 header("Location: /lancamento/conferirTransferencias");
                 exit();
             }
 
             $transferencias = $dados['transferencias'];
-
-
 
             PhpExporter::exportToExcel(
                 array('Produto', 'Importadora', 'Descrição', 'Quantidade', 'Origem', 'Destino', 'Observação'),
@@ -320,7 +318,7 @@ class LancamentoController extends _Controller
                         $transferencia['observation']
                     ];
                 }, $transferencias),
-                "Transferências Pendentes.pdf"
+                "Transferências Pendentes - " . date('d-m-Y H:i:s')
             );
         }
     }

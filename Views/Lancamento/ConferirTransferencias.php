@@ -15,8 +15,8 @@ require "Components/Header.php";
             <h1 class="mt-4 mb-3">Conferir transferências</h1>
         </div>
 
-        <form action="/lancamento/exportarConferirTransferencias" method="POST" id="form-export" target="_blank">
-            <button type="submit" class="btn btn-success fill-button">
+        <!-- <form action="/lancamento/exportarConferirTransferencias" method="POST" id="form-export" target="_blank">
+            <button type="submit" class="btn btn-success">
                 Exportar
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-pdf" viewBox="0 0 16 16">
                     <path d="M6.5 0a.5.5 0 0 1 .5.5V3h-1V.5a.5.5 0 0 1 .5-.5z" />
@@ -24,7 +24,7 @@ require "Components/Header.php";
                     <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h8.793a.5.5 0 0 1 .354.146l2.561 2.561a.5.5 0 0 1 .146.353V14.5a1.5 1.5 0 0 1-1.5 1.5H1.5A1.5 1.5 0 0 1 0 14.5V1.5z" />
                 </svg>
             </button>
-        </form>
+        </form> -->
     </div>
 
     <?php require "Components/StatusMessage.php"; ?>
@@ -89,7 +89,7 @@ require "Components/Header.php";
             <form action="/lancamento/cancelarTransferencias" method="post" id="form-cancel">
                 <button type="submit" class="btn btn-danger">Cancelar</button>
             </form>
-            <form action="/lancamento/exportarTransferencias" method="post" id="form-export" target="_blank">
+            <form action="/lancamento/exportarTransferencias" method="post" id="form-export" onsubmit="handleFormExportSubmit(event)">
                 <button type="submit" class="btn btn-success">Exportar</button>
             </form>
         </div>
@@ -192,8 +192,7 @@ require "Components/Header.php";
         cancelForm.submit();
     });
 
-    const exportForm = document.getElementById('form-export');
-    exportForm.addEventListener('submit', (event) => {
+    function handleFormExportSubmit(event) {
         event.preventDefault();
 
         const selectedIds = getTransferencesData().map(v => v.id);
@@ -207,10 +206,10 @@ require "Components/Header.php";
         input.type = 'hidden';
         input.name = 'transference-ids';
         input.value = JSON.stringify(selectedIds);
-        exportForm.appendChild(input);
+        event.currentTarget.appendChild(input);
 
-        exportForm.submit();
-    });
+        event.currentTarget.submit();
+    }
 
     function getTransferencesData() {
         const selectedCheckboxes = document.querySelectorAll('input[name="is-checked"]:checked');
