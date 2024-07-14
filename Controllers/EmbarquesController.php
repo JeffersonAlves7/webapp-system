@@ -6,54 +6,15 @@ require_once "Utils/PhpExcel.php";
 class EmbarquesController extends _Controller
 {
     private $containerModel;
+    private $controller_name;
 
     public function __construct()
     {
-        parent::__construct();
+        parent::__construct("Embarques");
 
-        if (
-            !$this->userPermissionManager->controller("Embarques")->canRead()
-        ) {
-            $_SESSION['mensagem_erro'] = "Você não tem permissão para acessar os Embarques!";
-            header("Location: /");
-            exit;
-        }
-
-
+        $this->verifyReadPermission();
         $this->containerModel = new Container();
-    }
-
-    private function verifyWritePermission()
-    {
-        if (
-            !$this->userPermissionManager->controller("Embarques")->canWrite()
-        ) {
-            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
-            header("Location: /embarques");
-            exit;
-        }
-    }
-
-    private function verifyEditPermission()
-    {
-        if (
-            !$this->userPermissionManager->controller("Embarques")->canEdit()
-        ) {
-            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
-            header("Location: /embarques");
-            exit;
-        }
-    }
-
-    private function verifyDeletePermission()
-    {
-        if (
-            !$this->userPermissionManager->controller("Embarques")->canDelete()
-        ) {
-            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
-            header("Location: /embarques");
-            exit;
-        }
+        $this->controller_name = "Embarques";
     }
 
     public function index()

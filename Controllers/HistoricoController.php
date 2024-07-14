@@ -9,16 +9,9 @@ class HistoricoController extends _Controller
 
     public function __construct()
     {
-        parent::__construct();
+        parent::__construct("Histórico");
 
-        if (
-            !$this->userPermissionManager->controller("Histórico")->canRead()
-        ) {
-            $_SESSION['mensagem_erro'] = "Você não tem permissão para acessar o Histórico!";
-            header("Location: /");
-            exit;
-        }
-
+        $this->verifyReadPermission();
         $this->historicoModel = new Historico();
     }
 

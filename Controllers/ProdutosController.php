@@ -12,16 +12,9 @@ class ProdutosController extends _Controller
 
     public function __construct()
     {
-        parent::__construct();
+        parent::__construct("Produtos");
 
-        if (
-            !$this->userPermissionManager->controller("Produtos")->canRead()
-        ) {
-            $_SESSION['mensagem_erro'] = "Você não tem permissão para acessar os Produtos!";
-            header("Location: /");
-            exit;
-        }
-
+        $this->verifyReadPermission();
         $this->productModel = new Product();
         $this->transacaoModel = new Transacao();
         $this->estoquesModel = new Estoque();
@@ -39,7 +32,7 @@ class ProdutosController extends _Controller
             $redirect_to = isset($_SESSION['redirect_to']) ? $_SESSION['redirect_to'] : "/produtos";
 
             if ($_POST["_method"] == "put") {
-                $this->verifyEditPermission("Produtos");
+                $this->verifyEditPermission();
                 try {
                     if (!isset($_POST["id"])) {
                         throw new Exception("ID não informado");
@@ -79,7 +72,7 @@ class ProdutosController extends _Controller
                     exit(0);
                 }
             } else if ($_POST["_method"] == "post") {
-                $this->verifyWritePermission("Produtos");
+                $this->verifyWritePermission();
                 try {
                     if (!isset($_POST["code"])) {
                         throw new Exception("Código não informado");
@@ -106,7 +99,7 @@ class ProdutosController extends _Controller
                     exit(0);
                 }
             } else if ($_POST["_method"] == "delete") {
-                $this->verifyDeletePermission("Produtos");
+                $this->verifyDeletePermission();
                 try {
                     if (!isset($_POST["ID"])) {
                         throw new Exception("ID não informado");

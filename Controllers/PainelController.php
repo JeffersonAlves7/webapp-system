@@ -8,18 +8,11 @@ class PainelController extends _Controller
 
     public function __construct()
     {
-        parent::__construct();
+        parent::__construct("Painel");
 
-
-        if (
-            !$this->userPermissionManager->controller("Painel")->canRead()
-            || !$this->userPermissionManager->controller("Painel")->canWrite()
-            || !$this->userPermissionManager->controller("Painel")->canDelete()
-        ) {
-            $_SESSION["mensagem_erro"] = "Você não tem permissão para acessar o painel!";
-            header("Location: /");
-            exit;
-        }
+        $this->verifyReadPermission();
+        $this->verifyWritePermission();
+        $this->verifyDeletePermission();
 
         $this->userModel = new User();
     }

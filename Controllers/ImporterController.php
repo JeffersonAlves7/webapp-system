@@ -12,21 +12,10 @@ class ImporterController extends _Controller
 
     public function __construct()
     {
-        parent::__construct();
+        parent::__construct("Lancamento");
 
         $this->importerModel = new Importer();
         $this->lancamentoModel = new Lancamento();
-    }
-
-    private function verifyWritePermission()
-    {
-        if (
-            !$this->userPermissionManager->controller("Lancamento")->canWrite()
-        ) {
-            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
-            header("Location: /lancamento");
-            exit;
-        }
     }
 
     public function importarSaida()

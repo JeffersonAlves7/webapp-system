@@ -9,17 +9,8 @@ class EstoquesController extends _Controller
 
     public function __construct()
     {
-        parent::__construct();
-
-        if (
-            !$this->userPermissionManager->controller("Estoques")->canRead()
-        ) {
-            $_SESSION['mensagem_erro'] = "Você não tem permissão para acessar os Estoques!";
-            header("Location: /");
-            exit;
-        }
-
-
+        parent::__construct("Estoques");
+        $this->verifyReadPermission();
         $this->estoquesModel = new Estoque();
     }
 

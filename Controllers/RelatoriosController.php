@@ -9,16 +9,8 @@ class RelatoriosController extends _Controller
 
     public function __construct()
     {
-        parent::__construct();
-
-        if (
-            !$this->userPermissionManager->controller("Relatorios")->canRead()
-        ) {
-            $_SESSION['mensagem_erro'] = "Você não tem permissão para acessar os Relatórios!";
-            header("Location: /");
-            exit;
-        }
-
+        parent::__construct("Relatorios");
+        $this->verifyReadPermission();
         $this->relatorios = new Relatorios();
     }
 

@@ -11,16 +11,9 @@ class LancamentoController extends _Controller
 
     public function __construct()
     {
-        parent::__construct();
+        parent::__construct("Lancamento");
 
-        if (
-            !$this->userPermissionManager->controller("Lancamento")->canRead()
-        ) {
-            $_SESSION['mensagem_erro'] = "Você não tem permissão para acessar o lançamento!";
-            header("Location: /");
-            exit;
-        }
-
+        $this->verifyReadPermission();
         $this->lancamentoModel = new Lancamento();
         $this->estoqueModel = new Estoque();
     }
@@ -28,17 +21,6 @@ class LancamentoController extends _Controller
     public function index()
     {
         $this->entrada();
-    }
-
-    private function verifyWritePermission()
-    {
-        if (
-            !$this->userPermissionManager->controller("Lancamento")->canWrite()
-        ) {
-            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
-            header("Location: /lancamento");
-            exit;
-        }
     }
 
     public function entrada()
