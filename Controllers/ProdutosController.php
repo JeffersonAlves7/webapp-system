@@ -27,29 +27,6 @@ class ProdutosController extends _Controller
         $this->estoquesModel = new Estoque();
     }
 
-    private function verifyWritePermission()
-    {
-        if (
-            !$this->userPermissionManager->controller("Produtos")->canWrite()
-        ) {
-            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
-            header("Location: /produtos");
-            exit;
-        }
-    }
-
-    private function verifyDeletePermission()
-    {
-        if (
-            !$this->userPermissionManager->controller("Produtos")->canDelete()
-        ) {
-            $_SESSION['mensagem_erro'] = "Você não tem permissão para realizar esta ação!";
-            header("Location: /produtos");
-            exit;
-        }
-    }
-
-
     public function index()
     {
         $mensagem_erro = isset($_SESSION['mensagem_erro']) ? $_SESSION['mensagem_erro'] : "";
@@ -59,11 +36,11 @@ class ProdutosController extends _Controller
         unset($_SESSION['sucesso']);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["_method"])) {
-            $this->verifyWritePermission();
 
             $redirect_to = isset($_SESSION['redirect_to']) ? $_SESSION['redirect_to'] : "/produtos";
 
             if ($_POST["_method"] == "put") {
+                $this->verifyEditPermission("Produtos");
                 try {
                     if (!isset($_POST["id"])) {
                         throw new Exception("ID não informado");
@@ -103,6 +80,7 @@ class ProdutosController extends _Controller
                     exit(0);
                 }
             } else if ($_POST["_method"] == "post") {
+                $this->verifyWritePermission("Produtos");
                 try {
                     if (!isset($_POST["code"])) {
                         throw new Exception("Código não informado");
@@ -129,6 +107,7 @@ class ProdutosController extends _Controller
                     exit(0);
                 }
             } else if ($_POST["_method"] == "delete") {
+                $this->verifyDeletePermission("Produtos");
                 try {
                     if (!isset($_POST["ID"])) {
                         throw new Exception("ID não informado");
@@ -167,7 +146,7 @@ class ProdutosController extends _Controller
         if (isset($_GET["chinese_description"]) && $_GET["chinese_description"] != "") {
             $where .= " AND chinese_description LIKE \"%" . htmlspecialchars($_GET["chinese_description"]) . "%\"";
         }
-        if(isset($_GET["container"]) && $_GET["container"] != "") {
+        if (isset($_GET["container"]) && $_GET["container"] != "") {
             $where .= " AND lc.name LIKE '" . $_GET["container"] . "%'";
         }
 
@@ -187,7 +166,7 @@ class ProdutosController extends _Controller
 
             switch ($method) {
                 case "delete":
-                    $this->verifyDeletePermission();
+                    $this->verifyDeletePermission("Operações");
 
                     try {
                         $this->transacaoModel->delete($_POST["ID"]);
@@ -196,6 +175,9 @@ class ProdutosController extends _Controller
                         $_SESSION['mensagem_erro'] = $e->getMessage();
                     }
 
+                    break;
+                default:
+                    $_SESSION['mensagem_erro'] = "Método não permitido";
                     break;
             }
 
