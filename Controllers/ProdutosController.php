@@ -36,7 +36,6 @@ class ProdutosController extends _Controller
         unset($_SESSION['sucesso']);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["_method"])) {
-
             $redirect_to = isset($_SESSION['redirect_to']) ? $_SESSION['redirect_to'] : "/produtos";
 
             if ($_POST["_method"] == "put") {
