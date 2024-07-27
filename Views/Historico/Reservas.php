@@ -59,28 +59,30 @@ require "Components/Header.php";
         </button>
     </form>
 
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>Produto</th>
-                <th>Quantidade</th>
-                <th>Estoque</th>
-                <th>Data</th>
-                <th>Observação</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($reservas as $reserva) : ?>
+    <div class="table-responsive" style="max-height: 60vh; min-height: 100px;">
+        <table class="table table-striped table-hover">
+            <thead>
                 <tr>
-                    <td><?= $reserva["code"] ?></td>
-                    <td><?= $reserva["quantity"] ?></td>
-                    <td><?= $reserva["stock_name"] ?></td>
-                    <td><?= date("d/m/Y H:i", strtotime($reserva["created_at"])) ?></td>
-                    <td><?= $reserva["observation"] ?></td>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Estoque</th>
+                    <th>Data</th>
+                    <th>Observação</th>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php foreach ($reservas as $reserva) : ?>
+                    <tr>
+                        <td><?= $reserva["code"] ?></td>
+                        <td><?= $reserva["quantity"] ?></td>
+                        <td><?= $reserva["stock_name"] ?></td>
+                        <td><?= date("d/m/Y H:i", strtotime($reserva["created_at"])) ?></td>
+                        <td><?= $reserva["observation"] ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 
 
     <?php if ($pageCount > 1) : ?>

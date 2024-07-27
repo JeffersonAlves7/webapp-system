@@ -59,38 +59,40 @@ require "Components/Header.php";
         </button>
     </form>
 
-    <table class="table table-striped">
-        <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000">
-            <tr>
-                <th>Produto</th>
-                <th>Quantidade</th>
-                <th>Origem</th>
-                <th>Destino</th>
-                <th>Data</th>
-                <th>Observação</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($transferencias as $transferencia) : ?>
+    <div class="table-responsive" style="max-height: 60vh; min-height: 100px;">
+        <table class="table table-striped">
+            <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000">
                 <tr>
-                    <td><?= $transferencia["code"] ?></td>
-                    <td><?= $transferencia["quantity"] ?></td>
-                    <td><?= $transferencia["from_stock_name"] ?></td>
-                    <td><?= $transferencia["to_stock_name"] ?></td>
-                    <td><?= date("d/m/Y H:i", strtotime($transferencia["created_at"])) ?></td>
-                    <td><?= $transferencia["observation"] ?></td>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Origem</th>
+                    <th>Destino</th>
+                    <th>Data</th>
+                    <th>Observação</th>
                 </tr>
-            <?php endforeach; ?>
+            </thead>
+            <tbody>
+                <?php foreach ($transferencias as $transferencia) : ?>
+                    <tr>
+                        <td><?= $transferencia["code"] ?></td>
+                        <td><?= $transferencia["quantity"] ?></td>
+                        <td><?= $transferencia["from_stock_name"] ?></td>
+                        <td><?= $transferencia["to_stock_name"] ?></td>
+                        <td><?= date("d/m/Y H:i", strtotime($transferencia["created_at"])) ?></td>
+                        <td><?= $transferencia["observation"] ?></td>
+                    </tr>
+                <?php endforeach; ?>
 
-            <?php if (empty($transferencias)) : ?>
-                <tr>
-                    <td class="text-center" colspan="6">
-                        Nenhuma transferência
-                    </td>
-                </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
+                <?php if (empty($transferencias)) : ?>
+                    <tr>
+                        <td class="text-center" colspan="6">
+                            Nenhuma transferência
+                        </td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 
     <?php if ($pageCount > 1) : ?>
         <?php
