@@ -164,9 +164,9 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                                         <i class='bi bi-pencil'></i>
                                     </button>
                                 <?php else : ?>
-                                    <button type="button" class="btn" disabled>
+                                    <!-- <button type="button" class="btn" disabled>
                                         <i class='bi bi-pencil'></i>
-                                    </button>
+                                    </button> -->
                                 <?php endif; ?>
                             </td>
                             <td>
