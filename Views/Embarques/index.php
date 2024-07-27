@@ -184,7 +184,6 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
             </tbody>
 
             <tfoot style="position: sticky; bottom: -5px; z-index: 1000" class="bg-light">
-                <!-- Aqui vai ter informacoes do total de embarques retornados e tambem do total de caixas -->
                 <tr>
                     <td colspan="4" class="text-center">Total de Embarques: <?= $totalProducts ?></td>
                     <td class="text-center">Total de Caixas: <?= $totalBoxes ?></td>
@@ -250,22 +249,56 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
         </div>
     <?php endif; ?>
 
-    <!-- Modal para confirmar delecao do container -->
-    <div class="modal fade" id="deleteContainerModal" tabindex="-1" aria-labelledby="deleteContainerModalLabel" aria-hidden="true">
+    <!-- Modal para editar o produto -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" id="editProductForm">
+                    <input type="hidden" name="action" value="editProduct">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProductModalLabel">Editar Produto</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body d-flex flex-column gap-3">
+                        <input type="hidden" name="product_ID" value="">
+                        <input type="hidden" name="container_ID" value="<?= $container_ID ?>">
+
+                        <label for="quantity" class="form-label">Quantidade Entregue</label>
+                        <input type="number" name="quantity" class="form-control" required>
+
+                        <label for="arrival_date" class="form-label">Data de Chegada</label>
+                        <input type="date" name="arrival_date" class="form-control" required>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-custom">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar o delete do produto -->
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteContainerModalLabel">Deletar container</h5>
+                    <h5 class="modal-title" id="deleteProductModalLabel">Deletar Produto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Tem certeza que deseja deletar este container?
+                    Tem certeza que deseja deletar este produto?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <a href="" id="deleteContainerLink">
-                        <button type="button" class="btn btn-danger">Deletar</button>
-                    </a>
+                    <form method="post" class="deleteProductForm" id="deleteProductForm">
+                        <input type="hidden" name="product_ID" value="">
+                        <input type="hidden" name="container_ID" value="<?= $container_ID ?>">
+                        <button type="submit" class="btn btn-danger">Deletar</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -275,59 +308,45 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
 </main>
 
 <script>
-    // Adiciona o ID do container ao link de delete
-    var deleteContainerModal = document.getElementById('deleteContainerModal');
-    deleteContainerModal.addEventListener('show.bs.modal', function(event) {
+    const deleteProductForm = document.getElementById('deleteProductForm');
+    const deleteProductModal = document.getElementById('deleteProductModal');
+    const editProductModal = document.getElementById('editProductModal');
+    const editProductForm = document.getElementById('editProductForm');
+
+    window.onload = () => {
+        // Obtém a URL atual
+        var currentUrl = window.location.href;
+
+        var deleteAction = "/embarques/deletarProduto?redirect=" + encodeURIComponent(currentUrl);
+        document.querySelectorAll('.deleteProductForm').forEach((e) => e.setAttribute('action', deleteAction));
+
+        var editAction = "/embarques/editarProduto?redirect=" + encodeURIComponent(currentUrl);
+        editProductForm.setAttribute('action', editAction);
+    }
+
+    // Adiciona o ID do produto ao formulário de delete
+    deleteProductModal.addEventListener('show.bs.modal', function(event) {
         var button = event.relatedTarget;
-        var container_ID = button.getAttribute('data-id');
-        var deleteContainerLink = document.getElementById('deleteContainerLink');
-        deleteContainerLink.href = "/embarques/deletar/" + container_ID;
+        var product_ID = button.getAttribute('data-id');
+        var deleteProductForm = document.getElementById('deleteProductForm');
+        deleteProductForm.querySelector('input[name="product_ID"]').value = product_ID;
     });
 
-    // Script to toggle form visibility
-    document.getElementById('toggleFormBtn').addEventListener('click', function() {
-        var form = document.querySelector('form');
-        const htmlMaximize = '<i class="bi bi-arrows-fullscreen text-white"></i> Maximizar';
-        const htmlMinimize = '<i class="bi bi-arrows-angle-contract text-white"></i> Minimizar';
-
-        if (form.style.display === 'none') {
-            form.style.display = 'block';
-            this.innerHTML = htmlMinimize;
-            document.querySelector('.table-responsive').style.maxHeight = '40vh';
-        } else {
-            form.style.display = 'none';
-            this.innerHTML = htmlMaximize;
-            // Mudar height da tabela para 70vh
-            document.querySelector('.table-responsive').style.maxHeight = '60vh';
-        }
-    });
-
-    // Adiciona o ID do container ao link de delete
-    var deleteContainerModal = document.getElementById('deleteContainerModal');
-    deleteContainerModal.addEventListener('show.bs.modal', function(event) {
+    // Adiciona o ID do produto ao formulário de edição
+    editProductModal.addEventListener('show.bs.modal', function(event) {
         var button = event.relatedTarget;
-        var container_ID = button.getAttribute('data-id');
-        var deleteContainerLink = document.getElementById('deleteContainerLink');
-        deleteContainerLink.href = "/embarques/deletar/" + container_ID;
-    });
+        var product_ID = button.getAttribute('data-id');
+        var editProductForm = document.getElementById('editProductForm');
+        editProductForm.querySelector('input[name="product_ID"]').value = product_ID;
 
-    // Todos os selects de dentro do formulario, quando alterados, devem apresentar um submit automatico
-    document.querySelectorAll('form select').forEach(select => {
-        select.addEventListener('change', function() {
-            this.form.submit();
-        });
-    });
+        var product = button.parentElement.parentElement;
+        var quantity = product.children[3].children[0].innerText;
+        var arrival_date = product.children[8].innerText;
 
-    // Todos os inputs de dentro do formulario, quando apertar enter, devem apresentar um submit automatico
-    document.querySelectorAll('form input').forEach(input => {
-        input.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                this.form.submit();
-            }
-        });
+        editProductForm.querySelector('input[name="quantity"]').value = quantity;
+        editProductForm.querySelector('input[name="arrival_date"]').value = arrival_date;
     });
 </script>
-
 
 <?php
 $content = ob_get_clean();
