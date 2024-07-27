@@ -30,14 +30,34 @@ require "Components/Header.php";
         <button class="btn btn-custom active">Reservas</button>
     </div>
 
-    <!-- Apresentar reservas, paginacao etc -->
-    <div class="d-flex justify-content-between align-items-center mt-4">
-        <h2>Reservas</h2>
+    <!-- Adicionando uma classe adicional para controle de responsividade -->
+    <form class="d-flex flex-wrap gap-4 my-4" id="form-filtro">
+        <!-- Campos de entrada -->
 
-        <a href="/lancamento/reserva">
-            <button class="btn btn-custom">Nova Reserva</button>
-        </a>
-    </div>
+        <div class="input-group" style="max-width: 300px;">
+            <label for="data-inicio" class="input-group-text">Data de início</label>
+            <input type="date" id="data-inicio" class="form-control" name="data-inicio" value="<?= $_GET["data-inicio"] ?? "" ?>">
+        </div>
+
+        <div class="input-group" style="max-width: 300px;">
+            <label for="data-fim" class="input-group-text">Data de fim</label>
+            <input type="date" id="data-fim" class="form-control" name="data-fim" value="<?= $_GET["data-fim"] ?? "" ?>">
+        </div>
+
+        <div class="input-group" style="max-width: 300px;">
+            <label for="produto" class="input-group-text">Produto</label>
+            <input type="text" id="produto" class="form-control" name="produto" value="<?= $_GET["code"] ?? "" ?>">
+        </div>
+
+        <!-- Botões, agora com ícones e texto ajustado -->
+        <button type="submit" class="btn btn-custom" title="Pesquisar">
+            <i class="bi bi-search"></i>
+        </button>
+
+        <button type="button" class="btn btn-custom" id="exportar">
+            <i class="bi bi-file-earmark-excel"></i> Exportar
+        </button>
+    </form>
 
     <table class="table table-striped table-hover">
         <thead>
@@ -79,6 +99,10 @@ require "Components/Header.php";
 
         <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
             <form method="GET" class="d-flex align-items-center">
+                <input type="hidden" name="page" value="<?= $nextPage ?>">
+                <input type="hidden" name="code" value="<?= $_GET["code"] ?? "" ?>">
+                <input type="hidden" name="data-inicio" value="<?= $_GET["data-inicio"] ?? "" ?>">
+                <input type="hidden" name="data-fim" value="<?= $_GET["data-fim"] ?? "" ?>">
                 <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isPrevDisabled) ?> title="Voltar">
                     <i class="bi bi-arrow-left"></i>
                 </button>
@@ -87,6 +111,10 @@ require "Components/Header.php";
             <span class="text-center">Página <?= $currentPage ?> de <?= $pageCount ?></span>
 
             <form method="GET">
+                <input type="hidden" name="page" value="<?= $nextPage ?>">
+                <input type="hidden" name="code" value="<?= $_GET["code"] ?? "" ?>">
+                <input type="hidden" name="data-inicio" value="<?= $_GET["data-inicio"] ?? "" ?>">
+                <input type="hidden" name="data-fim" value="<?= $_GET["data-fim"] ?? "" ?>">
                 <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isNextDisabled) ?> title="Avançar">
                     <i class="bi bi-arrow-right"></i>
                 </button>

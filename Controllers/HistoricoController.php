@@ -89,12 +89,12 @@ class HistoricoController extends _Controller
 
         if (isset($_GET["data-inicio"]) && !empty($_GET["data-inicio"])) {
             $dataInicio = $_GET["data-inicio"];
-            $where .= " AND `reservations`.`created_at` >= '$dataInicio'";
+            $where .= " AND `reserves`.`created_at` >= '$dataInicio'";
         }
 
         if (isset($_GET["data-fim"]) && !empty($_GET["data-fim"])) {
             $dataFim = $_GET["data-fim"];
-            $where .= " AND `reservations`.`created_at` <= '$dataFim'";
+            $where .= " AND `reserves`.`created_at` <= '$dataFim'";
         }
 
         if (isset($_GET["action"]) && $_GET["action"] == "exportarReservas") {
