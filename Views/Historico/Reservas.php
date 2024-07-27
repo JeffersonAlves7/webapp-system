@@ -46,7 +46,7 @@ require "Components/Header.php";
 
         <div class="input-group" style="max-width: 300px;">
             <label for="produto" class="input-group-text">Produto</label>
-            <input type="text" id="produto" class="form-control" name="produto" value="<?= $_GET["code"] ?? "" ?>">
+            <input type="text" id="produto" class="form-control" name="code" value="<?= $_GET["code"] ?? "" ?>">
         </div>
 
         <!-- Botões, agora com ícones e texto ajustado -->
