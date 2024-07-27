@@ -63,7 +63,7 @@ class HistoricoController extends _Controller
                         $transferencia["observation"],
                     ];
                 }, $transferencias),
-                "historicoTransferencias.pdf"
+                "historicoTransferencias"
             );
 
             return;
@@ -99,7 +99,7 @@ class HistoricoController extends _Controller
 
         if (isset($_GET["action"]) && $_GET["action"] == "exportarReservas") {
             $reservas = $this->historicoModel->getReservas(1, 1000000, $where);
-            $pdf = PhpExporter::exportToExcel(
+            PhpExporter::exportToExcel(
                 ['Produto', 'Quantidade', 'Estoque', 'Data', 'Observação'],
                 array_map(function ($reserva) {
                     return [
@@ -109,8 +109,8 @@ class HistoricoController extends _Controller
                         date("d/m/Y H:i", strtotime($reserva["created_at"])),
                         $reserva["observation"],
                     ];
-                }, $reservas),
-                "historicoReservas.pdf"
+                }, $reservas["reservations"]),
+                "historicoReservas"
             );
 
             return;
