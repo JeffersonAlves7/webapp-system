@@ -69,8 +69,14 @@ class HistoricoController extends _Controller
             return;
         }
 
-        $transferencias = $this->historicoModel->getTransferencias($where);
-        $this->view("Historico/Transferencias", ["transferencias" => $transferencias]);
+        $page = isset($_GET["page"]) && is_numeric($_GET["page"]) ? $_GET["page"] : 1;
+        $limit = 50;
+
+        $transferencias = $this->historicoModel->getTransferencias($page, $limit, $where);
+        $this->view("Historico/Transferencias", [
+            "transferencias" => $transferencias["transferences"],
+            "pageCount" => $transferencias["pageCount"]
+        ]);
     }
 
     public function devolucoes()
@@ -117,7 +123,7 @@ class HistoricoController extends _Controller
         }
 
         $page = isset($_GET["page"]) && is_numeric($_GET["page"]) ? $_GET["page"] : 1;
-        $limit = 10;
+        $limit = 50;
 
         $reservas = $this->historicoModel->getReservas($page, $limit, $where);
 
