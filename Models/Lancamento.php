@@ -491,7 +491,7 @@ class Lancamento
             ");
 
             while ($transference = $result->fetch_assoc()) {
-                $this->createTransaction($this->db, $transference['product_ID'], $transference['from_stock_ID'], $transference['to_stock_ID'], "Transferência", $transference['quantity'], $transference['observation']);
+                $this->createTransaction($this->db, $transference['product_ID'], $transference['from_stock_ID'], $transference['to_stock_ID'], "Transferência", $transference['quantity'], null, $transference['observation']);
             }
         } else {
             throw new Exception("Erro ao confirmar as transferências");
