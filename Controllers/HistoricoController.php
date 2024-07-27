@@ -17,7 +17,7 @@ class HistoricoController extends _Controller
 
     public function index()
     {
-        $this->entradas();
+        $this->transferencias();
     }
 
     public function entradas()
