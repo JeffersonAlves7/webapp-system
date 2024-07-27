@@ -6,7 +6,6 @@ require_once "Utils/PhpExcel.php";
 class EmbarquesController extends _Controller
 {
     private $containerModel;
-    private $controller_name;
 
     public function __construct()
     {
@@ -14,7 +13,6 @@ class EmbarquesController extends _Controller
 
         $this->verifyReadPermission();
         $this->containerModel = new Container();
-        $this->controller_name = "Embarques";
     }
 
     public function index()
