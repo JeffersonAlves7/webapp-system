@@ -34,7 +34,9 @@ class Historico extends Model
 
         $result = $this->db->query($sql);
 
-        $pageCount = ceil($this->db->query("SELECT COUNT(*) FROM `reserves` WHERE confirmed = 1 AND $where")->fetch_row()[0] / $limit);
+        $pageCount = ceil($this->db->query("SELECT COUNT(*) FROM `reserves` 
+        INNER JOIN `products` ON `reserves`.`product_ID` = `products`.`ID` 
+        WHERE confirmed = 1 AND $where")->fetch_row()[0] / $limit);
 
         return [
             "reservations" => $result->fetch_all(MYSQLI_ASSOC),
