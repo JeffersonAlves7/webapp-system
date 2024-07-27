@@ -20,4 +20,25 @@ class Historico extends Model
 
         return $transferences;
     }
+
+    public function getReservas($page = 1, $limit = 10, $where = "1")
+    {
+        $offset = ($page - 1) * $limit;
+
+        $sql = "SELECT `reserves`.*, `products`.`code`, `stocks`.`name` as `stock_name` FROM `reserves`
+        INNER JOIN `products` ON `reserves`.`product_ID` = `products`.`ID`
+        INNER JOIN `stocks` ON `reserves`.`stock_ID` = `stocks`.`ID`
+        WHERE confirmed = 1 AND $where
+        ORDER BY `reserves`.`created_at` DESC
+        LIMIT $limit OFFSET $offset";
+
+        $result = $this->db->query($sql);
+
+        $pageCount = ceil($this->db->query("SELECT COUNT(*) FROM `reserves` WHERE confirmed = 1 AND $where")->fetch_row()[0] / $limit);
+
+        return [
+            "reservations" => $result->fetch_all(MYSQLI_ASSOC),
+            "pageCount" => $pageCount
+        ];
+    }
 }
