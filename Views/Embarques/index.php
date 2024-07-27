@@ -17,7 +17,6 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
         </button>
     </div>
 
-
     <form method="get">
         <div class="row g-3 mb-2">
             <div class="col-md-3">
@@ -190,7 +189,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                 <tr>
                     <td colspan="4" class="text-center">Total de Embarques: <?= $totalProducts ?></td>
                     <td class="text-center">Total de Caixas: <?= $totalBoxes ?></td>
-                    <td colspan="6"></td>
+                    <td colspan="7"></td>
                 </tr>
             </tfoot>
         </table>
