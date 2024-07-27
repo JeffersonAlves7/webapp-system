@@ -14,6 +14,22 @@ require "Components/Header.php";
         <h1 class="mt-4 mb-3"><?= $pageTitle ?> - Transferências</h1>
     </div>
 
+    <div class="d-flex gap-3">
+        <a href="/historico/entradas">
+            <button class="btn btn-custom">Entradas</button>
+        </a>
+        <a href="/historico/saidas">
+            <button class="btn btn-custom">Saídas</button>
+        </a>
+        <button class="btn btn-custom active">Transferências</button>
+        <a href="/historico/devolucoes">
+            <button class="btn btn-custom">Devoluções</button>
+        </a>
+        <a href="/historico/reservas">
+            <button class="btn btn-custom">Reservas</button>
+        </a>
+    </div>
+
     <!-- Adicionando uma classe adicional para controle de responsividade -->
     <form class="d-flex flex-wrap gap-4 my-4" id="form-filtro">
         <!-- Campos de entrada -->

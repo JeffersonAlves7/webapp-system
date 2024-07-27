@@ -17,7 +17,17 @@ class HistoricoController extends _Controller
 
     public function index()
     {
-        $this->view("Historico/index");
+        $this->entradas();
+    }
+
+    public function entradas()
+    {
+        $this->view("Historico/Entradas");
+    }
+
+    public function saidas()
+    {
+        $this->view("Historico/Saidas");
     }
 
     public function transferencias()
@@ -61,5 +71,15 @@ class HistoricoController extends _Controller
 
         $transferencias = $this->historicoModel->getTransferencias($where);
         $this->view("Historico/Transferencias", ["transferencias" => $transferencias]);
+    }
+
+    public function devolucoes()
+    {
+        $this->view("Historico/Devolucoes");
+    }
+
+    public function reservas()
+    {
+        $this->view("Historico/Reservas");
     }
 }
