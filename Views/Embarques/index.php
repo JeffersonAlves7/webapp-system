@@ -88,8 +88,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                 </tr>
             </thead>
             <tbody>
-                <?php
-                if (isset($products) && $products->num_rows > 0) : ?>
+                <?php if (isset($products) && $products->num_rows > 0) : ?>
                     <?php while ($row = $products->fetch_assoc()) : ?>
                         <tr>
                             <td><?= $row['ean'] ?></td>
