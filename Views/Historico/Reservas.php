@@ -123,6 +123,25 @@ require "Components/Header.php";
     <?php endif; ?>
 </main>
 
+<script>
+    const exportar = document.getElementById("exportar");
+    exportar.addEventListener("click", () => {
+        const dataInicio = document.getElementById("data-inicio").value;
+        const dataFim = document.getElementById("data-fim").value;
+        const produto = document.getElementById("produto").value;
+
+        const url = new URL(window.location.href);
+        url.searchParams.set("action", "exportarReservas");
+        url.searchParams.set("data-inicio", dataInicio);
+        url.searchParams.set("data-fim", dataFim);
+        url.searchParams.set("code", produto);
+
+        window
+            .open(url.href, "_blank")
+            .focus();
+    });
+</script>
+
 <?php
 $content = ob_get_clean();
 include "Components/Template.php";
