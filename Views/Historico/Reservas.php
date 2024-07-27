@@ -101,7 +101,7 @@ require "Components/Header.php";
 
         <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
             <form method="GET" class="d-flex align-items-center">
-                <input type="hidden" name="page" value="<?= $nextPage ?>">
+                <input type="hidden" name="page" value="<?= $prevPage ?>">
                 <input type="hidden" name="code" value="<?= $_GET["code"] ?? "" ?>">
                 <input type="hidden" name="data-inicio" value="<?= $_GET["data-inicio"] ?? "" ?>">
                 <input type="hidden" name="data-fim" value="<?= $_GET["data-fim"] ?? "" ?>">
