@@ -1,12 +1,12 @@
 <?php
 require_once "Models/Estoque.php";
-require_once "Models/Reserva.php";
+require_once "Models/Lancamento.php";
 require_once "Controllers/_Controller.php";
 
 class ReservasController extends _Controller
 {
     private $estoquesModel = null;
-    private $reservaModel = null;
+    private $lancamentoModel = null;
 
     public function __construct()
     {
@@ -14,7 +14,7 @@ class ReservasController extends _Controller
 
         $this->verifyReadPermission();
         $this->estoquesModel = new Estoque();
-        $this->reservaModel = new Reserva();
+        $this->lancamentoModel = new Lancamento();
     }
 
     public function index()
@@ -36,7 +36,7 @@ class ReservasController extends _Controller
         }
 
         $stocks = $this->estoquesModel->getAll();
-        $dados = $this->reservaModel->getAll($page, 50, $where);
+        $dados = $this->lancamentoModel->getAllReserves($page, 50, $where);
 
         $this->view("Reservas", [
             "stocks" => $stocks,
@@ -55,7 +55,7 @@ class ReservasController extends _Controller
 
         $ID = $_POST["ID"];
 
-        $this->reservaModel->delete($ID);
+        $this->lancamentoModel->deleteReserve($ID);
         header("Location: /reservas");
     }
 
@@ -69,7 +69,7 @@ class ReservasController extends _Controller
 
         $ID = $_POST["ID"];
 
-        $this->reservaModel->confirm($ID);
+        $this->lancamentoModel->confirmReserve($ID);
         header("Location: /reservas");
     }
 }
