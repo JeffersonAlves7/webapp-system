@@ -31,10 +31,9 @@ class Estoque extends Model
             (SUM(qis.quantity) + SUM(qis.quantity_in_reserve)) as saldo_atual
             FROM `products` p
             INNER JOIN `quantity_in_stock` qis ON p.ID = qis.product_ID
-            WHERE (
-                    SELECT COUNT(*) FROM `transactions` t2 WHERE t2.product_ID = p.ID  LIMIT 1
-                ) > 0 
-                AND p.`is_active` = 1 
+            WHERE 
+                p.`is_active` = 1 
+                AND ( SELECT COUNT(*) FROM `transactions` t2 WHERE t2.product_ID = p.ID  LIMIT 1) > 0 
                 AND $where $stock_sql
             GROUP BY p.ID
             ORDER BY $order
