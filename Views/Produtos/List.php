@@ -74,6 +74,12 @@ ob_start();
                                     <i class='bi bi-pencil-square text-primary'></i>
                                 </button>
                             </td>
+                            <!-- Arquivar produtos -->
+                            <td>
+                                <button type='button' class='btn btn-archive' data-bs-toggle='modal' data-bs-target='#archiveProductModal' data-id='<?= htmlspecialchars($row["ID"]) ?>'>
+                                    <i class='bi bi-archive text-warning'></i>
+                                </button>
+                            </td>
                             <td>
                                 <button type='button' class='btn btn-delete' data-bs-toggle='modal' data-bs-target='#deleteProductModal' data-id='<?= htmlspecialchars($row["ID"]) ?>'>
                                     <i class='bi bi-trash text-danger'></i>
@@ -88,6 +94,7 @@ ob_start();
                 <?php endif; ?>
             </tbody>
         </table>
+
         <button type="submit" hidden></button>
     </form>
 
@@ -136,6 +143,29 @@ ob_start();
 </main>
 
 <?php require "Components/StatusMessage.php" ?>
+
+<div class="modal fade" id="archiveProductModal" tabindex="-1" aria-labelledby="archiveProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="archiveProductModalLabel">Arquivar produto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="archiveForm" method="post">
+                <input type="hidden" name="_method" value="put">
+                <input type="hidden" name="action" value="archive">
+                <div class="modal-body">
+                    <input type="hidden" name="ID" id="archiveProductId" value="">
+                    <p>Tem certeza de que deseja arquivar este produto?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning" id="confirmArchiveBtn">Confirmar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" id="newProductModal" tabindex="-1" aria-labelledby="newProductModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -192,6 +222,7 @@ ob_start();
             <div class="modal-body">
                 <form method="post">
                     <input type="hidden" name="_method" value="put" />
+                    <input type="hidden" name="action" value="update">
                     <input type="hidden" name="id" id="productId">
                     <div class="mb-3">
                         <label for="update-code" class="form-label">Código</label>
@@ -288,6 +319,13 @@ ob_start();
 
     document.getElementById('importer').addEventListener('change', function() {
         this.form.submit();
+    });
+
+    document.querySelectorAll('.btn-archive').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var productId = this.getAttribute('data-id');
+            document.getElementById('archiveProductId').value = productId;
+        });
     });
 </script>
 <?php

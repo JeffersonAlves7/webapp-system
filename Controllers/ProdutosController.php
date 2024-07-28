@@ -29,51 +29,56 @@ class ProdutosController extends _Controller
         unset($_SESSION['sucesso']);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["_method"])) {
-            $redirect_to = isset($_SESSION['redirect_to']) ? $_SESSION['redirect_to'] : "/produtos";
+            try {
+                $redirect_to = isset($_SESSION['redirect_to']) ? $_SESSION['redirect_to'] : "/produtos";
+                $action = $_POST["action"];
 
-            if ($_POST["_method"] == "put") {
-                $this->verifyEditPermission();
-                try {
-                    if (!isset($_POST["id"])) {
-                        throw new Exception("ID não informado");
+                if ($_POST["_method"] == "put") {
+                    $this->verifyEditPermission();
+
+                    if (isset($action) && !empty($action)) {
+                        if ($action == "update") {
+                            if (!isset($_POST["ID"])) {
+                                throw new Exception("ID não informado");
+                            }
+                            if (!isset($_POST["code"])) {
+                                throw new Exception("Código não informado");
+                            }
+                            if (!isset($_POST["ean"])) {
+                                throw new Exception("EAN não informado");
+                            }
+                            if (!isset($_POST["importer"])) {
+                                throw new Exception("Importador não informado");
+                            }
+
+                            $id = $_POST["ID"];
+
+                            $code = $_POST["code"];
+                            $ean = $_POST["ean"];
+                            $importer = $_POST["importer"];
+                            $description = $_POST["description"];
+                            $chinese_description = $_POST["chinese_description"];
+
+                            $this->productModel->update(
+                                $id,
+                                $code,
+                                $ean,
+                                $importer,
+                                $description,
+                                $chinese_description
+                            );
+                        } else if ($action == "archive") {
+                            if (!isset($_POST["ID"])) {
+                                throw new Exception("ID não informado");
+                            }
+
+                            $id = $_POST["ID"];
+                            $this->productModel->archive($id);
+                        }
                     }
-                    if (!isset($_POST["code"])) {
-                        throw new Exception("Código não informado");
-                    }
-                    if (!isset($_POST["ean"])) {
-                        throw new Exception("EAN não informado");
-                    }
-                    if (!isset($_POST["importer"])) {
-                        throw new Exception("Importador não informado");
-                    }
+                } else if ($_POST["_method"] == "post") {
+                    $this->verifyWritePermission();
 
-                    $id = $_POST["id"];
-
-                    $code = $_POST["code"];
-                    $ean = $_POST["ean"];
-                    $importer = $_POST["importer"];
-                    $description = $_POST["description"];
-                    $chinese_description = $_POST["chinese_description"];
-
-                    $this->productModel->update(
-                        $id,
-                        $code,
-                        $ean,
-                        $importer,
-                        $description,
-                        $chinese_description
-                    );
-
-                    $_SESSION['sucesso'] = true;
-                    header("location: " . $redirect_to);
-                } catch (Exception $e) {
-                    $_SESSION['mensagem_erro'] = $e->getMessage();
-                    header("location: " . $redirect_to);
-                    exit(0);
-                }
-            } else if ($_POST["_method"] == "post") {
-                $this->verifyWritePermission();
-                try {
                     if (!isset($_POST["code"])) {
                         throw new Exception("Código não informado");
                     }
@@ -91,29 +96,24 @@ class ProdutosController extends _Controller
                     $chinese_description = $_POST["chinese_description"];
 
                     $this->productModel->create($code, $ean, $importer, $description, $chinese_description);
-                    $_SESSION['sucesso'] = true;
-                    header("location: " . $redirect_to);
-                } catch (Exception $e) {
-                    $_SESSION['mensagem_erro'] = $e->getMessage();
-                    header("location: " . $redirect_to);
-                    exit(0);
-                }
-            } else if ($_POST["_method"] == "delete") {
-                $this->verifyDeletePermission();
-                try {
+                } else if ($_POST["_method"] == "delete") {
+                    $this->verifyDeletePermission();
+
                     if (!isset($_POST["ID"])) {
                         throw new Exception("ID não informado");
                     }
 
                     $id = $_POST["ID"];
                     $this->productModel->delete($id);
-                    $_SESSION['sucesso'] = true;
-                    header("location: " . $redirect_to);
-                } catch (Exception $e) {
-                    $_SESSION['mensagem_erro'] = $e->getMessage();
-                    header("location: " . $redirect_to);
-                    exit(0);
                 }
+
+                $_SESSION['sucesso'] = true;
+                header("location: " . $redirect_to);
+                return;
+            } catch (Exception $e) {
+                $_SESSION['mensagem_erro'] = $e->getMessage();
+                header("location: " . $redirect_to);
+                exit(0);
             }
         }
 
@@ -146,7 +146,14 @@ class ProdutosController extends _Controller
         $products = $productResponse["products"];
         $pageCount = $productResponse["pageCount"];
 
-        require_once "Views/Produtos/List.php";
+        // require_once "Views/Produtos/List.php";
+        $this->view("Produtos/List", [
+            "products" => $products,
+            "pageCount" => $pageCount,
+            "page" => $page,
+            "mensagem_erro" => $mensagem_erro,
+            "sucesso" => $sucesso
+        ]);
     }
 
     public function byId($id)
