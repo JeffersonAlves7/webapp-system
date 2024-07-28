@@ -33,3 +33,32 @@ document.querySelectorAll(".toggle-description").forEach(function (element) {
 document.getElementById("user-info").addEventListener("click", function () {
   document.getElementById("logout-button").style.display = "block";
 });
+
+// Verifica se o navegador é o safari
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+// Se for safari, adiciona o evento de keydown para os inputs do tipo search
+if (isSafari) {
+  console.log("Safari");
+  document.querySelectorAll("input[type=search]").forEach(function (element) {
+    element.addEventListener("keydown", function (event) {
+      // Se a tecla pressionada for o enter, previne o evento padrao
+      if (event.key === "Enter") {
+        event.preventDefault();
+
+        // Se o input estiver dentro de um form, submete o form
+        const form = element.closest("form");
+        if (form) {
+          form.submit();
+        }
+
+        return;
+      }
+
+      // Se a tecla pressionada for o esc, limpa o input
+      if (event.key === "Escape") {
+        element.value = "";
+      }
+    });
+  });
+}
