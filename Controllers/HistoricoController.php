@@ -22,12 +22,22 @@ class HistoricoController extends _Controller
 
     public function entradas()
     {
-        $this->view("Historico/Entradas");
+        $transaction_type_ID = 1;
+
+        $this->view(
+            "Historico/Entradas",
+            $this->renderTransactions($transaction_type_ID)
+        );
     }
 
     public function saidas()
     {
-        $this->view("Historico/Saidas");
+        $transaction_type_ID = 2;
+
+        $this->view(
+            "Historico/Saidas",
+            $this->renderTransactions($transaction_type_ID)
+        );
     }
 
     public function transferencias()

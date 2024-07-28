@@ -29,6 +29,8 @@ require "Components/Header.php";
             <button class="btn btn-custom">Reservas</button>
         </a>
     </div>
+
+    <?php require "Views/Historico/Operacoes.php"; ?>
 </main>
 
 <?php
