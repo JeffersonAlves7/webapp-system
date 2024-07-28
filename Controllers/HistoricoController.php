@@ -51,6 +51,52 @@ class HistoricoController extends _Controller
         );
     }
 
+    public function reservas()
+    {
+        $where = "1";
+
+        if (isset($_GET["code"]) && !empty($_GET["code"])) {
+            $code = $_GET["code"];
+            $where .= " AND `products`.`code` = '$code'";
+        }
+
+        if (isset($_GET["data-inicio"]) && !empty($_GET["data-inicio"])) {
+            $dataInicio = $_GET["data-inicio"];
+            $where .= " AND `reserves`.`created_at` >= '$dataInicio'";
+        }
+
+        if (isset($_GET["data-fim"]) && !empty($_GET["data-fim"])) {
+            $dataFim = $_GET["data-fim"];
+            $where .= " AND `reserves`.`created_at` <= '$dataFim'";
+        }
+
+        if (isset($_GET["action"]) && $_GET["action"] == "exportarReservas") {
+            $reservas = $this->historicoModel->getReservas(1, 1000000, $where);
+            PhpExporter::exportToExcel(
+                ['Produto', 'Quantidade', 'Estoque', 'Data', 'Observação'],
+                array_map(function ($reserva) {
+                    return [
+                        $reserva["code"],
+                        $reserva["quantity"],
+                        $reserva["stock_name"],
+                        date("d/m/Y H:i", strtotime($reserva["created_at"])),
+                        $reserva["observation"],
+                    ];
+                }, $reservas["reservations"]),
+                "historicoReservas"
+            );
+
+            return;
+        }
+
+        $page = isset($_GET["page"]) && is_numeric($_GET["page"]) ? $_GET["page"] : 1;
+        $limit = 50;
+
+        $reservas = $this->historicoModel->getReservas($page, $limit, $where);
+
+        $this->view("Historico/Reservas", ["reservas" => $reservas["reservations"], "pageCount" => $reservas["pageCount"]]);
+    }
+
     private function renderTransactions($transaction_type_ID)
     {
         $where = "1";
@@ -97,51 +143,5 @@ class HistoricoController extends _Controller
             "transactions" => $transactions["transactions"],
             "pageCount" => $transactions["pageCount"]
         ];
-    }
-
-    public function reservas()
-    {
-        $where = "1";
-
-        if (isset($_GET["code"]) && !empty($_GET["code"])) {
-            $code = $_GET["code"];
-            $where .= " AND `products`.`code` = '$code'";
-        }
-
-        if (isset($_GET["data-inicio"]) && !empty($_GET["data-inicio"])) {
-            $dataInicio = $_GET["data-inicio"];
-            $where .= " AND `reserves`.`created_at` >= '$dataInicio'";
-        }
-
-        if (isset($_GET["data-fim"]) && !empty($_GET["data-fim"])) {
-            $dataFim = $_GET["data-fim"];
-            $where .= " AND `reserves`.`created_at` <= '$dataFim'";
-        }
-
-        if (isset($_GET["action"]) && $_GET["action"] == "exportarReservas") {
-            $reservas = $this->historicoModel->getReservas(1, 1000000, $where);
-            PhpExporter::exportToExcel(
-                ['Produto', 'Quantidade', 'Estoque', 'Data', 'Observação'],
-                array_map(function ($reserva) {
-                    return [
-                        $reserva["code"],
-                        $reserva["quantity"],
-                        $reserva["stock_name"],
-                        date("d/m/Y H:i", strtotime($reserva["created_at"])),
-                        $reserva["observation"],
-                    ];
-                }, $reservas["reservations"]),
-                "historicoReservas"
-            );
-
-            return;
-        }
-
-        $page = isset($_GET["page"]) && is_numeric($_GET["page"]) ? $_GET["page"] : 1;
-        $limit = 50;
-
-        $reservas = $this->historicoModel->getReservas($page, $limit, $where);
-
-        $this->view("Historico/Reservas", ["reservas" => $reservas["reservations"], "pageCount" => $reservas["pageCount"]]);
     }
 }
