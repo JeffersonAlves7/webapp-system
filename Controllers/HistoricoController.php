@@ -81,7 +81,61 @@ class HistoricoController extends _Controller
 
     public function devolucoes()
     {
-        $this->view("Historico/Devolucoes");
+        $transaction_type_ID = 4;
+
+
+        $this->view(
+            "Historico/Devolucoes",
+            $this->renderTransactions($transaction_type_ID)
+        );
+    }
+
+    private function renderTransactions($transaction_type_ID)
+    {
+        $where = "1";
+
+        if (isset($_GET["code"]) && !empty($_GET["code"])) {
+            $code = $_GET["code"];
+            $where .= " AND `products`.`code` = '$code'";
+        }
+
+        if (isset($_GET["data-inicio"]) && !empty($_GET["data-inicio"])) {
+            $dataInicio = $_GET["data-inicio"];
+            $where .= " AND `transactions_history`.`created_at` >= '$dataInicio'";
+        }
+
+        if (isset($_GET["data-fim"]) && !empty($_GET["data-fim"])) {
+            $dataFim = $_GET["data-fim"];
+            $where .= " AND `transactions_history`.`created_at` <= '$dataFim'";
+        }
+
+        if (isset($_GET["action"]) && $_GET["action"] == "exportarDevolucoes") {
+            $devolucoes = $this->historicoModel->getAll($transaction_type_ID, 1, 1000000, $where);
+            PhpExporter::exportToExcel(
+                ['Produto', 'Quantidade', 'Estoque', 'Data', 'Observação'],
+                array_map(function ($devolucao) {
+                    return [
+                        $devolucao["code"],
+                        $devolucao["quantity"],
+                        $devolucao["stock_name"],
+                        date("d/m/Y H:i", strtotime($devolucao["created_at"])),
+                        $devolucao["observation"],
+                    ];
+                }, $devolucoes),
+                "historicoDevolucoes"
+            );
+
+            return;
+        }
+
+        $page = isset($_GET["page"]) && is_numeric($_GET["page"]) ? $_GET["page"] : 1;
+        $limit = 50;
+
+        $transactions = $this->historicoModel->getAll($transaction_type_ID, $page, $limit, $where);
+        return [
+            "transactions" => $transactions["transactions"],
+            "pageCount" => $transactions["pageCount"]
+        ];
     }
 
     public function reservas()
