@@ -616,6 +616,12 @@ class Lancamento
             $observation = '';
         }
 
+        $sql = "INSERT INTO `transactions_history` (`product_ID`, `from_stock_ID`, `to_stock_ID`, `type_ID`, `quantity`, `client_name`, `observation`) 
+        VALUES ($product_ID, $from_stock, $to_stock, $transaction_type_ID, $quantity, '" . (
+            $client_name && !empty($client_name) ? $db->escapeString($client_name) : '') .  "', '" . $db->escapeString($observation) . "')";
+
+        $db->query($sql);
+
         // Insert the transaction
         $sql = "INSERT INTO `transactions` (`product_ID`, `from_stock_ID`, `to_stock_ID`, `type_ID`, `quantity`, `client_name`, `observation`) 
         VALUES ($product_ID, $from_stock, $to_stock, $transaction_type_ID, $quantity, '" . (
