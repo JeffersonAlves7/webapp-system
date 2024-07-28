@@ -32,51 +32,12 @@ class HistoricoController extends _Controller
 
     public function transferencias()
     {
-        $where = "1";
+        $transaction_type_ID = 3;
 
-        if (isset($_GET["code"]) && !empty($_GET["code"])) {
-            $code = $_GET["code"];
-            $where .= " AND `products`.`code` = '$code'";
-        }
-
-        if (isset($_GET["data-inicio"]) && !empty($_GET["data-inicio"])) {
-            $dataInicio = $_GET["data-inicio"];
-            $where .= " AND `transferences`.`created_at` >= '$dataInicio'";
-        }
-
-        if (isset($_GET["data-fim"]) && !empty($_GET["data-fim"])) {
-            $dataFim = $_GET["data-fim"];
-            $where .= " AND `transferences`.`created_at` <= '$dataFim'";
-        }
-
-        if (isset($_GET["action"]) && $_GET["action"] == "exportarTransferencias") {
-            $transferencias = $this->historicoModel->getTransferencias($where);
-            $pdf = PhpExporter::exportToExcel(
-                ['Produto', 'Quantidade', 'Origem', 'Destino', 'Data', 'Observação'],
-                array_map(function ($transferencia) {
-                    return [
-                        $transferencia["code"],
-                        $transferencia["quantity"],
-                        $transferencia["from_stock_name"],
-                        $transferencia["to_stock_name"],
-                        date("d/m/Y H:i", strtotime($transferencia["created_at"])),
-                        $transferencia["observation"],
-                    ];
-                }, $transferencias),
-                "historicoTransferencias"
-            );
-
-            return;
-        }
-
-        $page = isset($_GET["page"]) && is_numeric($_GET["page"]) ? $_GET["page"] : 1;
-        $limit = 50;
-
-        $transferencias = $this->historicoModel->getTransferencias($page, $limit, $where);
-        $this->view("Historico/Transferencias", [
-            "transferencias" => $transferencias["transferences"],
-            "pageCount" => $transferencias["pageCount"]
-        ]);
+        $this->view(
+            "Historico/Transferencias",
+            $this->renderTransactions($transaction_type_ID)
+        );
     }
 
     public function devolucoes()
