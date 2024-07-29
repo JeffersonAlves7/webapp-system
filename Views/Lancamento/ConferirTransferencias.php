@@ -29,7 +29,7 @@ require "Components/Header.php";
 
     <?php require "Components/StatusMessage.php"; ?>
 
-    <div class="table-responsive">
+    <div class="table-responsive" style="max-height: 55vh; min-height: 200px">
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000">
                 <tr>
