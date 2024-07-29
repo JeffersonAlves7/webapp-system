@@ -502,65 +502,6 @@ class Lancamento
     }
 
 
-    // public function confirmarTransferencias($transference_IDs)
-    // {
-    //     // Verificar e garantir que todos os dados necessários estão presentes
-    //     foreach ($transference_IDs as $transference) {
-    //         if (!isset($transference->id) || !isset($transference->quantity)) {
-    //             throw new Exception("Dados de transferência incompletos: " . print_r($transference, true));
-    //         }
-    //     }
-
-    //     $transference_cases = [];
-    //     foreach ($transference_IDs as $transference) {
-    //         $transference_cases[] = "WHEN t.ID = {$transference->id} THEN {$transference->quantity}";
-    //     }
-    //     $case_statement = implode(" ", $transference_cases);
-
-    //     $transference_IDs_str = implode(",", array_map(function ($transference) {
-    //         return $transference->id;
-    //     }, $transference_IDs));
-
-    //     $query = "
-    //         UPDATE transferences t
-    //         JOIN products p ON t.product_ID = p.ID
-    //         JOIN quantity_in_stock q_from ON t.product_ID = q_from.product_ID AND t.from_stock_ID = q_from.stock_ID
-    //         LEFT JOIN quantity_in_stock q_to ON t.product_ID = q_to.product_ID AND t.to_stock_ID = q_to.stock_ID
-    //         SET
-    //             t.quantity = CASE $case_statement ELSE t.quantity END,
-    //             t.confirmed = 1,
-    //             q_from.quantity = q_from.quantity - CASE $case_statement ELSE t.quantity END,
-    //             q_to.quantity = COALESCE(q_to.quantity, 0) + CASE $case_statement ELSE t.quantity END
-    //         WHERE t.ID IN (
-    //             SELECT t.ID
-    //             FROM transferences t
-    //             JOIN products p ON t.product_ID = p.ID
-    //             JOIN quantity_in_stock q ON t.product_ID = q.product_ID AND t.from_stock_ID = q.stock_ID
-    //             WHERE t.ID IN ($transference_IDs_str)
-    //               AND ((t.ID IN ($transference_IDs_str) AND q.quantity >= CASE $case_statement ELSE 0 END))
-    //         );
-    //     ";
-
-    //     // Execute the update query
-    //     $result = $this->db->query($query);
-
-    //     if ($result) {
-    //         // Recuperar os dados atualizados da tabela transferences
-    //         $result = $this->db->query("
-    //             SELECT t.ID AS transference_ID, t.product_ID, t.from_stock_ID, t.to_stock_ID, t.quantity, t.observation
-    //             FROM transferences t
-    //             WHERE t.ID IN ($transference_IDs_str)
-    //         ");
-
-    //         while ($transference = $result->fetch_assoc()) {
-    //             $this->createTransaction($this->db, $transference['product_ID'], $transference['from_stock_ID'], $transference['to_stock_ID'], "Transferência", $transference['quantity'], null, $transference['observation']);
-    //         }
-    //     } else {
-    //         throw new Exception("Erro ao confirmar as transferências");
-    //     }
-    // }
-
-
     public function cancelarTransferencias($transference_IDs)
     {
         $transference_IDs_str = implode(",", $transference_IDs);
