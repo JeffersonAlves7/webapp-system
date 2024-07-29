@@ -440,9 +440,8 @@ class Lancamento
         }
     }
 
-    public function confirmarTransferencias(
-        $transference_IDs
-    ) {
+    public function confirmarTransferencias($transference_IDs)
+    {
         $this->db->beginTransaction();
         try {
             $transference_IDs_str = implode(",", array_map(function ($transference) {
@@ -465,60 +464,43 @@ class Lancamento
                 $from_stock_ID = $transference["from_stock_ID"];
                 $to_stock_ID = $transference["to_stock_ID"];
                 $from_stock_name = $transference["from_stock_name"];
-                // $location = $transference["location"];
                 $observation = $transference["observation"];
 
-                $result = $this->db->query(
-                    "SELECT * FROM `quantity_in_stock` 
-                    WHERE `product_ID` = $product_ID AND `stock_ID` = $from_stock_ID"
-                );
+                $quantityCheckResult = $this->db->query("SELECT * FROM `quantity_in_stock` WHERE `product_ID` = $product_ID AND `stock_ID` = $from_stock_ID");
+                $row = $quantityCheckResult->fetch_assoc();
 
-                $row = $result->fetch_assoc();
-
-                if ($row == null || $row["quantity"] < (int) $quantity) {
+                if ($row == null || $row["quantity"] < (int)$quantity) {
                     throw new Exception("Quantidade insuficiente do produto de ID '$product_ID' e Código '$product_code' no estoque '$from_stock_name'");
                 }
 
                 $estoque_origem_quantidade_ID = $row["ID"];
 
                 // Verificar se produto já tem registro no estoque destino
-                $result = $this->db->query(
-                    "SELECT `ID`, `quantity` FROM `quantity_in_stock` 
-                    WHERE `product_ID` = $product_ID AND `stock_ID` = $to_stock_ID"
-                );
+                $destStockCheckResult = $this->db->query("SELECT `ID`, `quantity` FROM `quantity_in_stock` WHERE `product_ID` = $product_ID AND `stock_ID` = $to_stock_ID");
 
-                // Se não existir, criar registro
-                if ($result->num_rows == 0) {
+                if ($destStockCheckResult->num_rows == 0) {
                     $this->db->query("INSERT INTO quantity_in_stock (`product_ID`, `stock_ID`, `quantity`) VALUES ($product_ID, $to_stock_ID, $quantity)");
                 } else {
-                    // Se existir, atualizar a quantidade
-                    $row = $result->fetch_assoc();
+                    $row = $destStockCheckResult->fetch_assoc();
                     $estoque_destino_quantidade_ID = $row["ID"];
                     $nova_quantidade = $row["quantity"] + $quantity;
-                    $this->db->query(
-                        "UPDATE `quantity_in_stock` 
-                        SET `quantity` = $nova_quantidade
-                        WHERE `ID` = $estoque_destino_quantidade_ID"
-                    );
+                    $this->db->query("UPDATE `quantity_in_stock` SET `quantity` = $nova_quantidade WHERE `ID` = $estoque_destino_quantidade_ID");
                 }
 
                 // Alterando quantidade do produto no estoque origem
-                $this->db->query(
-                    "UPDATE `quantity_in_stock` 
-                    SET `quantity` = `quantity` - $quantity 
-                    WHERE `ID` = $estoque_origem_quantidade_ID"
-                );
+                $this->db->query("UPDATE `quantity_in_stock` SET `quantity` = `quantity` - $quantity WHERE `ID` = $estoque_origem_quantidade_ID");
 
-                self::createTransaction($this->db, $product_ID, $from_stock_ID, $to_stock_ID, "Transferência", $quantity, observation: $observation);
+                self::createTransaction($this->db, $product_ID, $from_stock_ID, $to_stock_ID, "Transferência", $quantity, null, $observation);
                 $this->db->query("UPDATE `transferences` SET `confirmed` = 1 WHERE `ID` = " . $transference["ID"]);
             }
+
+            $this->db->commit(); // Confirma a transação
         } catch (Exception $e) {
             $this->db->rollback(); // Reverte a transação em caso de erro
             throw $e; // Lança a exceção para cima
         }
-
-        $this->db->commit(); // Confirma a transação
     }
+
 
     // public function confirmarTransferencias($transference_IDs)
     // {
