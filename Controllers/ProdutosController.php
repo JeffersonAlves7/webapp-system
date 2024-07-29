@@ -122,9 +122,9 @@ class ProdutosController extends _Controller
             $page = (int) $_GET["page"];
         }
 
-        $where = "1 = 1 ";
+        $where = "p.`is_active` = 1 ";
         if (isset($_GET["importer"]) && $_GET["importer"] != "") {
-            $where .= " AND importer LIKE \"%" . htmlspecialchars($_GET["importer"]) . "%\"";
+            $where .= " AND importer = \"" . htmlspecialchars($_GET["importer"]) . "\"";
         }
         if (isset($_GET["code"]) && $_GET["code"] != "") {
             $where .= " AND `code` LIKE \"%" . htmlspecialchars($_GET["code"]) . "%\"";
@@ -212,6 +212,35 @@ class ProdutosController extends _Controller
         $pageCount = $transacoesData["pageCount"];
 
         require_once "Views/Produtos/Produto.php";
+    }
+
+    public function arquivados()
+    {
+        $where = "p.is_active = 0";
+
+        // Filtro de importadora
+        if (isset($_GET["importer"]) && $_GET["importer"] != "") {
+            $where .= " AND importer = \"" . htmlspecialchars($_GET["importer"]) . "\"";
+        }
+
+        // Filto de codigo
+        if (isset($_GET["code"]) && $_GET["code"] != "") {
+            $where .= " AND `code` LIKE \"%" . htmlspecialchars($_GET["code"]) . "%\"";
+        }
+
+        $page = 1;
+        if (isset($_GET["page"])) {
+            $page = (int) $_GET["page"];
+        }
+        $limit = 50;
+
+        $productResponse = $this->productModel->getAll($page, $limit, where: $where);
+
+        return $this->view("Produtos/Arquivados",  [
+            "products" => $productResponse["products"]->fetch_all(MYSQLI_ASSOC),
+            "pageCount" => $productResponse["pageCount"],
+            "page" => $page
+        ]);
     }
 
     public function findAllByCodeOrEan()

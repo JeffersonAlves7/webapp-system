@@ -17,14 +17,18 @@ class Product extends Model
 
         $offset = ($page - 1) * $limit;
 
-        $sql = "SELECT p.*, lc.name as container_name FROM products p
+        $sql = "SELECT 
+                p.*, 
+                lc.name as container_name ,
+                pc.arrival_date as entry_date
+            FROM products p
         INNER JOIN products_in_container pc ON pc.product_ID = p.ID 
         INNER JOIN lote_container lc ON lc.ID = pc.container_ID
-        WHERE $where AND p.`is_active` = 1 ORDER BY pc.ID DESC LIMIT $limit OFFSET $offset
+        WHERE $where  ORDER BY pc.ID DESC LIMIT $limit OFFSET $offset
         ";
 
         $products = $this->db->query($sql);
-        // $pageCount = ceil($this->db->query("SELECT COUNT(*) as count FROM products WHERE $where")->fetch_assoc()["count"] / $limit);
+
         $pageCount = ceil($this->db->query("SELECT COUNT(*) as count FROM products p 
         INNER JOIN products_in_container pc ON pc.product_ID = p.ID
         INNER JOIN lote_container lc ON lc.ID = pc.container_ID
