@@ -27,6 +27,10 @@ require "Components/Header.php";
             }
         }
         ?>
+
+        <a href="/produtos/arquivados" class="btn">
+            <i class='bi bi-archive' style="color: gray; font-size: 1.2rem"></i>
+        </a>
     </div>
 
     <!-- Filtros - adicionar inputs aqui -->
