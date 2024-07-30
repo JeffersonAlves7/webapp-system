@@ -52,7 +52,6 @@ class ProdutosController extends _Controller
                             }
 
                             $id = $_POST["ID"];
-
                             $code = $_POST["code"];
                             $ean = $_POST["ean"];
                             $importer = $_POST["importer"];

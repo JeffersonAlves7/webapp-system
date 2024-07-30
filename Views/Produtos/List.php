@@ -223,7 +223,7 @@ ob_start();
                 <form method="post">
                     <input type="hidden" name="_method" value="put" />
                     <input type="hidden" name="action" value="update">
-                    <input type="hidden" name="id" id="productId">
+                    <input type="hidden" name="ID" id="productId">
                     <div class="mb-3">
                         <label for="update-code" class="form-label">Código</label>
                         <input type="text" name="code" class="form-control" id="update-code">
