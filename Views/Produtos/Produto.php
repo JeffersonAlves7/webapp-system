@@ -160,7 +160,7 @@ ob_start();
         $prevPage = $currentPage - 1;
         $nextPage = $currentPage + 1;
         $isPrevDisabled = !isset($_GET["page"]) || intval($_GET["page"]) <= 1;
-        $isNextDisabled = !isset($transactions) || !$transactions->num_rows > 0 || $currentPage >= $pageCount;
+        $isNextDisabled = !isset($transactions) || !count($transactions) > 0 || $currentPage >= $pageCount;
         ?>
 
         <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
