@@ -159,6 +159,11 @@ class EmbarquesController extends _Controller
 
                 // Mudar data para formato do banco de dados
                 $date = DateTime::createFromFormat("d/m/Y", $date)->format("Y-m-d");
+                if ($date === false) {
+                    $_SESSION["mensagem_erro"] = "Falha ao importar arquivo! A data de embarque não é válida na linha " . ($index + 2);
+                    header("Refresh: 0; URL = /embarques");
+                    return;
+                }
 
                 $ean = empty($product["ean"]) ? null : $product["ean"];
                 $description_chinese = empty($product["description_chinese"]) ? null : $product["description_chinese"];
