@@ -140,9 +140,10 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                                         if ($row['arrival_date']) {
                                             if ($days_late > 0) {
                                                 echo "Chegou dia " . $row['arrival_date'] . " - <b>" . $days_late . " dia(s)</b> atrasado.";
-                                            } else {
-                                                // echo "Chegou dia " . $row['arrival_date'] . " - <b>" . abs($days_late) . " dia(s)</b> adiantado.";
+                                            } else if ($days_late == 0) {
                                                 echo "Chegou dia " . $row['arrival_date'];
+                                            } else {
+                                                echo "Chegou dia " . $row['arrival_date'] . " - <b>" . abs($days_late) . " dia(s)</b> adiantado.";
                                             }
                                         } else {
                                             if ($days_late == 0) {
