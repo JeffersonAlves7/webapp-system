@@ -26,7 +26,7 @@ class HistoricoController extends _Controller
 
         $this->view(
             "Historico/Entradas",
-            $this->renderTransactions($transaction_type_ID)
+            $this->renderTransactions($transaction_type_ID, "HistoricoEntradas")
         );
     }
 
@@ -36,7 +36,7 @@ class HistoricoController extends _Controller
 
         $this->view(
             "Historico/Saidas",
-            $this->renderTransactions($transaction_type_ID)
+            $this->renderTransactions($transaction_type_ID, "HistoricoSaidas")
         );
     }
 
@@ -46,7 +46,7 @@ class HistoricoController extends _Controller
 
         $this->view(
             "Historico/Transferencias",
-            $this->renderTransactions($transaction_type_ID)
+            $this->renderTransactions($transaction_type_ID, "HistoricoTransferencias")
         );
     }
 
@@ -57,7 +57,7 @@ class HistoricoController extends _Controller
 
         $this->view(
             "Historico/Devolucoes",
-            $this->renderTransactions($transaction_type_ID)
+            $this->renderTransactions($transaction_type_ID, "HistoricoDevolucoes")
         );
     }
 
@@ -107,7 +107,7 @@ class HistoricoController extends _Controller
         $this->view("Historico/Reservas", ["reservas" => $reservas["reservations"], "pageCount" => $reservas["pageCount"]]);
     }
 
-    private function renderTransactions($transaction_type_ID)
+    private function renderTransactions($transaction_type_ID, $exportFileName = "historicoTransferencias")
     {
         $where = "1";
 
@@ -126,20 +126,21 @@ class HistoricoController extends _Controller
             $where .= " AND `transactions_history`.`created_at` <= '$dataFim'";
         }
 
-        if (isset($_GET["action"]) && $_GET["action"] == "exportarDevolucoes") {
+        if (isset($_GET["action"]) && $_GET["action"] == "exportar") {
             $devolucoes = $this->historicoModel->getAll($transaction_type_ID, 1, 1000000, $where);
             PhpExporter::exportToExcel(
-                ['Produto', 'Quantidade', 'Estoque', 'Data', 'Observação'],
+                ['Produto', 'Quantidade', 'Origem', 'Destino', 'Data', 'Observação'],
                 array_map(function ($devolucao) {
                     return [
                         $devolucao["code"],
                         $devolucao["quantity"],
-                        $devolucao["stock_name"],
+                        $devolucao["from_stock_name"],
+                        $devolucao["to_stock_name"],
                         date("d/m/Y H:i", strtotime($devolucao["created_at"])),
                         $devolucao["observation"],
                     ];
-                }, $devolucoes),
-                "historicoDevolucoes"
+                }, $devolucoes["transactions"]),
+                $exportFileName
             );
 
             return;

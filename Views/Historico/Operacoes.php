@@ -114,10 +114,5 @@
         window
             .open(url.href, "_blank")
             .focus();
-
-        url.searchParams.delete("action");
-        url.searchParams.delete("data-inicio");
-        url.searchParams.delete("data-fim");
-        url.searchParams.delete("code");
     });
 </script>
