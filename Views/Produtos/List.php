@@ -31,6 +31,7 @@ ob_start();
                     <th><i class="bi bi-file-earmark-text"></i> Descrição em Chinês</th>
                     <th></th>
                     <th></th>
+                    <th></th>
                 </tr>
                 <tr>
                     <th>
@@ -49,6 +50,7 @@ ob_start();
                         <input type="search" class="form-control" name="description" placeholder="Descrição" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>">
                     </th>
                     <th><input type="search" class="form-control" name="chinese_description" placeholder="Descrição em Chinês" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>"></th>
+                    <th></th>
                     <th></th>
                     <th></th>
                 </tr>
