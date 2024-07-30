@@ -118,12 +118,12 @@ class HistoricoController extends _Controller
 
         if (isset($_GET["data-inicio"]) && !empty($_GET["data-inicio"])) {
             $dataInicio = $_GET["data-inicio"];
-            $where .= " AND `transactions_history`.`created_at` >= '$dataInicio'";
+            $where .= " AND `transactions_history`.`created_at` >= '$dataInicio 00:00:00'";
         }
 
         if (isset($_GET["data-fim"]) && !empty($_GET["data-fim"])) {
             $dataFim = $_GET["data-fim"];
-            $where .= " AND `transactions_history`.`created_at` <= '$dataFim'";
+            $where .= " AND `transactions_history`.`created_at` <= '$dataFim 23:59:59'";
         }
 
         if (isset($_GET["action"]) && $_GET["action"] == "exportar") {
