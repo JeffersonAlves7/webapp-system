@@ -117,22 +117,22 @@ ob_start();
                     <th></th>
                 </tr>
             </thead>
-            <?php if ($transacoes->num_rows > 0) : ?>
+            <?php if (count($transactions) > 0) : ?>
                 <tbody>
-                    <?php while ($transacao = $transacoes->fetch_assoc()) : ?>
+                    <?php foreach ($transactions as $row) : ?>
                         <tr>
-                            <td><?= $transacao["type"]; ?></td>
-                            <td><?= $transacao["quantity"]; ?></td>
-                            <td><?= $transacao["from_stock"]; ?></td>
-                            <td><?= $transacao["to_stock"]; ?></td>
-                            <td><?= $transacao["client_name"]; ?></td>
-                            <td><?= $transacao["observation"]; ?></td>
-                            <td><?= date('d/m/Y H:i:s', strtotime($transacao["updated_at"])) ?></td>
+                            <td><?= $row["type"]; ?></td>
+                            <td><?= $row["quantity"]; ?></td>
+                            <td><?= $row["from_stock"]; ?></td>
+                            <td><?= $row["to_stock"]; ?></td>
+                            <td><?= $row["client_name"]; ?></td>
+                            <td><?= $row["observation"]; ?></td>
+                            <td><?= date('d/m/Y H:i:s', strtotime($row["updated_at"])) ?></td>
                             <td>
-                                <button type='button' class='btn btn-danger delete-transaction' data-id='<?= $transacao["ID"] ?>' data-bs-toggle='modal' data-bs-target='#cancelModal' class='btn-cancel'>Apagar</button>
+                                <button type='button' class='btn btn-danger delete-transaction' data-id='<?= $row["ID"] ?>' data-bs-toggle='modal' data-bs-target='#cancelModal' class='btn-cancel'>Apagar</button>
                             </td>
                         </tr>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                 </tbody>
             <?php else : ?>
                 <tbody>
@@ -153,7 +153,7 @@ ob_start();
         $prevPage = $currentPage - 1;
         $nextPage = $currentPage + 1;
         $isPrevDisabled = !isset($_GET["page"]) || intval($_GET["page"]) <= 1;
-        $isNextDisabled = !isset($transacoes) || !$transacoes->num_rows > 0 || $currentPage >= $pageCount;
+        $isNextDisabled = !isset($transactions) || !$transactions->num_rows > 0 || $currentPage >= $pageCount;
         ?>
 
         <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">

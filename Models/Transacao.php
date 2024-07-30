@@ -41,7 +41,7 @@ class Transacao extends Model
         $pageCount = ceil($this->db->query("SELECT COUNT(*) as count FROM transactions WHERE product_ID = $id AND $where")->fetch_assoc()["count"] / $limit);
 
         return array(
-            "transactions" => $result,
+            "transactions" => $result->fetch_all(MYSQLI_ASSOC),
             "pageCount" => $pageCount
         );
     }

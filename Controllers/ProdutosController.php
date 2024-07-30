@@ -145,7 +145,6 @@ class ProdutosController extends _Controller
         $products = $productResponse["products"];
         $pageCount = $productResponse["pageCount"];
 
-        // require_once "Views/Produtos/List.php";
         $this->view("Produtos/List", [
             "products" => $products,
             "pageCount" => $pageCount,
@@ -207,10 +206,15 @@ class ProdutosController extends _Controller
         }
 
         $transacoesData = $this->transacaoModel->getAllByProductId($id, $page, $where);
-        $transacoes = $transacoesData["transactions"];
-        $pageCount = $transacoesData["pageCount"];
 
-        require_once "Views/Produtos/Produto.php";
+        return $this->view("Produtos/Produto", [
+            "produto" => $produto,
+            "quantidade_em_estoque" => $quantidade_em_estoque,
+            "stocks" => $stocks,
+            "transactions" => $transacoesData["transactions"],
+            "pageCount" => $transacoesData["pageCount"],
+            "page" => $page
+        ]);
     }
 
     public function arquivados()
