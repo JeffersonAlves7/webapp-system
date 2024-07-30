@@ -317,6 +317,12 @@ require "Components/Header.php";
         }
         filterCodigo.submit();
     });
+
+    // Ao alterar importadora, da submit no form
+    const importadora = document.getElementById("importadora");
+    importadora.addEventListener("change", () => {
+        importadora.form.submit();
+    });
 </script>
 
 
