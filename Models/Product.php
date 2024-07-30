@@ -135,6 +135,12 @@ class Product extends Model
         return $result;
     }
 
+    public function changeLocation($product_id, $stock_id, $location)
+    {
+        $sql = "UPDATE `quantity_in_stock` SET location = '$location' WHERE product_ID = $product_id AND stock_ID = $stock_id";
+        return $this->db->query($sql);
+    }
+
     public function archive($id)
     {
         $sql = "UPDATE `products` SET `is_active` = 0 WHERE `ID` = $id";

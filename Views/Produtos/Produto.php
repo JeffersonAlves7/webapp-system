@@ -51,7 +51,14 @@ ob_start();
                         <td><?= $dados["quantity"]; ?></td>
                         <td><?= $dados["quantity_in_reserve"]; ?></td>
                         <td><?= $dados["quantity"] + $dados["quantity_in_reserve"]; ?></td>
-                        <td><?= $dados["location"]; ?></td>
+                        <td>
+                            <div class="input-group">
+                                <input data-stockId="<?= $dados["stock_ID"]; ?>" data-productId="<?= $produto["ID"]; ?>" type="text" class="form-control" value="<?= $dados["location"]; ?>" />
+                                <button class="btn btn-custom">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 <?php endwhile; ?>
                 <tr class="font-weight-bold">
@@ -271,6 +278,40 @@ ob_start();
             table.style.display = 'none';
             this.innerHTML = htmlMaximize;
         }
+    });
+
+    // Ao clicar para alterar a localização do produto
+    document.querySelectorAll('.input-group button').forEach(function(element) {
+        element.addEventListener('click', function() {
+            var input = this.previousElementSibling;
+            var stockId = input.getAttribute('data-stockId');
+            var productId = input.getAttribute('data-productId');
+            var location = input.value;
+
+            fetch('/produtos/changeLocation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    stockId: stockId,
+                    productId: productId,
+                    location: location
+                })
+            }).then(function(response) {
+                if (response.ok) {
+                    input.classList.add('is-valid');
+                    setTimeout(function() {
+                        input.classList.remove('is-valid');
+                    }, 2000);
+                } else {
+                    input.classList.add('is-invalid');
+                    setTimeout(function() {
+                        input.classList.remove('is-invalid');
+                    }, 2000);
+                }
+            });
+        });
     });
 </script>
 

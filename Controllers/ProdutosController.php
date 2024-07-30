@@ -267,4 +267,41 @@ class ProdutosController extends _Controller
 
         echo json_encode(array("products" => $products_arr));
     }
+
+    public function changeLocation()
+    {
+        header("Content-type: application/json");
+
+        $this->verifyWritePermission();
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            try {
+                $data = json_decode(file_get_contents("php://input"), true);
+
+                if (!isset($data["productId"]) || !isset($data["stockId"]) || !isset($data["location"])) {
+                    echo json_encode(array("success" => false, "message" => "Dados inválidos", "data" => $data));
+                    http_response_code(400);
+                    exit(0);
+                }
+
+                $product_ID = $data["productId"];
+                $stock_ID = $data["stockId"];
+                $location = $data["location"];
+
+                $this->productModel->changeLocation($product_ID, $stock_ID, $location);
+
+                echo json_encode(array("success" => true));
+                http_response_code(200);
+                exit(0);
+            } catch (Exception $e) {
+                echo json_encode(array("success" => false, "message" => $e->getMessage()));
+                http_response_code(500);
+                exit(0);
+            }
+        }
+
+        echo json_encode(array("success" => false));
+        http_response_code(500);
+        exit(0);
+    }
 }
