@@ -181,7 +181,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                     <?php endwhile; ?>
                 <?php else : ?>
                     <tr>
-                        <td colspan='9' class="text-center" style="padding: 1rem;">Nenhum produto encontrado neste container.</td>
+                        <td colspan='10' class="text-center" style="padding: 1rem;">Nenhum produto encontrado neste container.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
