@@ -76,7 +76,7 @@ require "Components/Header.php";
                     <th>CÓDIGO </th>
                     <th>QUANTIDADE</br> DE ENTRADA</th>
                     <th>SALDO </br>ATUAL</th>
-                    <?php if (isset($_GET["estoque"]) && $_GET["estoque"] != 2) : ?>
+                    <?php if (!isset($_GET["estoque"]) || isset($_GET["estoque"]) && $_GET["estoque"] != 2) : ?>
                         <th>CONTAINER</br> DE ORIGEM </th>
                     <?php endif; ?>
                     <th>IMPORTADORA </th>
@@ -160,9 +160,15 @@ require "Components/Header.php";
                         </tr>
                     <?php endforeach; ?>
                 <?php else : ?>
-                    <tr>
-                        <td colspan="9" class="text-center">Nenhum produto encontrado</td>
-                    </tr>
+                    <?php if (isset($_GET["estoque"]) && $_GET["estoque"] == 1) : ?>
+                        <tr>
+                            <td colspan="8" class="text-center">Nenhum produto encontrado</td>
+                        </tr>
+                    <?php else : ?>
+                        <tr>
+                            <td colspan="9" class="text-center">Nenhum produto encontrado</td>
+                        </tr>
+                    <?php endif; ?>
                 <?php endif; ?>
             </tbody>
 
