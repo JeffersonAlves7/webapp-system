@@ -24,7 +24,7 @@ class Container extends Model
         FROM products_in_container pc
         INNER JOIN products p ON p.ID = pc.product_ID
         INNER JOIN lote_container lc ON lc.ID = pc.container_ID
-        WHERE $where
+        WHERE $where AND p.is_active = 1
         ORDER BY pc.`created_at` DESC LIMIT $limit OFFSET $offset";
 
         $products = $this->db->query($sql);
