@@ -55,10 +55,10 @@ class EmbarquesController extends _Controller
         ) {
             $start_date = htmlspecialchars($_GET["start_date"]);
             $end_date = htmlspecialchars($_GET["end_date"]);
-            $where .= " AND lc.`created_at` BETWEEN '$start_date' AND '$end_date'";
+            $where .= " AND pc.`departure_date` <= '$end_date 23:59:59' AND pc.`departure_date` >= '$start_date 00:00:00'";
         } else if (isset($_GET["start_date"]) && !empty($_GET["start_date"])) {
             $start_date = htmlspecialchars($_GET["start_date"]);
-            $where .= " AND lc.`created_at` BETWEEN '$start_date 00:00:00' AND '$start_date 23:59:59'";
+            $where .= " AND pc.`departure_date`  <= '$start_date 23:59:59'";
         }
 
         $productsData = $this->containerModel->getAllProducts($page, where: $where);
