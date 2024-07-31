@@ -43,7 +43,7 @@ class Relatorios extends Model
             t.quantity as 'ENTRADA',
             CEIL(? * t.quantity) as 'QUANTIDADE DE ALERTA'
         FROM products p
-            INNER JOIN quantity_in_stock qs ON qs.product_ID = p.ID AND qs.stock_ID = 1
+            INNER JOIN quantity_in_stock qs ON qs.product_ID = p.ID
             INNER JOIN transactions t ON t.type_ID = 1 AND t.product_ID = p.ID
         WHERE (qs.quantity + qs.quantity_in_reserve) < CEIL(? * t.quantity)
         ORDER BY t.updated_at
