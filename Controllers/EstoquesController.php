@@ -44,10 +44,10 @@ class EstoquesController extends _Controller
 
         $where = "1";
         if (isset($_COOKIE["codigo"]) && $_COOKIE["codigo"] != "") {
-            $where = "p.code LIKE '%" . $_COOKIE["codigo"] . "%'";
+            $where .= " AND p.code LIKE '%" . $_COOKIE["codigo"] . "%'";
         }
         if (isset($_GET["importadora"]) && $_GET["importadora"] != "") {
-            $where = "p.importer = '" . $_GET["importadora"] . "'";
+            $where .= " AND p.importer = '" . $_GET["importadora"] . "'";
         }
 
         $orderBy = "p.created_at";
@@ -63,7 +63,7 @@ class EstoquesController extends _Controller
         }
 
         $stocks = $this->estoquesModel->getAll();
-        $productsData = $this->estoquesModel->getProductsByStock($estoque_ID, $page, limit: 30, alert: $alert, where: $where, order: $orderBy . " " . $orderType);
+        $productsData = $this->estoquesModel->getProductsByStock($estoque_ID, $page, limit: 50, alert: $alert, where: $where, order: $orderBy . " " . $orderType);
 
         return $this->view(
             "Estoques",

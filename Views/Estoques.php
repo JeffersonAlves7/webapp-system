@@ -72,50 +72,22 @@ require "Components/Header.php";
     <div class="table-responsive" style="max-height: 55vh; min-height: 200px">
         <table class="table table-striped">
             <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000">
-                <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"] || $_GET["estoque"] == 1) : ?>
-                    <tr>
-                        <th>
-                            <div class="d-flex align-items-center">
-                                CÓDIGO
-                                <form method="get" id="filter-codigo">
-                                    <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
-                                    <input type="hidden" name="orderType" value="<?= $_GET["orderType"] ?? "" ?>">
-                                    <input type="hidden" name="orderBy" value="codigo">
-                                    <button class="d-flex gap-1 btn" type="submit" id="filter-codigo">
-                                        <?php if (isset($_GET["orderType"]) && $_GET["orderType"] == "asc") : ?>
-                                            <i class="bi bi-sort-down filter" data-value="asc"></i>
-                                        <?php elseif (isset($_GET["orderType"]) && $_GET["orderType"] == "desc") : ?>
-                                            <i class="bi bi-sort-up filter" data-value="desc"></i>
-                                        <?php else : ?>
-                                            <i class="bi bi-filter filter" data-value=""></i>
-                                        <?php endif; ?>
-                                    </button>
-                                </form>
-                            </div>
-                        </th>
-                        <th>QUANTIDADE</br> DE ENTRADA</th>
-                        <th>SALDO </br>ATUAL</th>
+                <tr>
+                    <th>CÓDIGO </th>
+                    <th>QUANTIDADE</br> DE ENTRADA</th>
+                    <th>SALDO </br>ATUAL</th>
+                    <?php if (isset($_GET["estoque"]) && $_GET["estoque"] != 2) : ?>
                         <th>CONTAINER</br> DE ORIGEM </th>
-                        <th>IMPORTADORA </th>
-                        <th>DATA DE </br>ENTRADA</th>
-                        <th>DIAS </br>EM ESTOQUE</th>
+                    <?php endif; ?>
+                    <th>IMPORTADORA </th>
+                    <th>DATA DE </br>ENTRADA</th>
+                    <th>DIAS </br>EM ESTOQUE</th>
+                    <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"]) : ?>
                         <th>GIRO</th>
                         <th>QUANTIDADE </br>PARA ALERTA</th>
-                        <th>OBSERVAÇÃO</th>
-                    </tr>
-                <?php else : ?>
-                    <tr>
-                        <th>CÓDIGO </th>
-                        <th>QUANTIDADE</br> DE ENTRADA</th>
-                        <th>SALDO </br>ATUAL</th>
-                        <th>IMPORTADORA </th>
-                        <th>DATA DE </br>ENTRADA</th>
-                        <th>DIAS </br>EM ESTOQUE</th>
-                        <th>GIRO</th>
-                        <th>QUANTIDADE </br>PARA ALERTA</th>
-                        <th>OBSERVAÇÃO</th>
-                    </tr>
-                <?php endif; ?>
+                    <?php endif; ?>
+                    <th>OBSERVAÇÃO</th>
+                </tr>
             </thead>
             <tbody>
                 <?php if (isset($produtos) && count($produtos) > 0) :
@@ -133,7 +105,7 @@ require "Components/Header.php";
                         $dias = $produto["dias_em_estoque"] ?? 0;
                         $giro = $produto["giro"] ?? 0;
                         $alerta = $produto["quantidade_para_alerta"] ?? 0;
-                        $observacao = $produto["observation"] ?? "";
+                        $observacao = $produto["observacao"];
                         $importadora = $produto["importadora"] ?? "";
                         $container = isset($produto["container_de_origem"]) ? $produto["container_de_origem"] : "";
                 ?>
@@ -145,12 +117,16 @@ require "Components/Header.php";
                             </td>
                             <td><?= $quantidade_entrada ?></td>
 
-                            <?php if ($saldo > $alerta) : ?>
-                                <td class='bg-quaternary'><?= $saldo ?></td>
-                            <?php elseif ($saldo < $alerta) : ?>
-                                <td class='bg-danger'><?= $saldo ?></td>
+                            <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"]) : ?>
+                                <?php if ($saldo > $alerta) : ?>
+                                    <td class='bg-quaternary'><?= $saldo ?></td>
+                                <?php elseif ($saldo < $alerta) : ?>
+                                    <td class='bg-danger'><?= $saldo ?></td>
+                                <?php else : ?>
+                                    <td class='bg-warning'><?= $saldo ?></td>
+                                <?php endif; ?>
                             <?php else : ?>
-                                <td class='bg-warning'><?= $saldo ?></td>
+                                <td><?= $saldo ?></td>
                             <?php endif; ?>
 
                             <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"] || $_GET["estoque"] == 1) : ?>
@@ -162,13 +138,25 @@ require "Components/Header.php";
                             <?php endif; ?>
 
                             <td><?= $importadora ?></td>
+
                             <td style='min-width: 100px;'>
                                 <?= $data ?>
                             </td>
-                            <td><?= $dias ?> dia(s)</td>
-                            <td><?= $giro ?>%</td>
-                            <td><?= $alerta ?></td>
-                            <td><?= $observacao ?></td>
+
+                            <td>
+                                <?= $dias ?> dia(s)
+                            </td>
+
+                            <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"]) : ?>
+                                <td><?= $giro ?>%</td>
+                                <td><?= $alerta ?></td>
+                            <?php endif; ?>
+
+                            <td>
+                                <div class="container-col">
+                                    <p><?= $observacao ?></p>
+                                </div>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else : ?>
