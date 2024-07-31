@@ -295,27 +295,12 @@ require "Components/Header.php";
         }
     });
 
-    const filterCodigo = document.getElementById("filter-codigo");
-
-    filterCodigo.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const orderTypeEl = filterCodigo.querySelector("input[name='orderType']")
-        const orderType = orderTypeEl.value;
-        if (orderType == "desc") {
-            orderTypeEl.value = "";
-            filterCodigo.querySelector("input[name='orderBy']").value = "";
-        } else if (orderType == "asc") {
-            orderTypeEl.value = "desc";
-        } else {
-            orderTypeEl.value = "asc";
-        }
-        filterCodigo.submit();
-    });
-
-    // Ao alterar importadora, da submit no form
     const importadora = document.getElementById("importadora");
+    console.log(importadora);
     importadora.addEventListener("change", () => {
-        importadora.form.submit();
+        console.log("change");
+        const form = importadora.closest("form");
+        form.submit();
     });
 </script>
 
