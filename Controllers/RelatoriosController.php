@@ -145,8 +145,12 @@ class RelatoriosController extends _Controller
             header("Content-Type: application/json");
 
             $page = 1;
-            $limit = 1000000;
-            $porcentagem = 0.50;
+            $limit = 100000000000000000000;
+
+            $porcentagem = 0.20;
+            if (isset($_COOKIE["alerta"]) && !empty($_COOKIE["alerta"])) {
+                $porcentagem = $_COOKIE["alerta"];
+            }
 
             if (isset($_COOKIE["porcentagemParaAlerta"]) && !empty($_GET["porcentagemParaAlerta"])) {
                 $porcentagem = $_COOKIE["porcentagemParaAlerta"];
