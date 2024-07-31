@@ -118,7 +118,7 @@ class RelatoriosController extends _Controller
     public function estoqueMinimo()
     {
         $page = 1;
-        $limit = 30;
+        $limit = 60;
         $porcentagem = 0.20;
 
         if (isset($_GET["page"]) && !empty($_GET["page"])) {
