@@ -28,7 +28,7 @@ require "Components/Header.php"
 
     <div class="table-responsive mb-3" style="max-height: 400px; overflow-y: auto;">
         <table class="table table-striped">
-            <thead>
+            <thead  style="position: sticky; top: 0;">
                 <tr>
                     <th>Código</th>
                     <th>Quantidade De Entrada</th>
