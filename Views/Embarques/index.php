@@ -205,6 +205,10 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                 <button type="submit" class="btn btn-custom">
                     <i class="bi bi-file-earmark-arrow-up"></i> Importar
                 </button>
+
+                <a href="/public/Templates/embarque.xlsx" download>
+                    <button type="button" class="btn btn-custom">Baixar planilha</button>
+                </a>
             </div>
         </div>
     </form>
