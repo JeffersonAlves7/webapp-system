@@ -20,9 +20,9 @@ class Lancamento
         $product_ID,
         $quantidade,
         $lote_container,
-        $stock_ID = null,
         $observacao = null
     ) {
+        $stock_ID = 1;
         $this->db->beginTransaction(); // Inicia a transação
 
         try {
@@ -55,9 +55,6 @@ class Lancamento
                     VALUES ($containerID, $product_ID, $quantidade, $quantidade, NOW())";
             $this->db->query($sql);
 
-            if (!$stock_ID) {
-                $stock_ID = 1;
-            }
 
             $result = $this->db->query(
                 "SELECT `ID` FROM `quantity_in_stock` 
