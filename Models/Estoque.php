@@ -119,7 +119,7 @@ class Estoque extends Model
 
     private function getGalpaoProductsByStock($limit, $offset, $alert, $where, $order, $giro = false)
     {
-        $stock_filter = !$giro ? " AND qis.stock_ID = 1" : "";
+        $stock_filter = !$giro ? "AND qis.stock_ID = 1" : "";
 
         $query = "SELECT 
                 p.ID, 
@@ -128,7 +128,7 @@ class Estoque extends Model
                 (
                     SELECT SUM(qis.quantity) + SUM(qis.quantity_in_reserve)
                         FROM `quantity_in_stock` qis
-                        WHERE qis.stock_ID = 1
+                        WHERE qis.product_ID = p.ID 
                         $stock_filter
                 ) as saldo_atual 
             FROM `products` p
