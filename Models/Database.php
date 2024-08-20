@@ -1,7 +1,5 @@
 <?php
 
-use PSpell\Config;
-
 require_once("Managers/ConfigManager.php");
 
 class Database
