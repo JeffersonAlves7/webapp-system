@@ -28,6 +28,13 @@ require "Components/Header.php";
         }
         ?>
 
+        <!-- Exportar -->
+        <div>
+            <button type="button" class="btn btn-custom" id="exportar">
+                <i class="bi bi-file-earmark-excel"></i> Exportar
+            </button>
+        </div>
+
         <a href="/produtos/arquivados" class="btn">
             <i class='bi bi-archive' style="color: gray; font-size: 1.2rem"></i>
         </a>
@@ -185,8 +192,6 @@ require "Components/Header.php";
         </table>
     </div>
 
-    <button type="submit" hidden></button>
-
     <?php if ($pageCount > 1) : ?>
         <?php
         function isButtonDisabled($condition)
@@ -295,12 +300,30 @@ require "Components/Header.php";
         }
     });
 
-    const importadora = document.getElementById("importadora");
-    console.log(importadora);
-    importadora.addEventListener("change", () => {
+    const inputImportadora = document.getElementById("importadora");
+    console.log(inputImportadora);
+    inputImportadora.addEventListener("change", () => {
         console.log("change");
-        const form = importadora.closest("form");
+        const form = inputImportadora.closest("form");
         form.submit();
+    });
+
+    const exportar = document.getElementById("exportar");
+    exportar.addEventListener("click", () => {
+        const estoque = document.querySelector("button.active").textContent;
+        const codigo = inputCodigo.value;
+        const importadora = inputImportadora.value;
+        const alerta = inputAlerta.value;
+        // url do controller/exportar
+        const url = new URL(window.location.origin + "/estoques/exportar");
+        url.searchParams.set("estoque", estoque);
+        url.searchParams.set("codigo", codigo);
+        url.searchParams.set("importadora", importadora);
+        url.searchParams.set("alerta", alerta);
+
+        window
+            .open(url.href, "_blank")
+            .focus();
     });
 </script>
 

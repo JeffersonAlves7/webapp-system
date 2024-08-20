@@ -254,4 +254,24 @@ class Estoque extends Model
                 return $this->getGalpaoProductsByStock($limit, $offset, $alert, $where, $order, true);
         }
     }
+
+    public function getAllProductsStockWithoutAlert($stock_ID = null, $where = "1")
+    {
+        $stock_ID = (int) $stock_ID;
+
+        // If stock_ID is equal to 0 or it's not set, then we want to get all products from all stocks
+        $query = "SELECT 
+                p.*,
+                (SELECT qs.quantity + qs.quantity_in_reserve FROM quantity_in_stock qs WHERE qs.product_ID = p.ID AND qs.stock_ID = 1) as `quantity_galpao`,
+                (SELECT qs.quantity + qs.quantity_in_reserve FROM quantity_in_stock qs WHERE qs.product_ID = p.ID AND qs.stock_ID = 2) as `quantity_loja`
+            FROM products p
+            WHERE $where
+            GROUP BY p.ID
+            ORDER BY p.ID DESC";
+
+        $productsResult = $this->db->query($query);
+        $products = $productsResult->fetch_all(MYSQLI_ASSOC);
+
+        return $products;
+    }
 }

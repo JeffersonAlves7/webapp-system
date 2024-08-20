@@ -2,6 +2,7 @@
 
 require_once "Models/Estoque.php";
 require_once "Controllers/_Controller.php";
+require_once "Utils/PhpExporter.php";
 
 class EstoquesController extends _Controller
 {
@@ -94,5 +95,41 @@ class EstoquesController extends _Controller
 
         echo json_encode(array("stocks" => $stocks_arr));
         exit(0);
+    }
+
+    public function exportar()
+    {
+        $estoque_ID = null;
+        if (isset($_GET["estoque"]) && $_GET["estoque"] != "") {
+            $estoque_ID = $_GET["estoque"];
+        }
+
+        $where = "1";
+
+        if (isset($_COOKIE["codigo"]) && $_COOKIE["codigo"] != "") {
+            $where .= " AND p.code LIKE '%" . $_COOKIE["codigo"] . "%'";
+        }
+
+        if (isset($_GET["importadora"]) && $_GET["importadora"] != "") {
+            $where .= " AND p.importer = '" . $_GET["importadora"] . "'";
+        }
+
+        $productsData = $this->estoquesModel->getAllProductsStockWithoutAlert($estoque_ID);
+
+        PhpExporter::exportToExcel(
+            ["Código", "Descrição", "Quantidade Galpão", "Quantidade Loja", "Importadora"],
+            array_map(function ($product) {
+                return [
+                    $product["code"],
+                    $product["description"],
+                    $product["quantity_galpao"],
+                    $product["quantity_loja"],
+                    $product["importer"],
+                ];
+            }, $productsData),
+            "estoqueTotal"
+        );
+
+        return;
     }
 }
