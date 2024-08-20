@@ -164,9 +164,9 @@ class EmbarquesController extends _Controller
                     header("Refresh: 0; URL = /embarques");
                     return;
                 }
-
-                $ean = empty($product["ean"]) ? null : $product["ean"];
-                $description_chinese = empty($product["description_chinese"]) ? null : $product["description_chinese"];
+                
+                $ean = $ean ? $ean : null;
+                $description_chinese = $description_chinese ? $description_chinese : null;
 
                 $products[] = [
                     "ean" => $ean,
