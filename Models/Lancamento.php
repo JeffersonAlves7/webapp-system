@@ -228,7 +228,10 @@ class Lancamento
 
         $reserves = $this->db->query($sql);
 
-        $pageCountSql = "SELECT COUNT(*) AS count FROM reserves WHERE $where";
+        $pageCountSql = "SELECT COUNT(*) AS count 
+            FROM reserves r
+            INNER JOIN products p ON r.product_ID = p.ID
+         WHERE $where";
         $pageCount = $this->db->query($pageCountSql)->fetch_assoc()['count'];
         $pageCount = ceil($pageCount / $limit);
 
