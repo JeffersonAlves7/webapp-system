@@ -44,11 +44,18 @@ class Estoque extends Model
             $this->populateLojaProductsDetails($product);
         }
 
-        $sqlCount = "SELECT COUNT(DISTINCT p.ID) as count,
-                SUM(t.quantity) as saldo_total
+        $saldoTotalQuery = "SELECT SUM(qis.quantity + qis.quantity_in_reserve) as saldo_total
+            FROM quantity_in_stock qis
+            WHERE qis.stock_ID = 2";
+
+        $saldoTotal = $this->db->query($saldoTotalQuery);
+        $saldoTotal = $saldoTotal->fetch_assoc();
+
+        $sqlCount = "SELECT COUNT(DISTINCT p.ID) as count
             FROM `products` p
             INNER JOIN `transactions` t ON p.ID = t.product_ID
-            WHERE t.to_stock_ID = 2 AND p.is_active = 1 AND $where";
+            WHERE t.to_stock_ID = 2 AND p.is_active = 1 AND $where
+            GROUP BY p.ID";
 
         $pageCount = $this->db->query($sqlCount);
         $pageCount = $pageCount->fetch_assoc();
@@ -57,7 +64,7 @@ class Estoque extends Model
             "products" => $products,
             "pageCount" => ceil($pageCount['count'] / $limit),
             "total_count" => $pageCount['count'],
-            "saldo_total" => $pageCount['saldo_total']
+            "saldo_total" => $saldoTotal['saldo_total']
         ];
     }
 
@@ -149,11 +156,21 @@ class Estoque extends Model
             }
         }
 
-        $sqlCount = "SELECT COUNT(DISTINCT p.ID) as count,
-                SUM(qis.quantity) as saldo_total 
+        if ($giro) {
+            $saldoTotalQuery = "SELECT SUM(qis.quantity + qis.quantity_in_reserve) as saldo_total
+            FROM quantity_in_stock qis";
+        } else {
+            $saldoTotalQuery = "SELECT SUM(qis.quantity + qis.quantity_in_reserve) as saldo_total
+            FROM quantity_in_stock qis
+            WHERE qis.stock_ID = 1";
+        }
+
+        $saldoTotal = $this->db->query($saldoTotalQuery);
+        $saldoTotal = $saldoTotal->fetch_assoc();
+
+        $sqlCount = "SELECT COUNT(DISTINCT p.ID) as count 
             FROM `products` p
             INNER JOIN `transactions` t ON p.ID = t.product_ID
-            INNER JOIN `quantity_in_stock` qis ON p.ID = qis.product_ID
             WHERE t.to_stock_ID = 1 AND p.is_active = 1 AND $where";
 
         $pageCount = $this->db->query($sqlCount);
@@ -163,7 +180,7 @@ class Estoque extends Model
             "products" => $products,
             "pageCount" => ceil($pageCount['count'] / $limit),
             "total_count" => $pageCount['count'],
-            "saldo_total" => $pageCount['saldo_total']
+            "saldo_total" => $saldoTotal['saldo_total']
         ];
     }
 
