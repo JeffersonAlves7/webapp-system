@@ -54,8 +54,7 @@ class Estoque extends Model
         $sqlCount = "SELECT COUNT(DISTINCT p.ID) as count
             FROM `products` p
             INNER JOIN `transactions` t ON p.ID = t.product_ID
-            WHERE t.to_stock_ID = 2 AND p.is_active = 1 AND $where
-            GROUP BY p.ID";
+            WHERE t.to_stock_ID = 2 AND p.is_active = 1 AND $where";
 
         $pageCount = $this->db->query($sqlCount);
         $pageCount = $pageCount->fetch_assoc();
