@@ -590,7 +590,7 @@ class Lancamento
         }
     }
 
-    public static function createTransaction($db, $product_ID, $from_stock_ID, $to_stock_ID, $type_ID, $quantity, $client_name = null, $observation = null)
+    private static function createTransaction($db, $product_ID, $from_stock_ID, $to_stock_ID, $type_ID, $quantity, $client_name = null, $observation = null)
     {
         if ($from_stock_ID) {
             self::getLastEntriesAndQuantity($db, $product_ID, $from_stock_ID);
@@ -637,7 +637,7 @@ class Lancamento
         }
     }
 
-    public static function getLastEntriesAndQuantity($db, $product_ID, $stock_ID = 1)
+    private static function getLastEntriesAndQuantity($db, $product_ID, $stock_ID = 1)
     {
         // Obter o saldo necessário
         $stmt = $db->prepare(
