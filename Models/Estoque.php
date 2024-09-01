@@ -125,34 +125,132 @@ class Estoque extends Model
 
     private function getGalpaoProductsByStock($limit, $offset, $alert, $where, $order, $giro = false)
     {
-        $stock_filter = !$giro ? "AND qis.stock_ID = 1" : "";
-
-        $query = "SELECT 
+        if ($giro) {
+            $query = "SELECT 
                 p.ID, 
                 p.code as codigo, 
                 p.importer as importadora,
-                (
-                    SELECT SUM(qis.quantity) + SUM(qis.quantity_in_reserve)
-                        FROM `quantity_in_stock` qis
-                        WHERE qis.product_ID = p.ID 
-                        $stock_filter
-                ) as saldo_atual 
+                COALESCE(
+                    (
+                        SELECT SUM(qis.quantity) + SUM(qis.quantity_in_reserve)
+                            FROM `quantity_in_stock` qis
+                            WHERE qis.product_ID = p.ID 
+                    ), 0
+                ) as saldo_atual,
+                COALESCE(qis.last_entries, '') AS 'container_ids',
+                COALESCE(qis.entry_quantity, 0) AS 'quantidade_entrada',
+                CASE
+                    WHEN COALESCE(
+                        (
+                            SELECT SUM(qis.quantity) + SUM(qis.quantity_in_reserve)
+                                FROM `quantity_in_stock` qis
+                                WHERE qis.product_ID = p.ID 
+                        ), 0) = 0 THEN 100
+                    WHEN COALESCE(qis.entry_quantity, 0) > 0 THEN 
+                        ROUND(
+                            (
+                                (
+                                    COALESCE(qis.entry_quantity, 0) - COALESCE((
+                                        SELECT SUM(qis.quantity) + SUM(qis.quantity_in_reserve)
+                                            FROM `quantity_in_stock` qis
+                                            WHERE qis.product_ID = p.ID 
+                                    ), 0)
+                                ) / COALESCE(qis.entry_quantity, 0)
+                            ) * 100, 2)
+                    ELSE 0
+                END AS giro,
+                FLOOR(ROUND(COALESCE(qis.entry_quantity, 0) * $alert, 2)) AS quantidade_para_alerta,
+                null as observacao
             FROM `products` p
-            INNER JOIN `transactions` t ON p.ID = t.product_ID 
-            WHERE t.to_stock_ID = 1 AND p.is_active = 1 AND $where
+            INNER JOIN `transactions` t ON p.ID = t.product_ID  AND t.to_stock_ID = 1
+            INNER JOIN `quantity_in_stock` qis ON p.ID = qis.product_ID AND qis.stock_ID = 1
+            WHERE p.is_active = 1 AND $where
             GROUP BY p.ID
             ORDER BY $order
             LIMIT $limit OFFSET $offset";
+        } else {
+            $query = "SELECT 
+                p.ID, 
+                p.code as codigo, 
+                p.importer as importadora,
+                COALESCE(
+                    (
+                        SELECT SUM(qis.quantity) + SUM(qis.quantity_in_reserve)
+                            FROM `quantity_in_stock` qis
+                            WHERE qis.product_ID = p.ID 
+                            AND qis.stock_ID = 1
+                    ), 0
+                ) as saldo_atual,
+                COALESCE(qis.last_entries, '') AS 'container_ids',
+                COALESCE(qis.entry_quantity, 0) AS 'quantidade_entrada'
+            FROM `products` p
+            INNER JOIN `transactions` t ON p.ID = t.product_ID  AND t.to_stock_ID = 1
+            INNER JOIN `quantity_in_stock` qis ON p.ID = qis.product_ID AND qis.stock_ID = 1
+            WHERE p.is_active = 1 AND $where
+            GROUP BY p.ID
+            ORDER BY $order
+            LIMIT $limit OFFSET $offset";
+        }
 
         $productsResult = $this->db->query($query);
         $products = $productsResult->fetch_all(MYSQLI_ASSOC);
 
         foreach ($products as &$product) {
-            $this->populateGalpaoProductsDetails($product);
+            $containers_IDs_str = $product["container_ids"];
+            $containers_IDs = explode(",", $containers_IDs_str);
 
-            if ($giro) {
-                $this->populateGiro($product, $alert);
+            // Data de entrada do último container
+            $last_container = end($containers_IDs); // Corrigido para pegar o último item
+            $last_container_query = "SELECT arrival_date FROM `products_in_container` WHERE ID = ?";
+
+            if ($stmt = $this->db->prepare($last_container_query)) {
+                $stmt->bind_param("i", $last_container);
+                $stmt->execute();
+                $lastContainerResult = $stmt->get_result();
+                $containerData = $lastContainerResult->fetch_assoc();
+                $arrivalDate = $containerData["arrival_date"];
+
+                // Calcular quantos dias o produto está em estoque
+                $arrivalDateObj = new DateTime($arrivalDate);
+                $currentDateObj = new DateTime();
+                $interval = $arrivalDateObj->diff($currentDateObj);
+                $daysInStock = max($interval->days, 1); // Garantir que o mínimo seja 1 dia
+
+                $product["data_de_entrada"] = $arrivalDate;
+                $product["dias_em_estoque"] = $daysInStock;
             }
+
+            // Nomes dos containers
+            $container_ids_placeholder = implode(',', array_fill(0, count($containers_IDs), '?'));
+            $names_query = "SELECT lc.name FROM `products_in_container` pc
+            INNER JOIN `lote_container` lc ON pc.container_ID = lc.ID
+            WHERE pc.ID IN ($container_ids_placeholder)";
+
+            if ($stmt = $this->db->prepare($names_query)) {
+                $stmt->bind_param(str_repeat('i', count($containers_IDs)), ...$containers_IDs);
+                $stmt->execute();
+                $namesResult = $stmt->get_result();
+                $containerNames = [];
+
+                while ($row = $namesResult->fetch_assoc()) {
+                    $containerNames[] = $row["name"];
+                }
+
+                $product["container_de_origem"] = implode(", ", $containerNames);
+            }
+
+            // Preciso pegar a ultima transacao de entrada do produto
+            $product_ID = $product["ID"];
+
+            $queryLastTransaction = "SELECT 
+            t.ID as transaction_ID, t.observation as observacao
+            FROM transactions t
+            WHERE t.product_ID = $product_ID AND t.to_stock_ID = 1 AND t.type_ID = 1";
+
+            $lastTransaction = $this->db->query($queryLastTransaction);
+            $lastTransaction = $lastTransaction->fetch_assoc();
+
+            $product['observacao'] = $lastTransaction['observacao'];
         }
 
         if ($giro) {
@@ -181,82 +279,6 @@ class Estoque extends Model
             "total_count" => $pageCount['count'],
             "saldo_total" => $saldoTotal['saldo_total']
         ];
-    }
-
-    private function populateGiro(&$product, $alert)
-    {
-        if ($product["saldo_atual"] == 0) {
-            $product['giro'] = 100;
-        } else if ($product['quantidade_entrada'] > 0) {
-            $product['giro'] = round(($product['quantidade_entrada'] - $product['saldo_atual']) / $product['quantidade_entrada'] * 100, 2);
-        } else {
-            $product['giro'] = 0;
-        }
-
-        // Quantidade para alerta
-        $product['alerta'] = round($product['quantidade_entrada'] * $alert);
-        $product["quantidade_para_alerta"] = $product['quantidade_entrada'] - $product['alerta'];
-    }
-
-    private function populateGalpaoProductsDetails(&$product)
-    {
-        $product_ID = $product['ID'];
-
-        $product['quantidade_entrada'] = 0;
-        $product['data_de_entrada'] = 0;
-        $product['dias_em_estoque'] = 0;
-        $product['container_de_origem'] = "";
-
-
-        // Preciso pegar a ultima transacao de entrada do produto
-        $queryLastTransaction = "SELECT 
-                    t.ID as transaction_ID, t.observation as observacao
-                    FROM transactions t
-                    WHERE t.product_ID = $product_ID AND t.to_stock_ID = 1 AND t.type_ID = 1";
-
-        $lastTransaction = $this->db->query($queryLastTransaction);
-        $lastTransaction = $lastTransaction->fetch_assoc();
-
-        $product['observacao'] = $lastTransaction['observacao'];
-        $product['transaction_ID'] = $lastTransaction['transaction_ID'];
-
-
-        $query = "SELECT 
-                    pic.product_ID, SUM(pic.quantity) as quantidade_entrada, MAX(pic.arrival_date) as ultima_data_entrada,
-                    lc.name as container_de_origem, GREATEST(DATEDIFF(NOW(), MAX(pic.arrival_date)), 1) as dias_em_estoque
-                FROM `products_in_container` pic
-                INNER JOIN lote_container lc ON lc.ID = pic.container_ID
-                WHERE pic.in_stock = 1 AND pic.product_ID = $product_ID
-                GROUP BY pic.product_ID, lc.name ORDER BY pic.arrival_date DESC LIMIT 1";
-
-        $entrada = $this->db->query($query);
-        $entrada = $entrada->fetch_assoc();
-
-        $product['quantidade_entrada'] = $entrada['quantidade_entrada'];
-        $product['data_de_entrada'] = $entrada['ultima_data_entrada'];
-        $product['dias_em_estoque'] = $entrada['dias_em_estoque'];
-        $product['container_de_origem'] = $entrada['container_de_origem'];
-
-        $index = 1;
-        while ($product['quantidade_entrada'] < $product['saldo_atual']) {
-            $query = "SELECT 
-                        pic.product_ID, SUM(pic.quantity) as quantidade_entrada, MAX(pic.arrival_date) as ultima_data_entrada,
-                        lc.name as container_de_origem, GREATEST(DATEDIFF(NOW(), MAX(pic.arrival_date)), 1) as dias_em_estoque
-                    FROM `products_in_container` pic
-                    INNER JOIN lote_container lc ON lc.ID = pic.container_ID
-                    WHERE pic.in_stock = 1 AND pic.product_ID = $product_ID
-                    GROUP BY pic.product_ID, lc.name ORDER BY pic.arrival_date DESC LIMIT 1 OFFSET $index";
-
-            $entrada = $this->db->query($query);
-            $entrada = $entrada->fetch_assoc();
-            if (!$entrada) {
-                break;
-            }
-
-            $product['quantidade_entrada'] += $entrada['quantidade_entrada'];
-            $product['container_de_origem'] .= ", " . $entrada['container_de_origem'];
-            $index++;
-        }
     }
 
     public function getProductsByStock($stock_ID = null, $page = 1, $limit = 10, $alert = 0.2, $where = "1", $order = "p.created_at DESC ")
