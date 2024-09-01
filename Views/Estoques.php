@@ -67,6 +67,17 @@ require "Components/Header.php";
                 </div>
             </label>
 
+
+            <label>
+                Filtrar por alerta >=
+                <div class="input-group" style="max-width: 200px;">
+                    <input type="number" max="100" placeholder="Ex.: 20" class="form-control" id="input-alerta-filtro"
+                        value="<?= isset($_GET["alerta-filtro"]) ? $_GET["alerta-filtro"] : "" ?>"
+                        name="alerta-filtro" aria-describedby="alerta-addon">
+                    <span class="input-group-text" id="alerta-addon">%</span>
+                </div>
+            </label>
+
             <div class="d-flex align-items-end gap-2">
                 <button type="submit" class="btn bg-quaternary" title="Filtrar" style="height: 40px;width: 50px;">
                     <i class="bi bi-search"></i>

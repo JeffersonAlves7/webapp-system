@@ -123,9 +123,36 @@ class Estoque extends Model
         }
     }
 
-    private function getGalpaoProductsByStock($limit, $offset, $alert, $where, $order, $giro = false)
+    private function getGalpaoProductsByStock($limit, $offset, $alert, $where, $order, $giro = false, $alert_filter = null)
     {
         if ($giro) {
+            if ($alert_filter) {
+                $alert_filter_sql = " AND 
+                CASE
+                    WHEN COALESCE(
+                        (
+                            SELECT SUM(qis.quantity) + SUM(qis.quantity_in_reserve)
+                                FROM `quantity_in_stock` qis
+                                WHERE qis.product_ID = p.ID 
+                        ), 0) = 0 THEN 100
+                    WHEN COALESCE(qis.entry_quantity, 0) > 0 THEN 
+                        ROUND(
+                            (
+                                (
+                                    COALESCE(qis.entry_quantity, 0) - COALESCE((
+                                        SELECT SUM(qis.quantity) + SUM(qis.quantity_in_reserve)
+                                            FROM `quantity_in_stock` qis
+                                            WHERE qis.product_ID = p.ID 
+                                    ), 0)
+                                ) / COALESCE(qis.entry_quantity, 0)
+                            ) * 100, 2)
+                    ELSE 0
+                END >= $alert_filter 
+                ";
+
+                $where .= $alert_filter_sql;
+            }
+
             $query = "SELECT 
                 p.ID, 
                 p.code as codigo, 
@@ -267,8 +294,9 @@ class Estoque extends Model
 
         $sqlCount = "SELECT COUNT(DISTINCT p.ID) as count 
             FROM `products` p
-            INNER JOIN `transactions` t ON p.ID = t.product_ID
-            WHERE t.to_stock_ID = 1 AND p.is_active = 1 AND $where";
+            INNER JOIN `transactions` t ON p.ID = t.product_ID  AND t.to_stock_ID = 1
+            INNER JOIN `quantity_in_stock` qis ON p.ID = qis.product_ID AND qis.stock_ID = 1
+            WHERE p.is_active = 1 AND $where";
 
         $pageCount = $this->db->query($sqlCount);
         $pageCount = $pageCount->fetch_assoc();
@@ -281,7 +309,7 @@ class Estoque extends Model
         ];
     }
 
-    public function getProductsByStock($stock_ID = null, $page = 1, $limit = 10, $alert = 0.2, $where = "1", $order = "p.created_at DESC ")
+    public function getProductsByStock($stock_ID = null, $page = 1, $limit = 10, $alert = 0.2, $where = "1", $order = "p.created_at DESC ", $alert_filter = null)
     {
         $offset = ($page - 1) * $limit;
         $stock_ID = (int) $stock_ID;
@@ -292,7 +320,7 @@ class Estoque extends Model
             case 2:
                 return $this->getLojaProductsByStock($limit, $offset, $where, $order);
             default:
-                return $this->getGalpaoProductsByStock($limit, $offset, $alert, $where, $order, true);
+                return $this->getGalpaoProductsByStock($limit, $offset, $alert, $where, $order, true, $alert_filter);
         }
     }
 

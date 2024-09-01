@@ -43,6 +43,11 @@ class EstoquesController extends _Controller
             $alert = $_COOKIE["alerta"] / 100;
         }
 
+        $alert_filter = null;
+        if (isset($_GET["alerta-filtro"]) && !empty($_GET["alerta-filtro"])) {
+            $alert_filter = $_GET["alerta-filtro"];
+        }
+
         $where = "1";
         if (isset($_COOKIE["codigo"]) && $_COOKIE["codigo"] != "") {
             $where .= " AND p.code LIKE '%" . $_COOKIE["codigo"] . "%'";
@@ -64,7 +69,15 @@ class EstoquesController extends _Controller
         }
 
         $stocks = $this->estoquesModel->getAll();
-        $productsData = $this->estoquesModel->getProductsByStock($estoque_ID, $page, limit: 50, alert: $alert, where: $where, order: $orderBy . " " . $orderType);
+        $productsData = $this->estoquesModel->getProductsByStock(
+            $estoque_ID,
+            $page,
+            limit: 50,
+            alert: $alert,
+            where: $where,
+            order: $orderBy . " " . $orderType,
+            alert_filter: $alert_filter
+        );
 
         return $this->view(
             "Estoques",
