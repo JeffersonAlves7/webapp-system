@@ -22,6 +22,10 @@ class Lancamento
         $lote_container,
         $observacao = null
     ) {
+        if (!$this->canOperate($product_ID, "Entrada", $quantidade)) {
+            throw new Exception("Essa operação já foi realizada. Aguarde alguns segundos e recarregue a página");
+        }
+
         // Verificando se o lote container já existe no banco de dados
         $sql = "SELECT `ID` FROM `lote_container` WHERE `name` = '$lote_container'";
         $result = $this->db->query($sql);
@@ -320,6 +324,10 @@ class Lancamento
         $nome_cliente,
         $observacao
     ) {
+        if (!$this->canOperate($product_ID, "Saída", $quantidade)) {
+            throw new Exception("Essa operação já foi realizada. Aguarde alguns segundos e recarregue a página");
+        }
+
         // $this->db->beginTransaction(); // Inicia a transação
         $result = $this->db->query(
             "SELECT * FROM `quantity_in_stock` 
@@ -523,6 +531,10 @@ class Lancamento
         $cliente,
         $observacao
     ) {
+        if (!$this->canOperate($produto_ID, "Devolução", $quantidade)) {
+            throw new Exception("Essa operação já foi realizada. Aguarde alguns segundos e recarregue a página");
+        }
+
         // $this->db->beginTransaction(); // Inicia a transação
         $result = $this->db->query(
             "SELECT * FROM `quantity_in_stock` 
@@ -589,6 +601,31 @@ class Lancamento
             throw $e;
         }
     }
+
+    private function canOperate($product_ID, $type_ID, $quantity, $delay_time = 20)
+    {
+        $transaction_type_ID = self::getTransactionTypeID($this->db, $type_ID);
+
+        $sql = "SELECT COUNT(*) AS quantity 
+            FROM `transactions` 
+            WHERE `product_ID` = ? 
+              AND `type_ID` = ? 
+              AND `quantity` = ? 
+              AND TIMESTAMPDIFF(SECOND, `created_at`, NOW()) < ?";
+
+        if ($stmt = $this->db->prepare($sql)) {
+            $stmt->bind_param("iiid", $product_ID, $transaction_type_ID, $quantity, $delay_time);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $quantityCount = (int) $result->fetch_assoc()['quantity'];
+
+            return !($quantityCount > 0);
+        } else {
+            // Handle errors
+            return false;
+        }
+    }
+
 
     private static function createTransaction($db, $product_ID, $from_stock_ID, $to_stock_ID, $type_ID, $quantity, $client_name = null, $observation = null)
     {
