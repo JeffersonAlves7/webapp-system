@@ -42,27 +42,34 @@ class Product extends Model
 
     public function create($code, $ean, $importer, $description, $chinese_description)
     {
-        $ean_string = isset($ean) && $ean != "" ? "\"$ean\"" : "null";
-        $description_string = isset($description) && $description != "" ? "\"$description\"" : "null";
-        $chinese_description_string = isset($chinese_description) && $chinese_description != "" ? "\"$chinese_description\"" : "null";
+        return Product::createStatic($this->db, $code, $ean, $importer, $description, $chinese_description);
+    }
 
-        $sql = "INSERT INTO `products`
-        (
-            `code`, 
-            `ean`, 
-            `importer`, 
-            `description`, 
-            `chinese_description`
-        ) VALUES 
-        (
-            \"$code\",
-            $ean_string,
-            \"$importer\",
-            $description_string,
-            $chinese_description_string
-        )";
+    public static function createStatic($db, $code, $ean, $importer, $description, $chinese_description)
+    {
+        $ean_string = isset($ean) && $ean != "" ? $ean : null;
+        $description_string = isset($description) && $description != "" ? $description : null;
+        $chinese_description_string = isset($chinese_description) && $chinese_description != "" ? $chinese_description : null;
 
-        return $this->db->query($sql);
+        $stmt = $db->prepare("
+            INSERT INTO `products`
+            (
+                `code`, 
+                `ean`, 
+                `importer`, 
+                `description`, 
+                `chinese_description`
+            ) VALUES 
+            (?, ?, ?, ?, ?)
+        ");
+
+        $stmt->bind_param("sssss", $code, $ean_string, $importer, $description_string, $chinese_description_string);
+
+        if ($stmt->execute()) {
+            return $stmt->insert_id; // Retorna o ID do produto inserido
+        } else {
+            return false; // Retorna false em caso de falha
+        }
     }
 
     public function update($id, $code, $ean, $importer, $description, $chinese_description)
