@@ -1,6 +1,7 @@
 <?php
 require_once "Models/Model.php";
 require_once "Models/Lancamento.php";
+require_once "Models/Product.php";
 
 class Container extends Model
 {
@@ -29,10 +30,6 @@ class Container extends Model
 
         $products = $this->db->query($sql);
 
-        // $sql = "SELECT COUNT(*) as count FROM products_in_container  pc
-        // INNER JOIN products p ON p.ID = pc.product_ID
-        // INNER JOIN lote_container lc ON lc.ID = pc.container_ID
-        // WHERE $where"
 
         // SQL para pegar pagina, total de produtos a partir do filtro e tambem a soma da quantidade de produtos
         $sql = "SELECT 
@@ -111,12 +108,10 @@ class Container extends Model
             `quantity` = ? 
             WHERE `container_ID` = ? AND `product_ID` = ?");
 
-        $stock_ID = 1;
 
         if ($stmt === false) {
             throw new Exception('Failed to prepare statement: ' . $this->db->error);
         }
-
         foreach ($products as $product) {
             $product_ID = $product['product_ID'];
             $quantity = $product['quantity'];
@@ -125,28 +120,8 @@ class Container extends Model
             $stmt->bind_param("siii", $arrival_date, $quantity, $container_ID, $product_ID);
             $stmt->execute();
 
-            $result = $this->db->query(
-                "SELECT `ID` FROM `quantity_in_stock` 
-                WHERE `product_ID` = $product_ID AND `stock_ID` = $stock_ID"
-            );
 
-            if ($result->num_rows == 0) {
-                $this->db->query(
-                    "INSERT INTO quantity_in_stock 
-                        (`product_ID`, `stock_ID`, `quantity`) VALUES 
-                        ($product_ID, $stock_ID, $quantity)"
-                );
-            } else {
-                $row = $result->fetch_assoc();
-
-                $this->db->query(
-                    "UPDATE `quantity_in_stock` 
-                SET `quantity` = `quantity` + $quantity 
-                WHERE `ID` = " . $row["ID"]
-                );
-            }
-
-            Lancamento::createTransaction($this->db, $product_ID, null, $stock_ID, "Entrada", $quantity, observation: $observation);
+            Lancamento::registrarEntrada($this->db, $product_ID, null, 1, $quantity, $observation);
         }
     }
 
@@ -183,8 +158,8 @@ class Container extends Model
 
         // Adicionando produtos nos containers
         foreach ($products as $product) {
-            $stmt = $this->db->prepare("SELECT * FROM `products` WHERE `code` = ?");
-            $stmt->bind_param("s", $product["code"]);
+            $stmt = $this->db->prepare("SELECT * FROM `products` WHERE `code` = ? AND `importer` = ?");
+            $stmt->bind_param("ss", $product["code"], $product["importer"]);
             $stmt->execute();
 
             $result = $stmt->get_result();
@@ -192,12 +167,14 @@ class Container extends Model
             $container_ID = $container_com_id[$product["lote"]];
 
             if (!$product_from_DB) {
-                // Criar produto no banco de dados se nao existir
-                $stmt = $this->db->prepare("INSERT INTO `products` (`code`, `description`, `chinese_description`, `ean`, `importer`) VALUES (?, ?, ?, ?, ?)");
-                $stmt->bind_param("sssss", $product["code"], $product["description"], $product["description_chinese"], $product["ean"], $product["importer"]);
-                $stmt->execute();
-
-                $product_ID = $stmt->insert_id;
+                $product_ID = Product::createStatic(
+                    $this->db,
+                    $product["code"],
+                    $product["ean"],
+                    $product["importer"],
+                    $product["description"],
+                    $product["description_chinese"]
+                );
             } else {
                 $product_ID = $product_from_DB["ID"];
 
