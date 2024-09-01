@@ -169,11 +169,11 @@ require "Components/Header.php";
                 <?php else : ?>
                     <?php if (isset($_GET["estoque"]) && $_GET["estoque"] == 1) : ?>
                         <tr>
-                            <td colspan="8" class="text-center">Nenhum produto encontrado</td>
+                            <td colspan="9" class="text-center">Nenhum produto encontrado</td>
                         </tr>
                     <?php else : ?>
                         <tr>
-                            <td colspan="9" class="text-center">Nenhum produto encontrado</td>
+                            <td colspan="10" class="text-center">Nenhum produto encontrado</td>
                         </tr>
                     <?php endif; ?>
                 <?php endif; ?>
