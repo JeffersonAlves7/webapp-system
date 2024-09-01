@@ -22,69 +22,78 @@ class Lancamento
         $lote_container,
         $observacao = null
     ) {
-        $stock_ID = 1;
-        $this->db->beginTransaction(); // Inicia a transação
+        // Verificando se o lote container já existe no banco de dados
+        $sql = "SELECT `ID` FROM `lote_container` WHERE `name` = '$lote_container'";
+        $result = $this->db->query($sql);
 
-        try {
-            // Verificando se o lote container já existe no banco de dados
-            $sql = "SELECT `ID` FROM `lote_container` WHERE `name` = '$lote_container'";
-            $result = $this->db->query($sql);
-
-            // Se ele não existir, crie-o
-            if ($result->num_rows == 0) {
-                $sql = "INSERT INTO `lote_container` (`name`) VALUES ('$lote_container')";
-                $this->db->query($sql);
-
-                // Pegando o ID do container após a criação
-                $containerID = $this->db->get_con()->insert_id;
-            } else {
-                $row = $result->fetch_assoc();
-                $containerID = $row["ID"];
-
-                $sql = "SELECT * FROM `products_in_container` WHERE 
-                        `container_ID` = $containerID AND `product_ID` = $product_ID";
-                $result = $this->db->query($sql);
-
-                if ($result->num_rows != 0) {
-                    throw new Exception("O produto já está no container.");
-                }
-            }
-
-            // Criando registro após a criação do container
-            $sql = "INSERT INTO `products_in_container` (`container_ID`, `product_ID`, `quantity`, `quantity_expected`, `arrival_date`) 
-                    VALUES ($containerID, $product_ID, $quantidade, $quantidade, NOW())";
+        // Se ele não existir, crie-o
+        if ($result->num_rows == 0) {
+            $sql = "INSERT INTO `lote_container` (`name`) VALUES ('$lote_container')";
             $this->db->query($sql);
 
-
-            $result = $this->db->query(
-                "SELECT `ID` FROM `quantity_in_stock` 
-                WHERE `product_ID` = $product_ID AND `stock_ID` = $stock_ID"
-            );
-
-            if ($result->num_rows == 0) {
-                $this->db->query("INSERT INTO quantity_in_stock (`product_ID`, `stock_ID`) VALUES ($product_ID, $stock_ID)");
-                $result = $this->db->query(
-                    "SELECT `ID` FROM `quantity_in_stock` 
-                    WHERE `product_ID` = $product_ID AND `stock_ID` = $stock_ID"
-                );
-            }
-
+            // Pegando o ID do container após a criação
+            $containerID = $this->db->get_con()->insert_id;
+        } else {
             $row = $result->fetch_assoc();
+            $containerID = $row["ID"];
 
-            $this->db->query(
-                "UPDATE `quantity_in_stock` 
-                SET `quantity` = `quantity` + $quantidade 
-                WHERE `ID` = " . $row["ID"]
-            );
+            $sql = "SELECT * FROM `products_in_container` WHERE 
+                        `container_ID` = $containerID AND `product_ID` = $product_ID";
+            $result = $this->db->query($sql);
 
-            self::createTransaction($this->db, $product_ID, null, $stock_ID, "Entrada", $quantidade, observation: $observacao);
-
-            $this->db->commit(); // Confirma a transação
-        } catch (Exception $e) {
-            $this->db->rollback(); // Reverte a transação em caso de erro
-            throw $e; // Lança a exceção para cima
+            if ($result->num_rows != 0) {
+                throw new Exception("O produto já está no container.");
+            }
         }
+
+        // Criando registro após a criação do container
+        $this->db->query("INSERT INTO `products_in_container` (`container_ID`, `product_ID`, `quantity`, `quantity_expected`, `arrival_date`) 
+                    VALUES (
+                        $containerID,
+                        $product_ID,
+                        $quantidade,
+                        $quantidade,
+                        NOW()
+                    )");
+
+        Lancamento::registrarEntrada($this->db, $product_ID, 1, $quantidade, $observacao);
     }
+
+    public static function registrarEntrada($db, $product_ID, $stock_ID, $quantity, $observation = null)
+    {
+        $result = $db->query(
+            "SELECT `ID` FROM `quantity_in_stock` 
+                WHERE `product_ID` = $product_ID AND `stock_ID` = $stock_ID"
+        );
+
+        if ($result->num_rows == 0) {
+            $db->query("INSERT INTO quantity_in_stock (`product_ID`, `stock_ID`) VALUES ($product_ID, $stock_ID)");
+            $result = $db->query(
+                "SELECT `ID` FROM `quantity_in_stock` 
+                    WHERE `product_ID` = $product_ID AND `stock_ID` = $stock_ID"
+            );
+        }
+
+        $row = $result->fetch_assoc();
+
+        $db->query(
+            "UPDATE `quantity_in_stock` 
+                SET `quantity` = `quantity` + $quantity 
+                WHERE `ID` = " . $row["ID"]
+        );
+
+        self::createTransaction(
+            $db,
+            $product_ID,
+            null,
+            $stock_ID,
+            "Entrada",
+            $quantity,
+            observation: $observation
+        );
+    }
+
+
 
     public function criarEntradaEmMassa(
         $products
@@ -128,32 +137,7 @@ class Lancamento
                         VALUES ($containerID, $product_ID, $quantity, $quantity, NOW())";
                 $this->db->query($sql);
 
-                if (!$stock_ID) {
-                    $stock_ID = 1;
-                }
-
-                $result = $this->db->query(
-                    " SELECT `ID` FROM `quantity_in_stock` 
-                    WHERE `product_ID` = $product_ID AND `stock_ID` = $stock_ID"
-                );
-
-                if ($result->num_rows == 0) {
-                    $this->db->query("INSERT INTO quantity_in_stock (`product_ID`, `stock_ID`) VALUES ($product_ID, $stock_ID)");
-                    $result = $this->db->query(
-                        "SELECT `ID` FROM `quantity_in_stock` 
-                        WHERE `product_ID` = $product_ID AND `stock_ID` = $stock_ID"
-                    );
-                }
-
-                $row = $result->fetch_assoc();
-
-                $this->db->query(
-                    "UPDATE `quantity_in_stock` 
-                    SET `quantity` = `quantity` + $quantity 
-                    WHERE `ID` = " . $row["ID"]
-                );
-
-                self::createTransaction($this->db, $product_ID, null, $stock_ID, "Entrada", $quantity, observation: $observation);
+                self::registrarEntrada($this->db, $product_ID, $stock_ID, $quantity, $observation);
             }
 
             $this->db->commit(); // Confirma a transação
@@ -162,7 +146,6 @@ class Lancamento
             throw $e;
         }
     }
-
 
     public function criarReserva(
         $product_ID,
@@ -609,6 +592,13 @@ class Lancamento
 
     public static function createTransaction($db, $product_ID, $from_stock_ID, $to_stock_ID, $type_ID, $quantity, $client_name = null, $observation = null)
     {
+        if ($from_stock_ID) {
+            self::getLastEntriesAndQuantity($db, $product_ID, $from_stock_ID);
+        }
+        if ($to_stock_ID) {
+            self::getLastEntriesAndQuantity($db, $product_ID, $to_stock_ID);
+        }
+
         // Check if the transaction type exists, if not, create it
         $transaction_type_ID = self::getTransactionTypeID($db, $type_ID);
 
@@ -645,5 +635,78 @@ class Lancamento
             $db->query("INSERT INTO `transaction_types` (`type`) VALUES ('$transaction_type')");
             return $db->get_con()->insert_id;
         }
+    }
+
+    public static function getLastEntriesAndQuantity($db, $product_ID, $stock_ID = 1)
+    {
+        // Obter o saldo necessário
+        $stmt = $db->prepare(
+            "SELECT `ID`, (quantity + quantity_in_reserve) as saldo 
+            FROM `quantity_in_stock` 
+            WHERE `product_ID` = ? AND `stock_ID` = ?"
+        );
+        $stmt->bind_param("ii", $product_ID, $stock_ID);
+        $stmt->execute();
+        $stock_result = $stmt->get_result()->fetch_assoc();
+
+        // Verificar se o registro foi encontrado
+        if (!$stock_result) {
+            throw new Exception("Registro de estoque não encontrado em Lancamento::getLastEntriesAndQuantity.");
+        }
+
+        $quantity_in_stock_ID = $stock_result["ID"];
+        $required_quantity = $stock_result["saldo"];
+        $entries = [];
+        $quantity_sum = 0;
+
+        // Consultar entradas para o estoque 1
+        if ($stock_ID == 1) {
+            $query = "SELECT ID, quantity 
+            FROM products_in_container 
+            WHERE product_ID = ? AND in_stock = 1 
+            ORDER BY updated_at DESC";
+
+            $stmt = $db->prepare($query);
+            $stmt->bind_param("i", $product_ID);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            while ($row = $result->fetch_assoc()) {
+                $entries[] = $row['ID'];
+                $quantity_sum += $row['quantity'];
+
+                if ($quantity_sum >= $required_quantity) break;
+            }
+        }
+        // Consultar entradas para o estoque 2
+        else if ($stock_ID == 2) {
+            $query = "SELECT ID, quantity 
+            FROM `transactions` 
+            WHERE product_ID = ? AND to_stock_ID = 2 AND type_ID = 3
+            ORDER BY created_at";
+
+            $stmt = $db->prepare($query);
+            $stmt->bind_param("i", $product_ID);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            while ($row = $result->fetch_assoc()) {
+                $entries[] = $row['ID'];
+                $quantity_sum += $row['quantity'];
+
+                if ($quantity_sum >= $required_quantity) break;
+            }
+        }
+
+        $last_entries = implode(",", $entries); // IDs das últimas entradas
+
+        // Atualizar a tabela quantity_in_stock
+        $stmt = $db->prepare(
+            "UPDATE quantity_in_stock
+        SET last_entries = ?, entry_quantity = ?
+        WHERE ID = ?"
+        );
+        $stmt->bind_param("sii", $last_entries, $quantity_sum, $quantity_in_stock_ID);
+        $stmt->execute();
     }
 }
