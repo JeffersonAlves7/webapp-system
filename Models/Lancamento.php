@@ -1,5 +1,6 @@
 <?php
 require_once "Models/Database.php";
+require_once "Managers/AuthManager.php";
 
 class Lancamento
 {
@@ -626,9 +627,16 @@ class Lancamento
         }
     }
 
-
     private static function createTransaction($db, $product_ID, $from_stock_ID, $to_stock_ID, $type_ID, $quantity, $client_name = null, $observation = null)
     {
+        $user = AuthManager::getUser();
+
+        if (!$user) {
+            throw new Exception("Usuário não encontrado para que a tarnsação seja realizada", 1);
+        }
+
+        $operator_ID = $user["id"];
+
         if ($from_stock_ID) {
             self::getLastEntriesAndQuantity($db, $product_ID, $from_stock_ID);
         }
@@ -643,19 +651,66 @@ class Lancamento
         $to_stock = $to_stock_ID !== null ? $to_stock_ID : 'NULL';
 
         if (!$observation || empty($observation)) {
-            $observation = '';
+            $observation = "''";
+        } else {
+            $observation = $db->escapeString($observation);
         }
 
-        $sql = "INSERT INTO `transactions_history` (`product_ID`, `from_stock_ID`, `to_stock_ID`, `type_ID`, `quantity`, `client_name`, `observation`) 
-        VALUES ($product_ID, $from_stock, $to_stock, $transaction_type_ID, $quantity, '" . (
-            $client_name && !empty($client_name) ? $db->escapeString($client_name) : '') .  "', '" . $db->escapeString($observation) . "')";
+        if ($client_name && !empty($client_name)) {
+            $client_name = $db->escapeString("\"$client_name\"");
+        } else {
+            $client_name = "null";
+        }
+
+        $sql = "INSERT INTO `transactions_history` 
+            (
+                `product_ID`, 
+                `from_stock_ID`, 
+                `to_stock_ID`, 
+                `type_ID`, 
+                `quantity`, 
+                `client_name`, 
+                `operator_ID`, 
+                `observation`
+            ) 
+            VALUES 
+            (
+                $product_ID, 
+                $from_stock, 
+                $to_stock, 
+                $transaction_type_ID, 
+                $quantity, 
+                $client_name,
+                $operator_ID,
+                $observation
+            )";
+
 
         $db->query($sql);
 
         // Insert the transaction
-        $sql = "INSERT INTO `transactions` (`product_ID`, `from_stock_ID`, `to_stock_ID`, `type_ID`, `quantity`, `client_name`, `observation`) 
-        VALUES ($product_ID, $from_stock, $to_stock, $transaction_type_ID, $quantity, '" . (
-            $client_name && !empty($client_name) ? $db->escapeString($client_name) : '') .  "', '" . $db->escapeString($observation) . "')";
+        $sql = "INSERT INTO `transactions` 
+            (
+                `product_ID`, 
+                `from_stock_ID`, 
+                `to_stock_ID`, 
+                `type_ID`, 
+                `quantity`, 
+                `client_name`, 
+                `operator_ID`, 
+                `observation`
+            ) 
+            VALUES 
+            (
+                $product_ID, 
+                $from_stock, 
+                $to_stock, 
+                $transaction_type_ID, 
+                $quantity, 
+                $client_name,
+                $operator_ID,
+                $observation
+            )";
 
         return $db->query($sql);
     }
