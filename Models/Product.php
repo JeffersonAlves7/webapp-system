@@ -18,27 +18,36 @@ class Product extends Model
         $offset = ($page - 1) * $limit;
 
         $sql = "SELECT 
-                p.*, 
-                lc.name as container_name ,
-                pc.arrival_date as entry_date
-            FROM products p
-        INNER JOIN products_in_container pc ON pc.product_ID = p.ID 
-        INNER JOIN lote_container lc ON lc.ID = pc.container_ID
-        WHERE $where  ORDER BY pc.ID DESC LIMIT $limit OFFSET $offset
-        ";
+                    p.*, 
+                    lc.name as container_name,
+                    pc.arrival_date as entry_date
+                FROM products p
+            INNER JOIN products_in_container pc 
+                ON pc.product_ID = p.ID
+            INNER JOIN lote_container lc 
+                ON lc.ID = pc.container_ID
+            WHERE pc.ID = (
+                SELECT MAX(pc2.ID) 
+                FROM products_in_container pc2 
+                WHERE pc2.product_ID = p.ID
+            )
+            AND $where
+            ORDER BY p.created_at DESC
+            LIMIT $limit OFFSET $offset";
 
         $products = $this->db->query($sql);
 
-        $pageCount = ceil($this->db->query("SELECT COUNT(*) as count FROM products p 
-        INNER JOIN products_in_container pc ON pc.product_ID = p.ID
-        INNER JOIN lote_container lc ON lc.ID = pc.container_ID
-        WHERE $where")->fetch_assoc()["count"] / $limit);
+        $pageCount = ceil($this->db->query("SELECT COUNT(DISTINCT p.ID) as count FROM products p 
+            INNER JOIN products_in_container pc ON pc.product_ID = p.ID
+            INNER JOIN lote_container lc ON lc.ID = pc.container_ID
+            WHERE $where")->fetch_assoc()["count"] / $limit);
 
         return array(
             "products" => $products,
             "pageCount" => $pageCount
         );
     }
+
 
     public function create($code, $ean, $importer, $description, $chinese_description)
     {
