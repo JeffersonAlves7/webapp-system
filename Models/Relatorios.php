@@ -10,7 +10,7 @@ class Relatorios extends Model
             SUM(t.quantity) AS `QUANTIDADE`,
             tt.type AS `TIPO`,
             t.client_name AS `CLIENTE`,
-            t.operator_ID AS `OPERADOR`,
+            u.username AS `OPERADOR`,
             COALESCE(s_from.name, s_to.name) AS `ORIGEM`,
             t.observation AS `OBSERVACAO`,
             t.created_at AS `DATA`
@@ -19,6 +19,7 @@ class Relatorios extends Model
             LEFT JOIN `stocks` s_from ON s_from.ID = t.from_stock_ID AND t.type_ID = 2
             LEFT JOIN `stocks` s_to ON s_to.ID = t.to_stock_ID AND t.type_ID = 4
             INNER JOIN `transaction_types` tt ON tt.ID = t.type_ID
+            LEFT JOIN `users` u ON t.operator_ID = u.ID
         WHERE
             t.type_ID IN (2, 4)
             AND $where
