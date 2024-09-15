@@ -651,13 +651,13 @@ class Lancamento
         $to_stock = $to_stock_ID !== null ? $to_stock_ID : 'NULL';
 
         if (!$observation || empty($observation)) {
-            $observation = "''";
+            $observation = "null";
         } else {
-            $observation = $db->escapeString($observation);
+            $observation = '"' . $db->escapeString("$observation") . '"';
         }
 
         if ($client_name && !empty($client_name)) {
-            $client_name = $db->escapeString("\"$client_name\"");
+            $client_name = '"' . $db->escapeString($client_name) . '"';
         } else {
             $client_name = "null";
         }
