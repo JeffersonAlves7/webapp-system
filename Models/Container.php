@@ -108,10 +108,10 @@ class Container extends Model
             `quantity` = ? 
             WHERE `container_ID` = ? AND `product_ID` = ?");
 
-
         if ($stmt === false) {
             throw new Exception('Failed to prepare statement: ' . $this->db->error);
         }
+
         foreach ($products as $product) {
             $product_ID = $product['product_ID'];
             $quantity = $product['quantity'];
@@ -120,8 +120,7 @@ class Container extends Model
             $stmt->bind_param("siii", $arrival_date, $quantity, $container_ID, $product_ID);
             $stmt->execute();
 
-
-            Lancamento::registrarEntrada($this->db, $product_ID, null, 1, $quantity, $observation);
+            Lancamento::registrarEntrada($this->db, $product_ID, 1, $quantity, $observation);
         }
     }
 
