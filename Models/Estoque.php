@@ -25,7 +25,7 @@ class Estoque extends Model
                 (
                     SELECT SUM(qis.quantity) + SUM(qis.quantity_in_reserve)
                         FROM `quantity_in_stock` qis
-                        WHERE qis.product_ID = p.ID
+                        WHERE qis.product_ID = p.ID AND qis.stock_ID = 2
                 ) as saldo_atual
             FROM `products` p
             INNER JOIN `transactions` t ON p.ID = t.product_ID 
