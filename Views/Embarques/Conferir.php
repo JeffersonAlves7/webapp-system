@@ -40,17 +40,23 @@ require "Components/Header.php";
                     <th>Importadora</th>
                     <th>Quantidade Esperada</th>
                     <th style="max-width: 200px;">
-                        Quantidade Entregue</th>
+                        Quantidade Entregue
+                        <button class="btn btn-custom completar">
+                            <i class="bi bi-check2"></i>
+                        </button>
+                    </th>
+
                     <th>Observações</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
-                if (isset($products) && $products->num_rows > 0) : ?>
-                    <?php while ($row = $products->fetch_assoc()) : ?>
+                if (isset($products) && $products->num_rows > 0): ?>
+                    <?php while ($row = $products->fetch_assoc()): ?>
                         <tr data-id="<?= $row['product_ID'] ?>">
                             <td>
-                                <input type="checkbox" class="form-check-input" name="selected[]" value="<?= $row['product_ID'] ?>">
+                                <input type="checkbox" class="form-check-input" name="selected[]"
+                                    value="<?= $row['product_ID'] ?>">
                             </td>
                             <td><?= $row['code'] ?></td>
                             <td><?= $row['importer'] ?></td>
@@ -61,7 +67,9 @@ require "Components/Header.php";
                             </td>
                             <td style="max-width: 200px;">
                                 <div class="input-group" style="max-width: 200px;">
-                                    <input type="number" class="form-control" data-expect="<?= $row['quantity_expected'] ?>" name="quantity_delivered[]">
+
+                                    <input type="number" class="form-control" data-expect="<?= $row['quantity_expected'] ?>"
+                                        name="quantity_delivered[]">
                                     <button class="btn btn-custom completar">
                                         <i class="bi bi-check2"></i>
                                     </button>
@@ -72,16 +80,17 @@ require "Components/Header.php";
                             </td>
                         </tr>
                     <?php endwhile; ?>
-                <?php else : ?>
+                <?php else: ?>
                     <tr>
-                        <td colspan='6' class="text-center" style="padding: 1rem;">Nenhum produto para conferir neste container.</td>
+                        <td colspan='6' class="text-center" style="padding: 1rem;">Nenhum produto para conferir neste
+                            container.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </div>
 
-    <?php if ($pageCount > 1) : ?>
+    <?php if ($pageCount > 1): ?>
         <?php
         function isButtonDisabled($condition)
         {
@@ -154,13 +163,26 @@ require "Components/Header.php";
     }
 
     function completar(e) {
-        //  Funcao sera acionada quando o botao de completar for clicado
-        //  Ao clicar nesse botao o valor de quantity_expected deve ser aplicado no input de quantidade entregue
-        const input = e.currentTarget.previousElementSibling;
-        const expect = input.dataset.expect;
+        const isHeader = e.currentTarget.closest("thead");
 
-        input.value = expect;
-        input.dispatchEvent(new Event('input'));
+        if (isHeader) {
+            quantidades.forEach(input => {
+                input.value = input.dataset.expect;
+                input.dispatchEvent(new Event('input'));
+            });
+
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+
+            total.textContent = getTotalSelected();
+        } else {
+            const input = e.currentTarget.previousElementSibling;
+            const expect = input.dataset.expect;
+
+            input.value = expect;
+            input.dispatchEvent(new Event('input'));
+        }
     }
 
     document.querySelectorAll('.completar').forEach(button => {
