@@ -34,10 +34,11 @@ class EmbarquesController extends _Controller
             $where .= " AND lc.`name` LIKE '%$search%'";
         }
 
-        if (isset($_GET["product_code"]) && !empty($_GET["product_code"])) {
-            $product_code = htmlspecialchars($_GET["product_code"]);
+        if (isset($_GET["product_code"]) && !empty(trim($_GET["product_code"]))) {
+            $product_code = trim(htmlspecialchars($_GET["product_code"]));
             $where .= " AND (p.`code` LIKE '%$product_code%' OR p.`ean` LIKE '%$product_code%')";
         }
+        
         
 
         if (isset($_GET["importer"]) && !empty($_GET["importer"])) {
