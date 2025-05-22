@@ -1,0 +1,42 @@
+services:
+  server:
+    build:
+      context: .
+    ports:
+      - 9000:80
+    depends_on:
+      - db-app
+    networks:
+      - appnet
+    environment:
+      DB_HOST: db-app
+      DB_USER: root
+      DB_PASS: rootpassword
+      DB_NAME: webapp
+      ENVIRONMENT: PROD
+
+  db-app:
+    image: mysql:8.0
+    restart: always
+    networks:
+      - appnet
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: webapp
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+      MYSQL_ROOT_HOST: '%'
+    command: --sql_mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./entry.sql:/docker-entrypoint-initdb.d/entry.sql:ro
+    ports:
+      - 3306:3306
+
+networks:
+  appnet:
+    driver: bridge
+
+
+volumes:
+  mysql-data:
