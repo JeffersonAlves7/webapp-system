@@ -38,47 +38,78 @@ class Relatorios extends Model
     {
         $offset = ($page - 1) * $limit;
 
-        $sql = "SELECT 
-            p.code as 'CODIGO', 
-            (qs.quantity + qs.quantity_in_reserve) as 'SALDO', 
-            t.quantity as 'ENTRADA',
-            CEIL(? * t.quantity) as 'QUANTIDADE DE ALERTA'
+        $sql = "
+        SELECT 
+            p.code AS 'CODIGO',
+            COALESCE(SUM(qs.quantity + qs.quantity_in_reserve), 0) AS 'SALDO',
+            (
+                SELECT t.quantity
+                FROM transactions t
+                WHERE t.product_ID = p.ID AND t.type_ID = 1
+                ORDER BY t.ID DESC
+                LIMIT 1
+            ) AS 'ENTRADA',
+            CEIL(? * (
+                SELECT t.quantity
+                FROM transactions t
+                WHERE t.product_ID = p.ID AND t.type_ID = 1
+                ORDER BY t.ID DESC
+                LIMIT 1
+            )) AS 'QUANTIDADE_DE_ALERTA'
         FROM products p
-            INNER JOIN quantity_in_stock qs ON qs.product_ID = p.ID
-            INNER JOIN transactions t ON t.type_ID = 1 AND t.product_ID = p.ID
-        WHERE (qs.quantity + qs.quantity_in_reserve) < CEIL(? * t.quantity)
-        ORDER BY t.updated_at
-        LIMIT ? OFFSET ?;
-        ";
+        LEFT JOIN quantity_in_stock qs ON qs.product_ID = p.ID
+        WHERE p.is_active = 1
+        GROUP BY p.ID
+        HAVING SALDO < QUANTIDADE_DE_ALERTA AND ENTRADA IS NOT NULL
+        LIMIT ? OFFSET ?
+    ";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("ddii", $porcentagem, $porcentagem, $limit, $offset);
-
+        $stmt->bind_param("dii", $porcentagem, $limit, $offset);
         $stmt->execute();
         $result = $stmt->get_result();
+        $dados = $result->fetch_all(MYSQLI_ASSOC);
 
-        // Get the total number of records
-        $sqlTotal = "SELECT COUNT(*) as total
-        FROM products p
-            INNER JOIN quantity_in_stock qs ON qs.product_ID = p.ID AND qs.stock_ID = 1
-            INNER JOIN transactions t ON t.type_ID = 1 AND t.product_ID = p.ID
-        WHERE (qs.quantity + qs.quantity_in_reserve) < CEIL(? * t.quantity)
-        ";
+        // Total de itens (sem paginação)
+        $sqlCount = "
+        SELECT COUNT(*) as total
+        FROM (
+            SELECT p.ID
+            FROM products p
+            LEFT JOIN quantity_in_stock qs ON qs.product_ID = p.ID
+            WHERE p.is_active = 1
+            GROUP BY p.ID
+            HAVING 
+                COALESCE(SUM(qs.quantity + qs.quantity_in_reserve), 0) < 
+                CEIL(? * (
+                    SELECT t.quantity
+                    FROM transactions t
+                    WHERE t.product_ID = p.ID AND t.type_ID = 1
+                    ORDER BY t.ID DESC
+                    LIMIT 1
+                )) 
+                AND (
+                    SELECT t.quantity
+                    FROM transactions t
+                    WHERE t.product_ID = p.ID AND t.type_ID = 1
+                    ORDER BY t.ID DESC
+                    LIMIT 1
+                ) IS NOT NULL
+        ) AS sub
+    ";
 
-        $stmtTotal = $this->db->prepare($sqlTotal);
-        $stmtTotal->bind_param("d", $porcentagem);
+        $stmtCount = $this->db->prepare($sqlCount);
+        $stmtCount->bind_param("d", $porcentagem);
+        $stmtCount->execute();
+        $resultCount = $stmtCount->get_result()->fetch_assoc();
 
-        $stmtTotal->execute();
-        $resultTotal = $stmtTotal->get_result();
-        $rowTotal = $resultTotal->fetch_assoc();
-
-        $pageCount = ceil($rowTotal['total'] / $limit);
-
-        $resultData = $result->fetch_all(MYSQLI_ASSOC);
+        $total = $resultCount['total'];
+        $pageCount = ceil($total / $limit);
 
         return [
-            "dados" => $resultData,
-            "pageCount" => $pageCount
+            'dados' => $dados,
+            'pageCount' => $pageCount,
+            'totalItens' => $total,
         ];
     }
 

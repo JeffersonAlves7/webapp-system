@@ -171,7 +171,7 @@ class RelatoriosController extends _Controller
                         $estoque["CODIGO"],
                         $estoque["ENTRADA"],
                         $estoque["SALDO"],
-                        $estoque["QUANTIDADE DE ALERTA"]
+                        $estoque["QUANTIDADE_DE_ALERTA"]
                     ];
                 }, $dados),
                 "EstoqueMinimo.pdf"

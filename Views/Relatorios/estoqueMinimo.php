@@ -44,7 +44,7 @@ require "Components/Header.php"
                         <td><?= $row["CODIGO"] ?></td>
                         <td><?= $row["ENTRADA"] ?></td>
                         <td><?= $row["SALDO"] ?></td>
-                        <td><?= $row["QUANTIDADE DE ALERTA"] ?></td>
+                        <td><?= $row["QUANTIDADE_DE_ALERTA"] ?></td>
                     </tr>
                 <?php endforeach; ?>
         </table>
