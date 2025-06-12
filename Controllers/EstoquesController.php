@@ -147,9 +147,9 @@ class EstoquesController extends _Controller
                     if (isset($productData["quantity_in_stock"]) && is_array($productData["quantity_in_stock"])) {
                         foreach ($productData["quantity_in_stock"] as $stockEntry) {
                             if (isset($stockEntry["stock_ID"]) && isset($stockEntry["quantity"])) {
-                                if ($stockEntry["stock_ID"] == 2) { // Galpão
+                                if ($stockEntry["stock_ID"] == 1) { // Galpão
                                     $mappedProduct["quantity_galpao"] = $stockEntry["quantity"];
-                                } elseif ($stockEntry["stock_ID"] == 1) { // Loja
+                                } elseif ($stockEntry["stock_ID"] == 2) { // Loja
                                     $mappedProduct["quantity_loja"] = $stockEntry["quantity"];
                                 }
                             }
