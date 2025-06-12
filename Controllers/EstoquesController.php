@@ -7,6 +7,10 @@ require_once "Utils/PhpExporter.php";
 class EstoquesController extends _Controller
 {
     private $estoquesModel;
+    // Define a URL base para o seu serviço NestJS.
+    // Usamos 'host.docker.internal' para acessar o serviço na máquina host (macOS/Windows)
+    // a partir do contêiner Docker.
+    private $nestjsBaseUrl = "http://host.docker.internal:3000";
 
     public function __construct()
     {
@@ -17,18 +21,12 @@ class EstoquesController extends _Controller
 
     public function index()
     {
-        // if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["name"])) {
-        //     $name = $_POST["name"];
-        //     $this->estoquesModel->create($name);
-        //     header("location: /estoques");
-        // }
         $sucesso = isset($_SESSION["sucesso"]) && $_SESSION["sucesso"];
         unset($_SESSION["sucesso"]);
         $mensagem_erro = isset($_SESSION["mensagem_erro"]) ? $_SESSION["mensagem_erro"] : "";
         unset($_SESSION["mensagem_erro"]);
 
         $page = 1;
-
         if (isset($_GET["page"])) {
             $page = $_GET["page"];
         }
@@ -48,48 +46,164 @@ class EstoquesController extends _Controller
             $alert_filter = $_GET["alerta-filtro"];
         }
 
-        $where = "1";
-        if (isset($_COOKIE["codigo"]) && $_COOKIE["codigo"] != "") {
-            $where .= " AND p.code LIKE '%" . $_COOKIE["codigo"] . "%'";
-        }
-        if (isset($_GET["importadora"]) && $_GET["importadora"] != "") {
-            $where .= " AND p.importer = '" . $_GET["importadora"] . "'";
-        }
-
-        $orderBy = "p.created_at";
+        $orderBy = "created_at";
         $orderType = "DESC";
         if (isset($_GET["orderBy"]) && !empty($_GET["orderBy"])) {
             $orderBy = $_GET["orderBy"];
             if ($orderBy == "codigo") {
-                $orderBy = "p.code";
+                $orderBy = "code";
             }
         }
         if (isset($_GET["orderType"]) && !empty($_GET["orderType"]) && ($_GET["orderType"] == "asc" || $_GET["orderType"] == "desc")) {
             $orderType = $_GET["orderType"];
         }
 
+        $nestJsEndpointPath = "/products";
+        if ($estoque_ID == 1) {
+            $nestJsEndpointPath = "/products/galpao";
+        } elseif ($estoque_ID == 2) {
+            $nestJsEndpointPath = "/products/loja";
+        }
+
+        $queryParams = [
+            "page" => $page,
+            "limit" => 50,
+            "orderBy" => $orderBy,
+            "orderType" => $orderType
+        ];
+
+        if (isset($_COOKIE["codigo"]) && $_COOKIE["codigo"] != "") {
+            $queryParams["code"] = $_COOKIE["codigo"];
+        }
+        if (isset($_GET["importadora"]) && $_GET["importadora"] != "") {
+            $queryParams["importer"] = $_GET["importadora"];
+        }
+        if (isset($_COOKIE["alerta"]) && $_COOKIE["alerta"] != "") {
+            $queryParams["alerta"] = $_COOKIE["alerta"];
+        }
+
+        $fullNestJsUrl = $this->nestjsBaseUrl . $nestJsEndpointPath . "?" . http_build_query($queryParams);
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $fullNestJsUrl,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
+                "User-Agent: PHP EstoquesController Index"
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+
+        $products = [];
+        $totalProdutos = 0;
+        $pageCount = 1;
+        $totalCaixas = 0;
+
+        if ($err) {
+            error_log("Erro cURL ao buscar produtos do NestJS: " . $err);
+            $mensagem_erro = "Não foi possível carregar os dados de estoque do serviço externo.";
+        } else {
+            $nestJsResponseData = json_decode($response, true);
+
+            if (
+                json_last_error() === JSON_ERROR_NONE && is_array($nestJsResponseData) &&
+                isset($nestJsResponseData["products"]) && is_array($nestJsResponseData["products"]) &&
+                isset($nestJsResponseData["totalCount"]) &&
+                isset($nestJsResponseData["pageCount"]) &&
+                isset($nestJsResponseData["totalQuantityInStock"])
+            ) {
+
+                $productsRaw = $nestJsResponseData["products"];
+                $totalProdutos = $nestJsResponseData["totalCount"];
+                $pageCount = $nestJsResponseData["pageCount"];
+                $totalCaixas = $nestJsResponseData["totalQuantityInStock"];
+
+                // Mapeia os dados do NestJS para o formato esperado pela view PHP
+                foreach ($productsRaw as $productData) {
+                    $mappedProduct = [
+                        "ID" => $productData["ID"] ?? null,
+                        "codigo" => $productData["code"] ?? '',
+                        "description" => $productData["description"] ?? '', // Mantendo original para reuso
+                        "quantidade_entrada" => $productData["entry"]["quantity"] ?? 0,
+                        "observacao" => $productData["description"] ?? '', // Usando 'description' como 'observacao'
+                        "importadora" => $productData["importer"] ?? '',
+                        "daysInStock" => $productData["daysInStock"] ?? 0, // Mantendo original para reuso
+                        "giro_percentual" => $productData["giro_percentual"] ?? 0, // Mantendo original para reuso
+                        "alerta" => $productData["alerta"] ?? 0, // Mantendo original para reuso
+                    ];
+
+                    // Inicializa quantidades do galpão e loja
+                    $mappedProduct["quantity_galpao"] = 0;
+                    $mappedProduct["quantity_loja"] = 0;
+
+                    if (isset($productData["quantity_in_stock"]) && is_array($productData["quantity_in_stock"])) {
+                        foreach ($productData["quantity_in_stock"] as $stockEntry) {
+                            if (isset($stockEntry["stock_ID"]) && isset($stockEntry["quantity"])) {
+                                if ($stockEntry["stock_ID"] == 2) { // Galpão
+                                    $mappedProduct["quantity_galpao"] = $stockEntry["quantity"];
+                                } elseif ($stockEntry["stock_ID"] == 1) { // Loja
+                                    $mappedProduct["quantity_loja"] = $stockEntry["quantity"];
+                                }
+                            }
+                        }
+                    }
+
+                    // Define o saldo atual com base no estoque selecionado ou total
+                    if ($estoque_ID == 1) { // Galpão
+                        $mappedProduct["saldo_atual"] = $mappedProduct["quantity_galpao"];
+                        // O "container_de_origem" só é relevante para o galpão, e o NestJS o retorna em "entry.containers"
+                        $mappedProduct["container_de_origem"] = $productData["entry"]["containers"] ?? '';
+                    } elseif ($estoque_ID == 2) { // Loja
+                        $mappedProduct["saldo_atual"] = $mappedProduct["quantity_loja"];
+                        // Para a loja, o container de origem não é retornado na mesma estrutura
+                        // ou é uma transação que não tem container direto na entrada
+                        $mappedProduct["container_de_origem"] = ''; // Ou defina uma lógica específica se tiver
+                    } else { // Geral (sem filtro por estoque específico)
+                        $mappedProduct["saldo_atual"] = ($mappedProduct["quantity_galpao"] ?? 0) + ($mappedProduct["quantity_loja"] ?? 0);
+                        // No caso geral, se o container de origem é relevante para o galpão, inclua
+                        $mappedProduct["container_de_origem"] = $productData["entry"]["containers"] ?? '';
+                    }
+
+                    // A data de entrada no NestJS é o created_at do produto, que é mais como "data de cadastro"
+                    // ou a data da última transação. A view esperava "data_de_entrada" de um `entry`.
+                    // Vamos usar o `created_at` do produto e formatar.
+                    $mappedProduct["data_de_entrada"] = $productData["created_at"] ?? null;
+
+                    // 'dias_em_estoque', 'giro', 'quantidade_para_alerta' já vêm prontos do NestJS, só renomeamos
+                    $mappedProduct["dias_em_estoque"] = $productData["daysInStock"] ?? 0;
+                    $mappedProduct["giro"] = $productData["giro_percentual"] ?? 0;
+                    $mappedProduct["quantidade_para_alerta"] = $productData["alerta"] ?? 0;
+
+
+                    $products[] = $mappedProduct;
+                }
+            } else {
+                error_log("Resposta NestJS inválida ou estrutura ausente: " . $response);
+                $mensagem_erro = "Formato de dados inválido recebido do serviço externo.";
+            }
+        }
+
         $stocks = $this->estoquesModel->getAll();
-        $productsData = $this->estoquesModel->getProductsByStock(
-            $estoque_ID,
-            $page,
-            limit: 50,
-            alert: $alert,
-            where: $where,
-            order: $orderBy . " " . $orderType,
-            alert_filter: $alert_filter
-        );
 
         return $this->view(
             "Estoques",
             [
                 "estoques" => $stocks,
-                "produtos" => $productsData["products"],
+                "produtos" => $products,
                 "page" => $page,
-                "pageCount" => $productsData["pageCount"],
+                "pageCount" => $pageCount,
                 "sucesso" => $sucesso,
                 "mensagem_erro" => $mensagem_erro,
-                "totalProdutos"  => $productsData["total_count"],
-                "totalCaixas" => $productsData["saldo_total"],
+                "totalProdutos"  => $totalProdutos,
+                "totalCaixas" => $totalCaixas,
             ]
         );
     }
@@ -117,17 +231,87 @@ class EstoquesController extends _Controller
             $estoque_ID = $_GET["estoque"];
         }
 
-        $where = "1";
+        $nestJsEndpointPath = "/products";
+        if ($estoque_ID == 2) {
+            $nestJsEndpointPath = "/products/galpao";
+        } elseif ($estoque_ID == 1) {
+            $nestJsEndpointPath = "/products/loja";
+        }
 
+        $queryParams = [];
         if (isset($_COOKIE["codigo"]) && $_COOKIE["codigo"] != "") {
-            $where .= " AND p.code LIKE '%" . $_COOKIE["codigo"] . "%'";
+            $queryParams["code"] = $_COOKIE["codigo"];
         }
-
         if (isset($_GET["importadora"]) && $_GET["importadora"] != "") {
-            $where .= " AND p.importer = '" . $_GET["importadora"] . "'";
+            $queryParams["importer"] = $_GET["importer"];
         }
+        $queryParams["limit"] = 999999;
 
-        $productsData = $this->estoquesModel->getAllProductsStockWithoutAlert($estoque_ID);
+        $fullNestJsUrl = $this->nestjsBaseUrl . $nestJsEndpointPath . "?" . http_build_query($queryParams);
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $fullNestJsUrl,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 60,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
+                "User-Agent: PHP EstoquesController Export"
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+
+        $productsToExport = [];
+
+        if ($err) {
+            error_log("Erro cURL ao buscar produtos para exportação do NestJS: " . $err);
+            PhpExporter::exportToExcel([], [], "erro_estoque");
+            return;
+        } else {
+            $nestJsResponseData = json_decode($response, true);
+            if (
+                json_last_error() === JSON_ERROR_NONE && is_array($nestJsResponseData) &&
+                isset($nestJsResponseData["products"]) && is_array($nestJsResponseData["products"])
+            ) {
+
+                $productsRaw = $nestJsResponseData["products"];
+
+                foreach ($productsRaw as $productData) {
+                    $mappedProduct = [
+                        "code" => $productData["code"] ?? '',
+                        "description" => $productData["description"] ?? '',
+                        "importer" => $productData["importer"] ?? '',
+                    ];
+
+                    // Inicializa quantidades do galpão e loja
+                    $mappedProduct["quantity_galpao"] = 0;
+                    $mappedProduct["quantity_loja"] = 0;
+
+                    if (isset($productData["quantity_in_stock"]) && is_array($productData["quantity_in_stock"])) {
+                        foreach ($productData["quantity_in_stock"] as $stockEntry) {
+                            if (isset($stockEntry["stock_ID"]) && isset($stockEntry["quantity"])) {
+                                if ($stockEntry["stock_ID"] == 2) { // Galpão
+                                    $mappedProduct["quantity_galpao"] = $stockEntry["quantity"];
+                                } elseif ($stockEntry["stock_ID"] == 1) { // Loja
+                                    $mappedProduct["quantity_loja"] = $stockEntry["quantity"];
+                                }
+                            }
+                        }
+                    }
+                    $productsToExport[] = $mappedProduct;
+                }
+            } else {
+                error_log("Resposta NestJS inválida ou estrutura ausente para exportação: " . $response);
+                PhpExporter::exportToExcel([], [], "erro_estoque");
+                return;
+            }
+        }
 
         PhpExporter::exportToExcel(
             ["Código", "Descrição", "Quantidade Galpão", "Quantidade Loja", "Importadora"],
@@ -139,7 +323,7 @@ class EstoquesController extends _Controller
                     $product["quantity_loja"],
                     $product["importer"],
                 ];
-            }, $productsData),
+            }, $productsToExport),
             "estoqueTotal"
         );
 
