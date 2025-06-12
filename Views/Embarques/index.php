@@ -173,7 +173,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteProductModal" data-id="<?= $row['product_ID'] ?>">
+                                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteProductModal" data-id="<?= $row['product_ID'] ?>" data-container-id="<?= $row['container_ID'] ?>">
                                     <i class='bi bi-trash text-danger'></i>
                                 </button>
                             </td>
@@ -270,7 +270,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
 
                     <div class="modal-body d-flex flex-column gap-3">
                         <input type="hidden" name="product_ID" value="">
-                        <input type="hidden" name="container_ID" value="<?= $container_ID ?>">
+                        <input type="hidden" name="container_ID" value="">
 
                         <label for="quantity" class="form-label">Quantidade Entregue</label>
                         <input type="number" name="quantity" class="form-control" required>
@@ -335,8 +335,11 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
     deleteProductModal.addEventListener('show.bs.modal', function(event) {
         var button = event.relatedTarget;
         var product_ID = button.getAttribute('data-id');
+        var container_ID = button.getAttribute('data-container-id');
+
         var deleteProductForm = document.getElementById('deleteProductForm');
         deleteProductForm.querySelector('input[name="product_ID"]').value = product_ID;
+        deleteProductForm.querySelector('input[name="container_ID"]').value = container_ID;
     });
 
     // Adiciona o ID do produto ao formulário de edição
