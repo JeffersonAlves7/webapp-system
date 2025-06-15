@@ -100,6 +100,7 @@ require "Components/Header.php";
                     <th>IMPORTADORA </th>
                     <th>DATA DE </br>ENTRADA</th>
                     <th>DIAS </br>EM ESTOQUE</th>
+                    <th>COBERTURA </br>DE ESTOQUE</th>
                     <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"]) : ?>
                         <th>GIRO</th>
                         <th>QUANTIDADE </br>PARA ALERTA</th>
@@ -126,6 +127,18 @@ require "Components/Header.php";
                         $observacao = $produto["observacao"];
                         $importadora = $produto["importadora"] ?? "";
                         $container = isset($produto["container_de_origem"]) ? $produto["container_de_origem"] : "";
+
+                        if ($saldo <= 0 || $saldo >= $quantidade_entrada) {
+                            $cobertura_em_dias = 0;
+                        } else {
+                            // $quantidade_entrada = 20
+                            // $saldo = 5
+                            // $dias = 10
+                            // ($quantidade_entrada - $saldo) || 15 / 10 => 1,5 por dia
+                            // ($saldo / 1,5)  = 3.33 => Math.floor(3.33)
+
+                            $cobertura_em_dias = floor(($saldo / (($quantidade_entrada - $saldo) / $dias)));
+                        }
                 ?>
                         <tr>
                             <td>
@@ -163,6 +176,9 @@ require "Components/Header.php";
 
                             <td>
                                 <?= $dias ?> dia(s)
+                            </td>
+                            <td>
+                                <?= $cobertura_em_dias ?> dia(s)
                             </td>
 
                             <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"]) : ?>
