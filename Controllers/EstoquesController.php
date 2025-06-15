@@ -1,4 +1,5 @@
 <?php
+// Controllers/EstoquesController.php
 
 require_once "Models/Estoque.php";
 require_once "Controllers/_Controller.php";
@@ -232,9 +233,10 @@ class EstoquesController extends _Controller
         }
 
         $nestJsEndpointPath = "/products";
-        if ($estoque_ID == 2) {
+        // Ajuste: 1 agora é Galpão, 2 agora é Loja
+        if ($estoque_ID == 1) {
             $nestJsEndpointPath = "/products/galpao";
-        } elseif ($estoque_ID == 1) {
+        } elseif ($estoque_ID == 2) {
             $nestJsEndpointPath = "/products/loja";
         }
 
@@ -245,76 +247,98 @@ class EstoquesController extends _Controller
         if (isset($_GET["importadora"]) && $_GET["importadora"] != "") {
             $queryParams["importer"] = $_GET["importer"];
         }
-        $queryParams["limit"] = 999999;
-
-        $fullNestJsUrl = $this->nestjsBaseUrl . $nestJsEndpointPath . "?" . http_build_query($queryParams);
-
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $fullNestJsUrl,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 60,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => [
-                "User-Agent: PHP EstoquesController Export"
-            ],
-        ]);
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-        curl_close($curl);
+        // Removemos o limite fixo aqui, pois vamos iterar por todas as páginas
+        // $queryParams["limit"] = 999999; 
 
         $productsToExport = [];
+        $currentPage = 1;
+        $pageSize = 50; // Use o mesmo limite por página que a listagem normal ou um limite alto para menos requisições
+        $totalPageCount = 1; // Inicializa para garantir que o loop comece
 
-        if ($err) {
-            error_log("Erro cURL ao buscar produtos para exportação do NestJS: " . $err);
-            PhpExporter::exportToExcel([], [], "erro_estoque");
-            return;
-        } else {
-            $nestJsResponseData = json_decode($response, true);
-            if (
-                json_last_error() === JSON_ERROR_NONE && is_array($nestJsResponseData) &&
-                isset($nestJsResponseData["products"]) && is_array($nestJsResponseData["products"])
-            ) {
+        do {
+            $queryParams["page"] = $currentPage;
+            $queryParams["limit"] = $pageSize; // Garante que o limite seja passado em cada requisição
 
-                $productsRaw = $nestJsResponseData["products"];
+            $fullNestJsUrl = $this->nestjsBaseUrl . $nestJsEndpointPath . "?" . http_build_query($queryParams);
 
-                foreach ($productsRaw as $productData) {
-                    $mappedProduct = [
-                        "code" => $productData["code"] ?? '',
-                        "description" => $productData["description"] ?? '',
-                        "importer" => $productData["importer"] ?? '',
-                    ];
+            $curl = curl_init();
+            curl_setopt_array($curl, [
+                CURLOPT_URL => $fullNestJsUrl,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 60,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_HTTPHEADER => [
+                    "User-Agent: PHP EstoquesController Export"
+                ],
+            ]);
 
-                    // Inicializa quantidades do galpão e loja
-                    $mappedProduct["quantity_galpao"] = 0;
-                    $mappedProduct["quantity_loja"] = 0;
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
 
-                    if (isset($productData["quantity_in_stock"]) && is_array($productData["quantity_in_stock"])) {
-                        foreach ($productData["quantity_in_stock"] as $stockEntry) {
-                            if (isset($stockEntry["stock_ID"]) && isset($stockEntry["quantity"])) {
-                                if ($stockEntry["stock_ID"] == 2) { // Galpão
-                                    $mappedProduct["quantity_galpao"] = $stockEntry["quantity"];
-                                } elseif ($stockEntry["stock_ID"] == 1) { // Loja
-                                    $mappedProduct["quantity_loja"] = $stockEntry["quantity"];
+            if ($err) {
+                error_log("Erro cURL ao buscar produtos para exportação do NestJS (página {$currentPage}): " . $err);
+                // Em caso de erro em qualquer página, podemos parar e exportar o que já foi coletado
+                break;
+            } else {
+                $nestJsResponseData = json_decode($response, true);
+                if (
+                    json_last_error() === JSON_ERROR_NONE && is_array($nestJsResponseData) &&
+                    isset($nestJsResponseData["products"]) && is_array($nestJsResponseData["products"]) &&
+                    isset($nestJsResponseData["pageCount"])
+                ) {
+
+                    $productsRaw = $nestJsResponseData["products"];
+                    $totalPageCount = $nestJsResponseData["pageCount"]; // Atualiza o total de páginas
+
+                    foreach ($productsRaw as $productData) {
+                        $mappedProduct = [
+                            "code" => $productData["code"] ?? '',
+                            "description" => $productData["description"] ?? '',
+                            "importer" => $productData["importer"] ?? '',
+                            "daysInStock" => $productData["daysInStock"] ?? 0 // Incluindo Dias Em Estoque
+                        ];
+
+                        // Inicializa quantidades do galpão e loja
+                        $mappedProduct["quantity_galpao"] = 0;
+                        $mappedProduct["quantity_loja"] = 0;
+
+                        if (isset($productData["quantity_in_stock"]) && is_array($productData["quantity_in_stock"])) {
+                            foreach ($productData["quantity_in_stock"] as $stockEntry) {
+                                if (isset($stockEntry["stock_ID"]) && isset($stockEntry["quantity"])) {
+                                    // Ajuste: 1 agora é Galpão, 2 agora é Loja
+                                    if ($stockEntry["stock_ID"] == 1) { // Galpão
+                                        $mappedProduct["quantity_galpao"] = $stockEntry["quantity"];
+                                    } elseif ($stockEntry["stock_ID"] == 2) { // Loja
+                                        $mappedProduct["quantity_loja"] = $stockEntry["quantity"];
+                                    }
                                 }
                             }
                         }
+                        $productsToExport[] = $mappedProduct;
                     }
-                    $productsToExport[] = $mappedProduct;
+                } else {
+                    error_log("Resposta NestJS inválida ou estrutura ausente para exportação (página {$currentPage}): " . $response);
+                    break; // Sai do loop em caso de resposta inválida
                 }
-            } else {
-                error_log("Resposta NestJS inválida ou estrutura ausente para exportação: " . $response);
-                PhpExporter::exportToExcel([], [], "erro_estoque");
-                return;
             }
+            $currentPage++; // Avança para a próxima página
+        } while ($currentPage <= $totalPageCount); // Continua enquanto houver páginas a buscar
+
+        if (empty($productsToExport)) {
+            // Se nenhuma produto foi coletado, exporta um arquivo vazio ou com mensagem de erro
+            PhpExporter::exportToExcel([], [], "erro_estoque_exportacao");
+            return;
         }
 
+        // Headers para o Excel, agora incluindo "Dias Em Estoque"
+        $excelHeaders = ["Código", "Descrição", "Quantidade Galpão", "Quantidade Loja", "Importadora", "Dias Em Estoque"];
+
         PhpExporter::exportToExcel(
-            ["Código", "Descrição", "Quantidade Galpão", "Quantidade Loja", "Importadora"],
+            $excelHeaders,
             array_map(function ($product) {
                 return [
                     $product["code"],
@@ -322,6 +346,7 @@ class EstoquesController extends _Controller
                     $product["quantity_galpao"],
                     $product["quantity_loja"],
                     $product["importer"],
+                    $product["daysInStock"] // Valor de "Dias Em Estoque"
                 ];
             }, $productsToExport),
             "estoqueTotal"
