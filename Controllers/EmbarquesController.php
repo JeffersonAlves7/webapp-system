@@ -164,7 +164,7 @@ class EmbarquesController extends _Controller
                     header("Refresh: 0; URL = /embarques");
                     return;
                 }
-                
+
                 $ean = $ean ? $ean : null;
                 $description_chinese = $description_chinese ? $description_chinese : null;
 
@@ -205,27 +205,42 @@ class EmbarquesController extends _Controller
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             try {
-                $products = [];
+                $productsToConfirm = []; // Renomeado para evitar conflito com a variável de view
 
-                // Cada produto tem que ter o campo "product_ID" e "quantity_delivered"
-                foreach ($_POST["selected"] as $index => $product_ID) {
-                    $quantity_delivered = $_POST["quantity_delivered"][$index];
-                    $observations = $_POST["observations"][$index];
+                // O JavaScript está enviando os dados como 'products_data'
+                if (isset($_POST['products_data']) && is_array($_POST['products_data'])) {
+                    foreach ($_POST['products_data'] as $productData) {
+                        // Verifique se os campos necessários existem antes de usá-los
+                        $product_ID = $productData["product_ID"] ?? null;
+                        $quantity_delivered = $productData["quantity_delivered"] ?? 0;
+                        $quantity_expected = $productData["quantity_expected"] ?? 0; // Captura a quantidade esperada editada
+                        $observations = $productData["observation"] ?? '';
 
-                    $products[] = [
-                        "product_ID" => $product_ID,
-                        "quantity" => $quantity_delivered,
-                        "observations" => $observations
-                    ];
+                        // Validação básica: garante que o product_ID e quantity_delivered são válidos
+                        if ($product_ID !== null && $quantity_delivered >= 0) {
+                            $productsToConfirm[] = [
+                                "product_ID" => $product_ID,
+                                "quantity_delivered" => $quantity_delivered, // Mantém o nome para clareza
+                                "quantity_expected" => $quantity_expected, // Incluindo o novo campo
+                                "observations" => $observations
+                            ];
+                        }
+                    }
+                } else {
+                    throw new Exception("Dados de produtos não recebidos ou em formato inválido.");
                 }
 
-                $arrival_date = $_POST["arrival_date"];
+                $arrival_date = $_POST["arrival_date"] ?? date('Y-m-d'); // Use a data do POST ou a data atual como fallback
 
-                // Transformar a data para o formato do banco de dados
-                $this->containerModel->confirmProducts($container_ID, $products, $arrival_date);
+                // Exemplo de como a chamada ao modelo **poderia** ser, dependendo da sua lógica:
+                $this->containerModel->confirmProducts(
+                    $container_ID,
+                    $productsToConfirm,
+                    $arrival_date
+                );
+
                 $_SESSION["sucesso"] = true;
             } catch (Exception $e) {
-                // Mensagem generica de erro com quebra de linha e descricao do erro
                 $_SESSION["mensagem_erro"] = "Falha ao confirmar produtos! \n" . $e->getMessage();
             }
 
@@ -233,26 +248,28 @@ class EmbarquesController extends _Controller
             return;
         }
 
+        // --- Lógica para exibir a página de conferência (GET request) ---
         $page = 1;
-
         if (isset($_GET["page"])) {
             $page = (int) $_GET["page"];
         }
 
         $where = "pc.`in_stock` = 0";
 
-        $products = $this->containerModel->produtosById($container_ID, $page, where: $where);
+        // Certifique-se de que produtosById está retornando a 'quantity_expected' corretamente para a view
+        $productsData = $this->containerModel->produtosById($container_ID, $page, where: $where);
         $container = $this->containerModel->byId($container_ID);
 
         $this->view("Embarques/Conferir", [
-            "products" => $products["products"],
+            "products" => $productsData["products"],
             "container_ID" => $container_ID,
             "container" => $container,
-            "pageCount" => $products["pageCount"],
+            "pageCount" => $productsData["pageCount"],
             "sucesso" => $sucesso,
             "mensagem_erro" => $mensagem_erro
         ]);
     }
+
 
     public function deletarProduto()
     {

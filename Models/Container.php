@@ -105,23 +105,28 @@ class Container extends Model
         $stmt = $this->db->prepare("UPDATE `products_in_container`
             SET `in_stock` = 1, 
             `arrival_date` = ?, 
-            `quantity` = ? 
+            `quantity` = ? ,
+            `quantity_expected` = ? 
             WHERE `container_ID` = ? AND `product_ID` = ?");
 
-        if ($stmt === false) {
-            throw new Exception('Failed to prepare statement: ' . $this->db->error);
-        }
 
         foreach ($products as $product) {
             $product_ID = $product['product_ID'];
-            $quantity = $product['quantity'];
+            $quantity = $product['quantity_delivered'];
             $observation = $product['observations'];
+            $quantity_expected = $product['quantity_expected'] || 0;
 
-            $stmt->bind_param("siii", $arrival_date, $quantity, $container_ID, $product_ID);
+            $stmt->bind_param("siiii", $arrival_date, $quantity, $quantity_expected, $container_ID,  $product_ID);
             $stmt->execute();
 
             Lancamento::registrarEntrada($this->db, $product_ID, 1, $quantity, $observation);
         }
+
+        $stmt = $this->db->prepare("DELETE FROM  `products_in_container`
+            WHERE `in_stock` = 0 AND `container_ID` = ? ");
+
+        $stmt->bind_param("i",  $container_ID);
+        $stmt->execute();
     }
 
     public function importData($products)
