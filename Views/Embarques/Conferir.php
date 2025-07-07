@@ -40,10 +40,13 @@ require "Components/Header.php";
                     <th>Importadora</th>
                     <th>Quantidade Esperada</th> <!-- Agora será editável -->
                     <th style="max-width: 200px;">
-                        Quantidade Entregue
-                        <button class="btn btn-custom completar">
-                            <i class="bi bi-check2"></i>
-                        </button>
+                        <div class="d-flex">
+                            Quantidade <br /> Entregue
+
+                            <button type="button" id="completar-todos" class="btn btn-sm btn-custom ms-2" title="Completar todos">
+                                <i class="bi bi-check2-all"></i>
+                            </button>
+                        </div>
                     </th>
 
                     <th>Observações</th>
@@ -52,12 +55,11 @@ require "Components/Header.php";
             </thead>
             <tbody>
                 <?php
-                if (isset($products) && $products->num_rows > 0): ?>
-                    <?php while ($row = $products->fetch_assoc()): ?>
+                if (isset($products) && $products->num_rows > 0) : ?>
+                    <?php while ($row = $products->fetch_assoc()) : ?>
                         <tr data-id="<?= $row['product_ID'] ?>">
                             <td>
-                                <input type="checkbox" class="form-check-input" name="selected[]"
-                                    value="<?= $row['product_ID'] ?>">
+                                <input type="checkbox" class="form-check-input product-checkbox" name="selected_product_ids[]" value="<?= $row['product_ID'] ?>">
                             </td>
                             <td><?= $row['code'] ?></td>
                             <td><?= $row['importer'] ?></td>
@@ -69,10 +71,12 @@ require "Components/Header.php";
                             </td>
                             <td style="max-width: 200px;">
                                 <div class="input-group" style="max-width: 200px;">
+                                    <input type="number" class="form-control quantity-delivered-input"
+                                        data-expect="<?= $row['quantity_expected'] ?? 0 ?>"
+                                        data-product-id="<?= $row['product_ID'] ?>"
+                                        name="quantity_delivered[]" min="0">
 
-                                    <input type="number" class="form-control" data-expect="<?= $row['quantity_expected'] ?>"
-                                        name="quantity_delivered[]">
-                                    <button class="btn btn-custom completar">
+                                    <button class="btn btn-custom completar" type="button">
                                         <i class="bi bi-check2"></i>
                                     </button>
                                 </div>
@@ -89,17 +93,16 @@ require "Components/Header.php";
                             </td>
                         </tr>
                     <?php endwhile; ?>
-                <?php else: ?>
+                <?php else : ?>
                     <tr>
-                        <td colspan='6' class="text-center" style="padding: 1rem;">Nenhum produto para conferir neste
-                            container.</td>
+                        <td colspan='7' class="text-center" style="padding: 1rem;">Nenhum produto para conferir neste container.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </div>
 
-    <?php if ($pageCount > 1): ?>
+    <?php if ($pageCount > 1) : ?>
         <?php
         function isButtonDisabled($condition)
         {
@@ -208,26 +211,15 @@ require "Components/Header.php";
 
     // Função para completar a quantidade entregue com a quantidade esperada
     function completar(e) {
-        const isHeader = e.currentTarget.closest("thead");
+        const tr = e.currentTarget.closest('tr');
+        const inputDelivered = tr.querySelector('.quantity-delivered-input');
+        const inputExpected = tr.querySelector('.quantity-expected-input'); // Pega o input de quantidade esperada
 
-        if (isHeader) {
-            quantidades.forEach(input => {
-                input.value = input.dataset.expect;
-                input.dispatchEvent(new Event('input'));
-            });
+        // Usa o valor ATUAL do input de quantidade esperada
+        const expectedQuantity = Number(inputExpected.value || 0);
 
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = true;
-            });
-
-            total.textContent = getTotalSelected();
-        } else {
-            const input = e.currentTarget.previousElementSibling;
-            const expect = input.dataset.expect;
-
-            input.value = expect;
-            input.dispatchEvent(new Event('input'));
-        }
+        inputDelivered.value = expectedQuantity;
+        inputDelivered.dispatchEvent(new Event('input')); // Dispara o evento 'input' para atualizar a cor e o total
     }
 
     // Adiciona event listeners aos botões "Completar" (usando delegação de eventos)
