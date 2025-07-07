@@ -39,7 +39,16 @@ require "Components/Header.php";
                     <th>Código</th>
                     <th>Importadora</th>
                     <th>Quantidade Esperada</th> <!-- Agora será editável -->
-                    <th style="max-width: 200px;">Quantidade Entregue</th>
+                    <th style="max-width: 200px;">
+                        <div class="d-flex">
+                            Quantidade <br /> Entregue
+
+                            <button type="button" id="completar-todos" class="btn btn-sm btn-custom ms-2" title="Completar todos">
+                                <i class="bi bi-check2-all"></i>
+                            </button>
+                        </div>
+                    </th>
+
                     <th>Observações</th>
                     <th>Ações</th> <!-- Nova coluna para o botão de remover -->
                 </tr>
@@ -66,6 +75,7 @@ require "Components/Header.php";
                                         data-expect="<?= $row['quantity_expected'] ?? 0 ?>"
                                         data-product-id="<?= $row['product_ID'] ?>"
                                         name="quantity_delivered[]" min="0">
+
                                     <button class="btn btn-custom completar" type="button">
                                         <i class="bi bi-check2"></i>
                                     </button>
@@ -332,8 +342,26 @@ require "Components/Header.php";
         mainForm.submit();
     });
 
+
     // Inicializa o total ao carregar a página
     window.addEventListener('load', () => {
+        // Função para completar todos os produtos com a quantidade esperada
+        document.getElementById('completar-todos').addEventListener('click', () => {
+            const rows = document.querySelectorAll('tbody tr');
+
+            rows.forEach(tr => {
+                const inputExpected = tr.querySelector('.quantity-expected-input');
+                const inputDelivered = tr.querySelector('.quantity-delivered-input');
+
+                if (inputExpected && inputDelivered) {
+                    inputDelivered.value = inputExpected.value;
+                    inputDelivered.dispatchEvent(new Event('input')); // Atualiza a cor e total
+                }
+            });
+
+            updateTotalSelected(); // Atualiza o total geral
+        });
+
         updateTotalSelected();
         // Garante que as cores das linhas sejam aplicadas no carregamento
         getQuantityDeliveredInputs().forEach(input => onChangeQuantidade(input));
