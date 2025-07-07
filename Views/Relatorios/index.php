@@ -51,6 +51,13 @@ require "Components/Header.php"
                 <p class="card-text text-white">Acessar Relatório de Entradas dos últimos 12 meses</p>
             </a>
         </div>
+
+        <div class="d-flex gap-4">
+            <a href="/relatorios/semSaida" class="card p-3 bg-secondary" style="width: 18rem; text-decoration: none;">
+                <h5 class="card-title text-white">Produtos sem saída</h5>
+                <p class="card-text text-white">Acessar Relatório de produtos que não tiveram saída desde sua última entrada</p>
+            </a>
+        </div>
     </div>
 </main>
 
