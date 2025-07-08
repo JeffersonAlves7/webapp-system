@@ -413,6 +413,8 @@ class RelatoriosController extends _Controller
                 // totalQuantityInStock é 0 na resposta do NestJS para esta rota
                 $totalCaixas = $nestJsResponseData["totalQuantityInStock"] ?? 0;
                 $products = $productsRaw;
+                $totalProductsInGalpaoUnfiltered = $nestJsResponseData["totalProductsInGalpaoUnfiltered"] ?? 0;
+
 
                 // Mapeia os dados do NestJS para o formato esperado pela view PHP
                 // foreach ($productsRaw as $productData) {
@@ -447,6 +449,7 @@ class RelatoriosController extends _Controller
                 "mensagem_erro" => $mensagem_erro,
                 "totalProdutos"  => $totalProdutos,
                 "totalCaixas" => $totalCaixas,
+                "totalProductsInGalpaoUnfiltered" => $totalProductsInGalpaoUnfiltered
             ]
         );
     }
