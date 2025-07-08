@@ -10,7 +10,8 @@ require "Components/Header.php"; // Certifique-se de que o caminho para o Header
  * @param int $limit O limite de caracteres.
  * @return string A string truncada.
  */
-function truncateString($string, $limit) {
+function truncateString($string, $limit)
+{
     if (strlen($string) > $limit) {
         return substr($string, 0, $limit) . '...';
     }
@@ -49,6 +50,11 @@ function truncateString($string, $limit) {
             </div>
         </form>
     </div>
+
+    <p>Representatividade dos produtos sem saída:
+        <strong><?= number_format($totalProdutos / $totalProductsInGalpaoUnfiltered * 100, 2, ',', '.') ?>%</strong>
+    </p>
+
 
     <!-- Tabela de Produtos Sem Saída -->
     <div class="table-responsive" style="max-height: 65vh; min-height: 200px">
