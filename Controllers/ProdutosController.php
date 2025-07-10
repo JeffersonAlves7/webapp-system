@@ -1,8 +1,10 @@
 <?php
+// Controllers/ProdutosController.php
 require_once "Controllers/_Controller.php";
 require_once "Models/Estoque.php";
 require_once "Models/Product.php";
 require_once "Models/Transacao.php";
+require_once "Managers/ConfigManager.php";
 
 class ProdutosController extends _Controller
 {
@@ -183,7 +185,6 @@ class ProdutosController extends _Controller
         }
 
         $result = $this->productModel->byId($id);
-
         $page = 1;
 
         if (isset($_GET['page'])) {
@@ -195,6 +196,7 @@ class ProdutosController extends _Controller
             header("Location: /");
         }
 
+        $mensagem_erro = "";
         $stocks = $this->estoquesModel->getAll();
         $produto = $result->fetch_assoc();
         $quantidade_em_estoque = $this->productModel->quantityInStockById($id);
@@ -207,13 +209,63 @@ class ProdutosController extends _Controller
 
         $transacoesData = $this->transacaoModel->getAllByProductId($id, $page, $where);
 
+        $totalSalesGalpao = 0;
+        $totalSalesLoja = 0;
+        $startDate = $_GET['startDate'] ?? date('Y-m-01'); // Padrão: primeiro dia do mês atual
+        $endDate = $_GET['endDate'] ?? date('Y-m-d');     // Padrão: data atual
+
+        $queryParams = [
+            "startDate" => $startDate,
+            "endDate" => $endDate,
+        ];
+
+        $fullNestJsUrl = ConfigManager::$NEST_SERVER . "/product/" . $id . "/sales?" . http_build_query($queryParams);
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $fullNestJsUrl,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
+                "User-Agent: PHP ProdutosController Sales"
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+
+        if ($err) {
+            error_log("Erro cURL ao buscar vendas do NestJS: " . $err);
+            $mensagem_erro .= " Não foi possível carregar os dados de vendas do serviço externo.";
+        } else {
+            $nestJsResponseData = json_decode($response, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $totalSalesGalpao = $nestJsResponseData[1];
+                $totalSalesLoja = $nestJsResponseData[2];
+            } else {
+                error_log("Resposta NestJS inválida ou estrutura ausente para vendas: " . $response);
+                $mensagem_erro .= " Formato de dados de vendas inválido recebido do serviço externo.";
+            }
+        }
+
         return $this->view("Produtos/Produto", [
             "produto" => $produto,
             "quantidade_em_estoque" => $quantidade_em_estoque,
             "stocks" => $stocks,
             "transactions" => $transacoesData["transactions"],
             "pageCount" => $transacoesData["pageCount"],
-            "page" => $page
+            "page" => $page,
+            "mensagem_erro" => $mensagem_erro,
+            "startDate" => $startDate,
+            "endDate" => $endDate,
+            "totalSalesGalpao" => $totalSalesGalpao,
+            "totalSalesLoja" => $totalSalesLoja,
         ]);
     }
 

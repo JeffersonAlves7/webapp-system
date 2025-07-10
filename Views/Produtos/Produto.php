@@ -10,12 +10,21 @@ ob_start();
     $quantidade_total = 0;
     $quantidade_reservada = 0;
 
-    while ($dados = $quantidade_em_estoque->fetch_assoc()) {
-        $quantidade_total += $dados["quantity"];
-        $quantidade_reservada += $dados["quantity_in_reserve"];
+    // Certifique-se de que $quantidade_em_estoque é um objeto mysqli_result
+    if ($quantidade_em_estoque instanceof mysqli_result) {
+        while ($dados = $quantidade_em_estoque->fetch_assoc()) {
+            $quantidade_total += $dados["quantity"];
+            $quantidade_reservada += $dados["quantity_in_reserve"];
+        }
+        $quantidade_em_estoque->data_seek(0); // Reseta o ponteiro para o início
+    } else {
+        // Se não for mysqli_result, talvez seja um array já processado.
+        // Adapte esta parte se $quantidade_em_estoque for um array direto.
+        foreach ($quantidade_em_estoque as $dados) {
+            $quantidade_total += $dados["quantity"];
+            $quantidade_reservada += $dados["quantity_in_reserve"];
+        }
     }
-
-    $quantidade_em_estoque->data_seek(0);
     ?>
 
     <div class="d-flex gap-4 align-items-center">
@@ -33,49 +42,102 @@ ob_start();
         <p>Resumo do estoque</p>
     </div>
 
-    <div class="table-responsive" id="stockTable" style="max-width: 600px; display: table;">
-        <table class="table table-striped table-bordered table-hover">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Estoque</th>
-                    <th>Disponível</th>
-                    <th>Reservado</th>
-                    <th>Total</th>
-                    <th>Localização</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($dados = $quantidade_em_estoque->fetch_assoc()) : ?>
-                    <tr>
-                        <td><?= $dados["stock_name"]; ?></td>
-                        <td><?= $dados["quantity"]; ?></td>
-                        <td><?= $dados["quantity_in_reserve"]; ?></td>
-                        <td><?= $dados["quantity"] + $dados["quantity_in_reserve"]; ?></td>
-                        <td>
-                            <div class="input-group">
-                                <input data-stockId="<?= $dados["stock_ID"]; ?>" data-productId="<?= $produto["ID"]; ?>" type="text" class="form-control" value="<?= $dados["location"]; ?>" />
-                                <button class="btn btn-custom">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-                <tr class="font-weight-bold">
-                    <td>Total</td>
-                    <td><?= $quantidade_total; ?></td>
-                    <td><?= $quantidade_reservada; ?></td>
-                    <td><?= $quantidade_total + $quantidade_reservada; ?></td>
-                    <td></td>
-                </tr>
-                <tr class="font-weight-bold">
-                    <td colspan="3">Disponível para venda</td>
-                    <td><?= $quantidade_total; ?></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="h5 mt-4 mb-3">Resumo do Estoque</h2>
 
+            <div class="table-responsive" id="stockTable">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Estoque</th>
+                            <th>Disponível</th>
+                            <th>Reservado</th>
+                            <th>Total</th>
+                            <th>Localização</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        // Garante que $quantidade_em_estoque seja um array iterável para o loop
+                        $estoque_data = [];
+                        if ($quantidade_em_estoque instanceof mysqli_result) {
+                            $estoque_data = $quantidade_em_estoque->fetch_all(MYSQLI_ASSOC);
+                        } else {
+                            $estoque_data = $quantidade_em_estoque; // Já é um array
+                        }
+
+                        if (!empty($estoque_data)) :
+                            foreach ($estoque_data as $dados) : ?>
+                                <tr>
+                                    <td><?= $dados["stock_name"]; ?></td>
+                                    <td><?= $dados["quantity"]; ?></td>
+                                    <td><?= $dados["quantity_in_reserve"]; ?></td>
+                                    <td><?= $dados["quantity"] + $dados["quantity_in_reserve"]; ?></td>
+                                    <td>
+                                        <div class="input-group">
+                                            <input data-stockId="<?= $dados["stock_ID"]; ?>" data-productId="<?= $produto["ID"]; ?>" type="text" class="form-control" value="<?= htmlspecialchars($dados["location"] ?? '') ?>" />
+                                            <button class="btn btn-custom change-location-btn">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <tr>
+                                <td colspan="5" class="text-center">Nenhum dado de estoque encontrado.</td>
+                            </tr>
+                        <?php endif; ?>
+                        <tr class="font-weight-bold">
+                            <td>Total</td>
+                            <td><?= $quantidade_total; ?></td>
+                            <td><?= $quantidade_reservada; ?></td>
+                            <td><?= $quantidade_total + $quantidade_reservada; ?></td>
+                            <td></td>
+                        </tr>
+                        <tr class="font-weight-bold">
+                            <td colspan="3">Disponível para venda</td>
+                            <td><?= $quantidade_total; ?></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h2 class="h5 mt-4 mb-3">Vendas por Período</h2>
+            <div class="p-3 mb-4 border rounded">
+                <form method="GET" action="/produtos/byId/<?= $produto['ID'] ?>">
+                    <input type="hidden" name="product_ID" value="<?= $produto['ID'] ?>">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-6"> <label for="startDate" class="form-label mb-1">Data Início</label>
+                            <input type="date" class="form-control form-control-sm" id="startDate" name="startDate" value="<?= htmlspecialchars($startDate) ?>" required>
+                        </div>
+                        <div class="col-6"> <label for="endDate" class="form-label mb-1">Data Fim</label>
+                            <input type="date" class="form-control form-control-sm" id="endDate" name="endDate" value="<?= htmlspecialchars($endDate) ?>" required>
+                        </div>
+                        <div class="col-12 mt-2"> <button type="submit" class="btn btn-custom w-100">
+                                <i class="bi bi-search"></i> Buscar Vendas
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div class="mt-3">
+                    <h5>Total de Vendas no Período</h5>
+                    <div class="row">
+                        <div class="col-6">
+                            <p>Galpao: <strong><?= htmlspecialchars($totalSalesGalpao) ?></strong></p>
+                        </div>
+                        <div class="col-6">
+                            <p>Loja: <strong><?= htmlspecialchars($totalSalesLoja) ?></strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Estoques -->
     <div class="d-flex gap-3 mt-3 mb-3">
         <!-- Adicionar lancamento -->
@@ -83,7 +145,6 @@ ob_start();
             <input type="hidden" name="product_ID" value="<?= $produto["ID"] ?>" />
             <input type="hidden" name="product_code" value="<?= $produto["code"] ?>" />
             <input type="hidden" name="product_importer" value="<?= $produto["importer"] ?>" />
-            <!-- Button submit com um icone de + e um texto aoo lado escrito "Incluir novo lancamento -->
             <button type="submit" class="btn btn-custom">
                 <i class="bi bi-plus"></i>
                 Incluir novo lançamento
@@ -95,16 +156,18 @@ ob_start();
         </form>
 
         <?php
-        if (isset($stocks) && $stocks->num_rows > 0) {
+        // Certifique-se de que $stocks é um objeto mysqli_result e resete o ponteiro
+        if (isset($stocks) && $stocks instanceof mysqli_result) {
+            $stocks->data_seek(0);
             while ($estoque = $stocks->fetch_assoc()) {
                 $name = $estoque["name"];
                 $ID = $estoque["ID"];
                 $active = (isset($_GET["estoque"]) && $_GET["estoque"] == "$ID" ? "active" : "");
 
                 echo "<form method='get'>
-                    <input type='hidden' name='estoque' value='$ID'/>
-                    <button type='submit' class='btn btn-custom $active'>$name</button>
-                </form>";
+                        <input type='hidden' name='estoque' value='$ID'/>
+                        <button type='submit' class='btn btn-custom $active'>$name</button>
+                    </form>";
             }
         }
         ?>
@@ -124,7 +187,7 @@ ob_start();
                     <th></th>
                 </tr>
             </thead>
-            <?php if (count($transactions) > 0) : ?>
+            <?php if (isset($transactions) && count($transactions) > 0) : ?>
                 <tbody>
                     <?php foreach ($transactions as $row) : ?>
                         <tr>
@@ -149,7 +212,7 @@ ob_start();
         </table>
     </div>
 
-    <?php if ($pageCount > 1) : ?>
+    <?php if (isset($pageCount) && $pageCount > 1) : ?>
         <?php
         function isButtonDisabled($condition)
         {
@@ -281,7 +344,7 @@ ob_start();
     });
 
     // Ao clicar para alterar a localização do produto
-    document.querySelectorAll('.input-group button').forEach(function(element) {
+    document.querySelectorAll('.change-location-btn').forEach(function(element) {
         element.addEventListener('click', function() {
             var input = this.previousElementSibling;
             var stockId = input.getAttribute('data-stockId');
@@ -310,6 +373,9 @@ ob_start();
                         input.classList.remove('is-invalid');
                     }, 2000);
                 }
+            }).catch(function(error) {
+                console.error('Erro na requisição de mudança de localização:', error);
+                // Opcional: mostrar uma mensagem de erro genérica ao usuário
             });
         });
     });

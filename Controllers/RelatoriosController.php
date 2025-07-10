@@ -4,12 +4,11 @@
 require_once "Controllers/_Controller.php";
 require_once "Utils/PhpExporter.php";
 require_once "Models/Relatorios.php";
+require_once "Managers/ConfigManager.php";
 
 class RelatoriosController extends _Controller
 {
     private $relatorios;
-    // Adicione a URL base do NestJS aqui também, se ainda não estiver
-    private $nestjsBaseUrl = "http://host.docker.internal:3000";
 
     public function __construct()
     {
@@ -369,7 +368,7 @@ class RelatoriosController extends _Controller
             $queryParams["importer"] = $importer;
         }
 
-        $fullNestJsUrl = $this->nestjsBaseUrl . "/products/notselled?" . http_build_query($queryParams);
+        $fullNestJsUrl = ConfigManager::$NEST_SERVER . "/products/notselled?" . http_build_query($queryParams);
 
         $curl = curl_init();
         curl_setopt_array($curl, [

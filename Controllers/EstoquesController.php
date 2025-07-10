@@ -3,16 +3,12 @@
 
 require_once "Models/Estoque.php";
 require_once "Controllers/_Controller.php";
+require_once "Managers/ConfigManager.php";
 require_once "Utils/PhpExporter.php";
 
 class EstoquesController extends _Controller
 {
     private $estoquesModel;
-    // Define a URL base para o seu serviço NestJS.
-    // Usamos 'host.docker.internal' para acessar o serviço na máquina host (macOS/Windows)
-    // a partir do contêiner Docker.
-    private $nestjsBaseUrl = "http://host.docker.internal:3000";
-
     public function __construct()
     {
         parent::__construct("Estoques");
@@ -83,7 +79,7 @@ class EstoquesController extends _Controller
             $queryParams["alerta"] = $_COOKIE["alerta"];
         }
 
-        $fullNestJsUrl = $this->nestjsBaseUrl . $nestJsEndpointPath . "?" . http_build_query($queryParams);
+        $fullNestJsUrl = ConfigManager::$NEST_SERVER . $nestJsEndpointPath . "?" . http_build_query($queryParams);
 
         $curl = curl_init();
         curl_setopt_array($curl, [
@@ -259,7 +255,7 @@ class EstoquesController extends _Controller
             $queryParams["page"] = $currentPage;
             $queryParams["limit"] = $pageSize; // Garante que o limite seja passado em cada requisição
 
-            $fullNestJsUrl = $this->nestjsBaseUrl . $nestJsEndpointPath . "?" . http_build_query($queryParams);
+            $fullNestJsUrl = ConfigManager::$NEST_SERVER . $nestJsEndpointPath . "?" . http_build_query($queryParams);
 
             $curl = curl_init();
             curl_setopt_array($curl, [
