@@ -174,7 +174,7 @@ class EstoquesController extends _Controller
                     // A data de entrada no NestJS é o created_at do produto, que é mais como "data de cadastro"
                     // ou a data da última transação. A view esperava "data_de_entrada" de um `entry`.
                     // Vamos usar o `created_at` do produto e formatar.
-                    $mappedProduct["data_de_entrada"] = $productData["created_at"] ?? null;
+                    $mappedProduct["data_de_entrada"] = $productData["entryDate"] ?? null;
 
                     // 'dias_em_estoque', 'giro', 'quantidade_para_alerta' já vêm prontos do NestJS, só renomeamos
                     $mappedProduct["dias_em_estoque"] = $productData["daysInStock"] ?? 0;
