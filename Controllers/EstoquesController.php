@@ -44,7 +44,6 @@ class EstoquesController extends _Controller
         }
 
         $orderBy = "created_at";
-        $orderType = "DESC";
         if (isset($_GET["orderBy"]) && !empty($_GET["orderBy"])) {
             $orderBy = $_GET["orderBy"];
             if ($orderBy == "codigo") {
@@ -53,6 +52,9 @@ class EstoquesController extends _Controller
         }
         if (isset($_GET["orderType"]) && !empty($_GET["orderType"]) && ($_GET["orderType"] == "asc" || $_GET["orderType"] == "desc")) {
             $orderType = $_GET["orderType"];
+        }
+        else{ 
+            $orderType = "desc";
         }
 
         $nestJsEndpointPath = "/products";
@@ -201,6 +203,8 @@ class EstoquesController extends _Controller
                 "mensagem_erro" => $mensagem_erro,
                 "totalProdutos"  => $totalProdutos,
                 "totalCaixas" => $totalCaixas,
+                "orderType" => $orderType,
+                "orderBy" => $orderBy
             ]
         );
     }

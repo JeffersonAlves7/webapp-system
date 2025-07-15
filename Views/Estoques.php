@@ -10,7 +10,8 @@ require "Components/Header.php";
     <!-- Estoques -->
     <div class="d-flex gap-3">
         <form method="get">
-            <button type="submit" class="btn btn-custom <?= isset($_GET["estoque"]) && $_GET["estoque"] != '' ? "" : "active" ?>">Geral</button>
+            <button type="submit"
+                class="btn btn-custom <?= isset($_GET["estoque"]) && $_GET["estoque"] != '' ? "" : "active" ?>">Geral</button>
         </form>
 
         <?php
@@ -46,7 +47,8 @@ require "Components/Header.php";
             <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
             <label>
                 Código:
-                <input type="search" class="form-control" name="codigo" placeholder="Ex.: BT-001" id="input-codigo" value="<?= isset($_COOKIE["codigo"]) ? $_COOKIE["codigo"] : "" ?>">
+                <input type="search" class="form-control" name="codigo" placeholder="Ex.: BT-001" id="input-codigo"
+                    value="<?= isset($_COOKIE["codigo"]) ? $_COOKIE["codigo"] : "" ?>">
             </label>
 
             <label>
@@ -62,7 +64,9 @@ require "Components/Header.php";
             <label>
                 Porcentagem para alerta
                 <div class="input-group" style="max-width: 200px;">
-                    <input type="number" max="100" min="1" placeholder="Ex.: 20" class="form-control" id="input-alerta" value="<?= isset($_COOKIE["alerta"]) ? $_COOKIE["alerta"] : 20 ?>" name="alerta" aria-describedby="alerta-addon">
+                    <input type="number" max="100" min="1" placeholder="Ex.: 20" class="form-control" id="input-alerta"
+                        value="<?= isset($_COOKIE["alerta"]) ? $_COOKIE["alerta"] : 20 ?>" name="alerta"
+                        aria-describedby="alerta-addon">
                     <span class="input-group-text" id="alerta-addon">%</span>
                 </div>
             </label>
@@ -72,8 +76,8 @@ require "Components/Header.php";
                 Filtrar por alerta >=
                 <div class="input-group" style="max-width: 200px;">
                     <input type="number" max="100" placeholder="Ex.: 20" class="form-control" id="input-alerta-filtro"
-                        value="<?= isset($_GET["alerta-filtro"]) ? $_GET["alerta-filtro"] : "" ?>"
-                        name="alerta-filtro" aria-describedby="alerta-addon">
+                        value="<?= isset($_GET["alerta-filtro"]) ? $_GET["alerta-filtro"] : "" ?>" name="alerta-filtro"
+                        aria-describedby="alerta-addon">
                     <span class="input-group-text" id="alerta-addon">%</span>
                 </div>
             </label>
@@ -92,30 +96,36 @@ require "Components/Header.php";
             <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000">
                 <tr>
                     <th>CÓDIGO </th>
-                    <th>QUANTIDADE</br> DE ENTRADA</th>
-                    <th>SALDO </br>ATUAL</th>
-                    <?php if (!isset($_GET["estoque"]) || isset($_GET["estoque"]) && $_GET["estoque"] != 2) : ?>
-                        <th>CONTAINER</br> DE ORIGEM </th>
+                    <th>QUANTIDADE DE ENTRADA</th>
+                    <th>
+                        SALDO ATUAL
+                        <a href="?<?= http_build_query(array_merge($_GET, ['orderBy' => 'saldo', 'orderType' => ($orderType == 'asc' ? 'desc' : 'asc')])) ?>"
+                            class="text-decoration-none">
+                            <i class="bi bi-arrow-<?= ($orderType == 'asc' ? 'down' : 'up') ?>"></i>
+                        </a>
+                    </th>
+                    <?php if (!isset($_GET["estoque"]) || isset($_GET["estoque"]) && $_GET["estoque"] != 2): ?>
+                        <th>CONTAINER DE ORIGEM</th>
                     <?php endif; ?>
                     <th>IMPORTADORA </th>
-                    <th>DATA DE </br>ENTRADA</th>
-                    <th>DIAS </br>EM ESTOQUE</th>
-                    <th>COBERTURA </br>DE ESTOQUE</th>
-                    <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"]) : ?>
+                    <th>DATA DE ENTRADA</th>
+                    <th>DIAS EM ESTOQUE</th>
+                    <th>COBERTURA DE ESTOQUE</th>
+                    <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"]): ?>
                         <th>GIRO</th>
-                        <th>QUANTIDADE </br>PARA ALERTA</th>
+                        <th>QUANTIDADE PARA ALERTA</th>
                     <?php endif; ?>
                     <th>OBSERVAÇÃO</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if (isset($produtos) && count($produtos) > 0) :
-                    foreach ($produtos as $produto) :
+                <?php if (isset($produtos) && count($produtos) > 0):
+                    foreach ($produtos as $produto):
                         $codigo = $produto["codigo"];
                         $quantidade_entrada = $produto["quantidade_entrada"] ?? 0;
                         $saldo = $produto["saldo_atual"] ?? 0;
                         if (isset($produto["data_de_entrada"])) {
-                            $data = $produto["data_de_entrada"]  ?
+                            $data = $produto["data_de_entrada"] ?
                                 date("d/m/Y", strtotime($produto["data_de_entrada"]))
                                 : "";
                         } else {
@@ -131,15 +141,9 @@ require "Components/Header.php";
                         if ($saldo <= 0 || $saldo >= $quantidade_entrada) {
                             $cobertura_em_dias = 0;
                         } else {
-                            // $quantidade_entrada = 20
-                            // $saldo = 5
-                            // $dias = 10
-                            // ($quantidade_entrada - $saldo) || 15 / 10 => 1,5 por dia
-                            // ($saldo / 1,5)  = 3.33 => Math.floor(3.33)
-
                             $cobertura_em_dias = floor(($saldo / (($quantidade_entrada - $saldo) / $dias)));
                         }
-                ?>
+                        ?>
                         <tr>
                             <td>
                                 <a href='/produtos/byId/<?= htmlspecialchars($produto["ID"]) ?>' title='Ver mais'>
@@ -148,19 +152,19 @@ require "Components/Header.php";
                             </td>
                             <td><?= $quantidade_entrada ?></td>
 
-                            <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"]) : ?>
-                                <?php if ($saldo > $alerta) : ?>
+                            <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"]): ?>
+                                <?php if ($saldo > $alerta): ?>
                                     <td class='bg-quaternary'><?= $saldo ?></td>
-                                <?php elseif ($saldo < $alerta) : ?>
+                                <?php elseif ($saldo < $alerta): ?>
                                     <td class='bg-danger'><?= $saldo ?></td>
-                                <?php else : ?>
+                                <?php else: ?>
                                     <td class='bg-warning'><?= $saldo ?></td>
                                 <?php endif; ?>
-                            <?php else : ?>
+                            <?php else: ?>
                                 <td><?= $saldo ?></td>
                             <?php endif; ?>
 
-                            <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"] || $_GET["estoque"] == 1) : ?>
+                            <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"] || $_GET["estoque"] == 1): ?>
                                 <td>
                                     <div class="container-col">
                                         <p><?= $container ?></p>
@@ -181,7 +185,7 @@ require "Components/Header.php";
                                 <?= $cobertura_em_dias ?> dia(s)
                             </td>
 
-                            <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"]) : ?>
+                            <?php if (!isset($_GET["estoque"]) || !$_GET["estoque"]): ?>
                                 <td><?= $giro ?>%</td>
                                 <td><?= $alerta ?></td>
                             <?php endif; ?>
@@ -193,12 +197,12 @@ require "Components/Header.php";
                             </td>
                         </tr>
                     <?php endforeach; ?>
-                <?php else : ?>
-                    <?php if (isset($_GET["estoque"]) && $_GET["estoque"] == 1) : ?>
+                <?php else: ?>
+                    <?php if (isset($_GET["estoque"]) && $_GET["estoque"] == 1): ?>
                         <tr>
                             <td colspan="9" class="text-center">Nenhum produto encontrado</td>
                         </tr>
-                    <?php else : ?>
+                    <?php else: ?>
                         <tr>
                             <td colspan="10" class="text-center">Nenhum produto encontrado</td>
                         </tr>
@@ -210,7 +214,7 @@ require "Components/Header.php";
                 <!-- Aqui no tfoot vai ter a informacao de total de produtos e de caixas -->
                 <tr>
                     <?= isset($_GET["estoque"]) && $_GET["estoque"] != 1 && !empty($_GET["estoque"]) ? "<td colspan='9'>" : "<td colspan='10'>" ?>
-                    <?php if (isset($totalProdutos) && isset($totalCaixas)) : ?>
+                    <?php if (isset($totalProdutos) && isset($totalCaixas)): ?>
                         <strong>Total de produtos: <?= $totalProdutos ?> | Total de caixas: <?= $totalCaixas ?></strong>
                     <?php endif; ?>
                     </td>
@@ -219,7 +223,7 @@ require "Components/Header.php";
         </table>
     </div>
 
-    <?php if ($pageCount > 1) : ?>
+    <?php if ($pageCount > 1): ?>
         <?php
         function isButtonDisabled($condition)
         {
@@ -233,7 +237,8 @@ require "Components/Header.php";
         $isNextDisabled = !isset($produtos) || !count($produtos) > 0 || $currentPage >= $pageCount;
         ?>
 
-        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mt-2" style="max-width: 250px; margin: 0 auto;">
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mt-2"
+            style="max-width: 250px; margin: 0 auto;">
             <form method="GET" class="d-flex align-items-center">
                 <input type="hidden" name="page" value="<?= $prevPage ?>">
                 <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
