@@ -127,11 +127,14 @@ ob_start();
                 <div class="mt-3">
                     <h5>Total de Vendas no Período</h5>
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-4">
                             <p>Galpao: <strong><?= htmlspecialchars($totalSalesGalpao) ?></strong></p>
                         </div>
-                        <div class="col-6">
+                        <div class="col-4">
                             <p>Loja: <strong><?= htmlspecialchars($totalSalesLoja) ?></strong></p>
+                        </div>
+                        <div class="col-4">
+                            <p>Total: <strong><?= htmlspecialchars($totalSalesLoja+ $totalSalesGalpao) ?></strong></p>
                         </div>
                     </div>
                 </div>
