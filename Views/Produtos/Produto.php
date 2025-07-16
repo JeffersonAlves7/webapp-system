@@ -108,7 +108,7 @@ ob_start();
 
         <div class="col-md-6">
             <h2 class="h5 mt-4 mb-3">Vendas por Período</h2>
-            <div class="p-3 mb-4 border rounded">
+            <div id="salesPerPeriod" class="p-3 mb-4 border rounded">
                 <form method="GET" action="/produtos/byId/<?= $produto['ID'] ?>">
                     <input type="hidden" name="product_ID" value="<?= $produto['ID'] ?>">
                     <div class="row g-2 align-items-end">
@@ -141,6 +141,7 @@ ob_start();
             </div>
         </div>
     </div>
+
     <!-- Estoques -->
     <div class="d-flex gap-3 mt-3 mb-3">
         <!-- Adicionar lancamento -->
@@ -334,13 +335,17 @@ ob_start();
     // Script to toggle table visibility
     document.getElementById('toggleTableBtn').addEventListener('click', function() {
         var table = document.getElementById('stockTable');
+        var salesDiv = document.getElementById("salesPerPeriod")
+
         const htmlMaximize = '<i class="bi bi-arrows-fullscreen"></i> Maximizar';
         const htmlMinimize = '<i class="bi bi-arrows-angle-contract"></i> Minimizar';
 
         if (table.style.display === 'none') {
             table.style.display = 'table';
+            salesDiv.style.display="block"
             this.innerHTML = htmlMinimize;
         } else {
+            salesDiv.style.display="none"
             table.style.display = 'none';
             this.innerHTML = htmlMaximize;
         }
