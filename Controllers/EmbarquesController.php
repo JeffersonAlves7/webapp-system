@@ -319,6 +319,29 @@ class EmbarquesController extends _Controller
         header("Refresh: 0; URL = $redirect");
     }
 
+    public function editar($container_ID)
+    {
+        $this->verifyEditPermission();
+
+        $redirect = "/embarques";
+
+        if (isset($_GET["redirect"])) {
+            $redirect = htmlspecialchars($_GET["redirect"]);
+        }
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $departure_date = $_POST["departure_date"];
+
+            $this->containerModel->editDate($container_ID,  $departure_date);
+            $_SESSION["sucesso"] = true;
+        } else {
+            $_SESSION["mensagem_erro"] = "Falha ao editar produto!";
+        }
+
+        header("Refresh: 0; URL = $redirect");
+
+    }
+
     public function deletar($id)
     {
         $this->verifyDeletePermission();

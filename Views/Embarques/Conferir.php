@@ -3,6 +3,10 @@ $pageTitle = "Embarques";
 ob_start();
 
 require "Components/Header.php";
+
+// Corrigido: Pegando todos os produtos como array e armazenando o primeiro item
+$productList = $products->fetch_all(MYSQLI_ASSOC);
+$firstProduct = $productList[0] ?? null;
 ?>
 <main>
     <div class="d-flex gap-4 align-items-center mb-3">
@@ -18,19 +22,32 @@ require "Components/Header.php";
         </a>
     </div>
 
-    <!-- Data de chegada: Aqui o usuario vai poder customizar a data de chegada dos produtos no container -->
-    <div class="mb-3" style="max-width: 300px;">
-        <label for="arrival_date" class="form-label">Data de chegada</label>
-        <!-- Data no horario de brasilia -->
-        <input type="date" class="form-control" id="arrival_date" value="<?= date('Y-m-d') ?>">
+    <div class="row">
+        <div class="col-3">
+            <!-- Form separado para atualizar a data de saída -->
+            <form method="POST" action="/embarques/editar/<?= $container_ID ?>" id="departure-form" class="mb-3"
+                style="max-width: 300px;">
+                <label for="departure_date" class="form-label">Data de saída</label>
+                <input type="date" class="form-control" id="departure_date" name="departure_date"
+                    value="<?= $firstProduct ? htmlspecialchars($firstProduct['departure_date']) : '' ?>"
+                    data-original="<?= $firstProduct ? htmlspecialchars($firstProduct['departure_date']) : '' ?>">
+            </form>
+        </div>
+        <div class="col-3">
+            <!-- Campo: Data de chegada -->
+            <div class="mb-3" style="max-width: 300px;">
+                <label for="arrival_date" class="form-label">Data de chegada</label>
+                <input type="date" class="form-control" id="arrival_date" value="<?= date('Y-m-d') ?>">
+            </div>
+        </div>
     </div>
 
-
-    <!-- Mostrar total selecionado pelo checkbox (atraves da soma do campo quantidade entregue) -->
+    <!-- Total selecionado -->
     <div class="mb-3">
         <p>Total selecionado: <span id="total">0</span></p>
     </div>
 
+    <!-- Tabela de produtos -->
     <div class="table-responsive" style="max-height: 60vh; min-height: 100px">
         <table class="table table-striped" style="min-width:max-content">
             <thead class="thead-dark" style="position: sticky; top: 0; z-index: 1000;">
@@ -43,35 +60,31 @@ require "Components/Header.php";
                     </th>
                     <th>Código</th>
                     <th>Importadora</th>
-                    <th>Quantidade Esperada</th> <!-- Agora será editável -->
+                    <th>Quantidade Esperada</th>
                     <th style="max-width: 200px;">
                         <div class="d-flex">
                             Quantidade <br /> Entregue
-
                             <button type="button" id="completar-todos" class="btn btn-sm btn-custom ms-2"
                                 title="Completar todos">
                                 <i class="bi bi-check2-all"></i>
                             </button>
                         </div>
                     </th>
-
                     <th>Observações</th>
-                    <th>Ações</th> <!-- Nova coluna para o botão de remover -->
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
-                <?php
-                if (isset($products) && $products->num_rows > 0): ?>
-                    <?php while ($row = $products->fetch_assoc()): ?>
+                <?php if (!empty($productList)): ?>
+                    <?php foreach ($productList as $row): ?>
                         <tr data-id="<?= $row['product_ID'] ?>">
                             <td>
                                 <input type="checkbox" class="form-check-input product-checkbox" name="selected_product_ids[]"
                                     value="<?= $row['product_ID'] ?>">
                             </td>
-                            <td><?= $row['code'] ?></td>
-                            <td><?= $row['importer'] ?></td>
+                            <td><?= htmlspecialchars($row['code']) ?></td>
+                            <td><?= htmlspecialchars($row['importer']) ?></td>
                             <td style="max-width: 200px;">
-                                <!-- Quantidade Esperada agora é um input editável -->
                                 <input type="number" class="form-control quantity-expected-input"
                                     data-product-id="<?= $row['product_ID'] ?>" value="<?= $row['quantity_expected'] ?? 0 ?>"
                                     min="0">
@@ -81,7 +94,6 @@ require "Components/Header.php";
                                     <input type="number" class="form-control quantity-delivered-input"
                                         data-expect="<?= $row['quantity_expected'] ?? 0 ?>"
                                         data-product-id="<?= $row['product_ID'] ?>" name="quantity_delivered[]" min="0">
-
                                     <button class="btn btn-custom completar" type="button">
                                         <i class="bi bi-check2"></i>
                                     </button>
@@ -98,17 +110,19 @@ require "Components/Header.php";
                                 </button>
                             </td>
                         </tr>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan='7' class="text-center" style="padding: 1rem;">Nenhum produto para conferir neste
-                            container.</td>
+                        <td colspan='7' class="text-center" style="padding: 1rem;">
+                            Nenhum produto para conferir neste container.
+                        </td>
                     </tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </div>
 
+    <!-- Paginação -->
     <?php if ($pageCount > 1): ?>
         <?php
         function isButtonDisabled($condition)
@@ -120,9 +134,8 @@ require "Components/Header.php";
         $prevPage = $currentPage - 1;
         $nextPage = $currentPage + 1;
         $isPrevDisabled = intval($currentPage) <= 1;
-        $isNextDisabled = !isset($products) || $products->num_rows === 0 || intval($currentPage) >= $pageCount;
+        $isNextDisabled = empty($productList) || intval($currentPage) >= $pageCount;
         ?>
-
         <div class="d-flex justify-content-center align-items-center gap-2 flex-wraps">
             <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 300px;">
                 <form method="GET" class="d-flex align-items-center">
@@ -144,18 +157,51 @@ require "Components/Header.php";
         </div>
     <?php endif; ?>
 
-    <!-- Formulário principal para submissão dos dados -->
+    <!-- Formulário principal -->
     <form method="POST" action="/embarques/conferir/<?= $container_ID ?>" id="main-form" class="mt-3">
         <input type="hidden" name="container_ID" value="<?= $container_ID ?>">
         <input type="hidden" name="arrival_date" id="form-arrival-date">
-        <!-- Hidden inputs para os dados dos produtos serão adicionados via JS -->
-        <button type="submit" class="btn btn-custom">
-            Confirmar Conferência
-        </button>
+        <!-- (Opcional) Enviar departure_date -->
+        <input type="hidden" name="departure_date"
+            value="<?= $firstProduct ? htmlspecialchars($firstProduct['departure_date']) : '' ?>">
+        <button type="submit" class="btn btn-custom">Confirmar Conferência</button>
     </form>
 
     <?php include_once "Components/StatusMessage.php"; ?>
 </main>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const departureInput = document.getElementById('departure_date');
+        const departureForm = document.getElementById('departure-form');
+        const originalDeparture = departureInput.dataset.original;
+
+        departureInput.addEventListener('change', () => {
+            const newDate = departureInput.value;
+
+            if (newDate !== originalDeparture) {
+                // Cria um formulário temporário se quiser evitar recarregamento:
+                const formData = new FormData(departureForm);
+
+                fetch(departureForm.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro ao atualizar a data de saída.');
+                        }
+                        // Atualiza o valor original para não submeter novamente se mudar para a mesma data
+                        departureInput.dataset.original = newDate;
+                        alert('Data de saída atualizada com sucesso!');
+                    })
+                    .catch(error => {
+                        alert(error.message);
+                        console.error(error);
+                    });
+            }
+        });
+    });
+</script>
 
 <script>
     const selectAll = document.getElementById('selectAll');

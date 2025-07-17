@@ -19,7 +19,7 @@ class Container extends Model
 
         $offset = ($page - 1) * $limit;
 
-        $sql =  "SELECT 
+        $sql = "SELECT 
         pc.*, p.`code`, p.`importer`, p.`ean`, lc.`name` as container_name,
         lc.ID as container_ID
         FROM products_in_container pc
@@ -66,7 +66,7 @@ class Container extends Model
 
         $offset = ($page - 1) * $limit;
 
-        $sql =  "SELECT pc.*, p.`code`, p.`importer` FROM products_in_container pc
+        $sql = "SELECT pc.*, p.`code`, p.`importer` FROM products_in_container pc
         INNER JOIN products p ON p.ID = pc.product_ID
         WHERE pc.`container_ID` = $container_ID AND $where
         ORDER BY `created_at` DESC LIMIT $limit OFFSET $offset";
@@ -100,6 +100,13 @@ class Container extends Model
         $this->db->query("DELETE FROM `lote_container` WHERE `ID` = $container_ID");
     }
 
+    public function editDate($container_ID, $departure_date)
+    {
+        $stmt = $this->db->prepare("UPDATE `products_in_container` SET `departure_date` = ? WHERE `container_ID` = ?");
+        $stmt->bind_param("si", $departure_date, $container_ID);
+        $stmt->execute();
+    }
+
     public function confirmProducts($container_ID, $products, $arrival_date)
     {
         // A variavel produtos precisa ter o Id dos produtos, tambem precisa ter a quantidade que foi entregue
@@ -117,7 +124,7 @@ class Container extends Model
             $observation = $product['observations'];
             $quantity_expected = $product['quantity_expected'] || 0;
 
-            $stmt->bind_param("siiii", $arrival_date, $quantity, $quantity_expected, $container_ID,  $product_ID);
+            $stmt->bind_param("siiii", $arrival_date, $quantity, $quantity_expected, $container_ID, $product_ID);
             $stmt->execute();
 
             Lancamento::registrarEntrada($this->db, $product_ID, 1, $quantity, $observation);
@@ -126,7 +133,7 @@ class Container extends Model
         $stmt = $this->db->prepare("DELETE FROM  `products_in_container`
             WHERE `in_stock` = 0 AND `container_ID` = ? ");
 
-        $stmt->bind_param("i",  $container_ID);
+        $stmt->bind_param("i", $container_ID);
         $stmt->execute();
     }
 
