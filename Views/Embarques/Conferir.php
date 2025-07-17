@@ -5,13 +5,17 @@ ob_start();
 require "Components/Header.php";
 ?>
 <main>
-    <div class="d-flex gap-4 align-items-center">
+    <div class="d-flex gap-4 align-items-center mb-3">
         <button id="go-back" class="btn btn-custom">
             <i class="bi bi-arrow-left"></i>
         </button>
-        <h1 class="mb-3">
+        <h1 class="mb-0">
             <?= $pageTitle ?> - Conferência do Container <?= $container['name'] ?>
         </h1>
+        <a href="/embarques/deletar/<?= $container_ID ?>" class="btn btn-outline-danger ms-auto"
+            onclick="return confirm('Tem certeza que deseja deletar este embarque? Esta ação não pode ser desfeita.')">
+            <i class="bi bi-trash"></i> Deletar Embarque
+        </a>
     </div>
 
     <!-- Data de chegada: Aqui o usuario vai poder customizar a data de chegada dos produtos no container -->
@@ -20,6 +24,7 @@ require "Components/Header.php";
         <!-- Data no horario de brasilia -->
         <input type="date" class="form-control" id="arrival_date" value="<?= date('Y-m-d') ?>">
     </div>
+
 
     <!-- Mostrar total selecionado pelo checkbox (atraves da soma do campo quantidade entregue) -->
     <div class="mb-3">
@@ -43,7 +48,8 @@ require "Components/Header.php";
                         <div class="d-flex">
                             Quantidade <br /> Entregue
 
-                            <button type="button" id="completar-todos" class="btn btn-sm btn-custom ms-2" title="Completar todos">
+                            <button type="button" id="completar-todos" class="btn btn-sm btn-custom ms-2"
+                                title="Completar todos">
                                 <i class="bi bi-check2-all"></i>
                             </button>
                         </div>
@@ -55,26 +61,26 @@ require "Components/Header.php";
             </thead>
             <tbody>
                 <?php
-                if (isset($products) && $products->num_rows > 0) : ?>
-                    <?php while ($row = $products->fetch_assoc()) : ?>
+                if (isset($products) && $products->num_rows > 0): ?>
+                    <?php while ($row = $products->fetch_assoc()): ?>
                         <tr data-id="<?= $row['product_ID'] ?>">
                             <td>
-                                <input type="checkbox" class="form-check-input product-checkbox" name="selected_product_ids[]" value="<?= $row['product_ID'] ?>">
+                                <input type="checkbox" class="form-check-input product-checkbox" name="selected_product_ids[]"
+                                    value="<?= $row['product_ID'] ?>">
                             </td>
                             <td><?= $row['code'] ?></td>
                             <td><?= $row['importer'] ?></td>
                             <td style="max-width: 200px;">
                                 <!-- Quantidade Esperada agora é um input editável -->
                                 <input type="number" class="form-control quantity-expected-input"
-                                    data-product-id="<?= $row['product_ID'] ?>"
-                                    value="<?= $row['quantity_expected'] ?? 0 ?>" min="0">
+                                    data-product-id="<?= $row['product_ID'] ?>" value="<?= $row['quantity_expected'] ?? 0 ?>"
+                                    min="0">
                             </td>
                             <td style="max-width: 200px;">
                                 <div class="input-group" style="max-width: 200px;">
                                     <input type="number" class="form-control quantity-delivered-input"
                                         data-expect="<?= $row['quantity_expected'] ?? 0 ?>"
-                                        data-product-id="<?= $row['product_ID'] ?>"
-                                        name="quantity_delivered[]" min="0">
+                                        data-product-id="<?= $row['product_ID'] ?>" name="quantity_delivered[]" min="0">
 
                                     <button class="btn btn-custom completar" type="button">
                                         <i class="bi bi-check2"></i>
@@ -83,26 +89,27 @@ require "Components/Header.php";
                             </td>
                             <td>
                                 <input type="text" class="form-control observation-input"
-                                    data-product-id="<?= $row['product_ID'] ?>"
-                                    name="observations[]">
+                                    data-product-id="<?= $row['product_ID'] ?>" name="observations[]">
                             </td>
                             <td>
-                                <button type="button" class="btn btn-danger btn-sm remove-product" data-product-id="<?= $row['product_ID'] ?>">
+                                <button type="button" class="btn btn-danger btn-sm remove-product"
+                                    data-product-id="<?= $row['product_ID'] ?>">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </td>
                         </tr>
                     <?php endwhile; ?>
-                <?php else : ?>
+                <?php else: ?>
                     <tr>
-                        <td colspan='7' class="text-center" style="padding: 1rem;">Nenhum produto para conferir neste container.</td>
+                        <td colspan='7' class="text-center" style="padding: 1rem;">Nenhum produto para conferir neste
+                            container.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </div>
 
-    <?php if ($pageCount > 1) : ?>
+    <?php if ($pageCount > 1): ?>
         <?php
         function isButtonDisabled($condition)
         {
@@ -341,7 +348,6 @@ require "Components/Header.php";
         // Finalmente, submete o formulário
         mainForm.submit();
     });
-
 
     // Inicializa o total ao carregar a página
     window.addEventListener('load', () => {

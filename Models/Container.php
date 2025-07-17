@@ -96,6 +96,7 @@ class Container extends Model
 
     public function delete($container_ID)
     {
+        $this->db->query("DELETE FROM `products_in_container` WHERE `container_ID` = $container_ID");
         $this->db->query("DELETE FROM `lote_container` WHERE `ID` = $container_ID");
     }
 
