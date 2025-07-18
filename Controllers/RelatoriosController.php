@@ -349,6 +349,10 @@ class RelatoriosController extends _Controller
                 $orderBy = "code"; // Mapeia para o campo do NestJS
             }
         }
+
+        $startDate = $_GET['startDate'] ?? date('Y-m-d', strtotime('-30 days')); // Padrão: 30 dias atrás
+        $endDate = $_GET['endDate'] ?? date('Y-m-d');     // Padrão: data atual
+
         if (isset($_GET["orderType"]) && !empty($_GET["orderType"]) && ($_GET["orderType"] == "asc" || $_GET["orderType"] == "desc")) {
             $orderType = $_GET["orderType"];
         }
@@ -357,7 +361,9 @@ class RelatoriosController extends _Controller
             "page" => $page,
             "limit" => 20, // Limite padrão da função NestJS
             "orderBy" => $orderBy,
-            "orderType" => $orderType
+            "orderType" => $orderType,
+            "startDate" => $startDate,
+            "endDate" => $endDate
         ];
 
         // Adiciona filtros se existirem
@@ -413,24 +419,6 @@ class RelatoriosController extends _Controller
                 $totalCaixas = $nestJsResponseData["totalQuantityInStock"] ?? 0;
                 $products = $productsRaw;
                 $totalProductsInGalpaoUnfiltered = $nestJsResponseData["totalProductsInGalpaoUnfiltered"] ?? 0;
-
-
-                // Mapeia os dados do NestJS para o formato esperado pela view PHP
-                // foreach ($productsRaw as $productData) {
-                //     $mappedProduct = [
-                //         "ID" => $productData["ID"] ?? null,
-                //         "codigo" => $productData["code"] ?? '',
-                //         "description" => $productData["description"] ?? '',
-                //         "chineseDescription" => $productData["chineseDescription"] ?? '',
-                //         "importadora" => $productData["importer"] ?? '',
-                //         "quantidade_entrada" => $productData["entry"]["quantity"] ?? 0,
-                //         "container_de_origem" => $productData["entry"]["containers"] ?? '',
-                //         "dias_em_estoque" => $productData["daysInStock"] ?? 0,
-                //         "data_de_entrada" => $productData["productsInContainer"][0]["created_at"] ?? null,
-                //         "saldo_atual" => $productData["quantity_in_stock"][0]["quantity"] ?? 0,
-                //     ];
-                //     $products[] = $mappedProduct;
-                // }
             } else {
                 error_log("Resposta NestJS inválida ou estrutura ausente para produtos sem saída: " . $response);
                 $mensagem_erro = "Formato de dados inválido recebido do serviço externo para produtos sem saída.";
@@ -446,10 +434,161 @@ class RelatoriosController extends _Controller
                 "pageCount" => $pageCount,
                 "sucesso" => $sucesso,
                 "mensagem_erro" => $mensagem_erro,
-                "totalProdutos"  => $totalProdutos,
+                "totalProdutos" => $totalProdutos,
                 "totalCaixas" => $totalCaixas,
+                "startDate" => $startDate,
+                "endDate" => $endDate,
                 "totalProductsInGalpaoUnfiltered" => $totalProductsInGalpaoUnfiltered
             ]
         );
+    }
+
+    public function exportarSemSaida()
+    {
+        $this->verifyReadPermission();
+
+        if ($_SERVER["REQUEST_METHOD"] == "GET") { // Mudança para GET, pois os filtros virão da URL
+            header("Content-Type: application/json"); // Pode ser ajustado para 'application/vnd.ms-excel' depois
+
+            // Parâmetros de filtro da URL (os mesmos da função semSaida)
+            $code = $_GET["code"] ?? '';
+            $importer = $_GET["importer"] ?? '';
+            $orderBy = "ID";
+            $orderType = "desc";
+
+            if (isset($_GET["orderBy"]) && !empty($_GET["orderBy"])) {
+                $orderBy = $_GET["orderBy"];
+                if ($orderBy == "codigo") {
+                    $orderBy = "code";
+                }
+            }
+
+            // Datas, com os mesmos padrões da função semSaida
+            $startDate = $_GET['startDate'] ?? date('Y-m-d', strtotime('-30 days'));
+            $endDate = $_GET['endDate'] ?? date('Y-m-d');
+
+            if (isset($_GET["orderType"]) && !empty($_GET["orderType"]) && ($_GET["orderType"] == "asc" || $_GET["orderType"] == "desc")) {
+                $orderType = $_GET["orderType"];
+            }
+
+            $allProducts = []; // Array para armazenar todos os produtos de todas as páginas
+            $currentPage = 1;
+            $pageLimit = 1000; // Um limite alto por página para reduzir requisições, ajuste conforme a API permite
+            $pageCount = 1; // Inicializado para entrar no loop
+
+            do {
+                $queryParams = [
+                    "page" => $currentPage,
+                    "limit" => $pageLimit,
+                    "orderBy" => $orderBy,
+                    "orderType" => $orderType,
+                    "startDate" => $startDate,
+                    "endDate" => $endDate
+                ];
+
+                if (!empty($code)) {
+                    $queryParams["code"] = $code;
+                }
+                if (!empty($importer)) {
+                    $queryParams["importer"] = $importer;
+                }
+
+                $fullNestJsUrl = ConfigManager::$NEST_SERVER . "/products/notselled?" . http_build_query($queryParams);
+
+                $curl = curl_init();
+                curl_setopt_array($curl, [
+                    CURLOPT_URL => $fullNestJsUrl,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => "",
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 60, // Aumentar o timeout para grandes volumes de dados
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => "GET",
+                    CURLOPT_HTTPHEADER => [
+                        "User-Agent: PHP RelatoriosController ExportarSemSaida"
+                    ],
+                ]);
+
+                $response = curl_exec($curl);
+                $err = curl_error($curl);
+                curl_close($curl);
+
+                if ($err) {
+                    error_log("Erro cURL ao buscar página $currentPage de produtos sem saída do NestJS: " . $err);
+                    echo json_encode(["erro" => "Erro ao coletar dados para exportação: " . $err]);
+                    exit;
+                }
+
+                $nestJsResponseData = json_decode($response, true);
+
+                if (json_last_error() === JSON_ERROR_NONE && isset($nestJsResponseData["products"]) && is_array($nestJsResponseData["products"])) {
+                    $allProducts = array_merge($allProducts, $nestJsResponseData["products"]);
+                    $pageCount = $nestJsResponseData["pageCount"] ?? 1; // Atualiza o total de páginas
+                } else {
+                    error_log("Resposta NestJS inválida para página $currentPage: " . $response);
+                    echo json_encode(["erro" => "Formato de dados inválido da API NestJS na página " . $currentPage]);
+                    exit;
+                }
+
+                $currentPage++;
+            } while ($currentPage <= $pageCount); // Continua enquanto houver páginas a buscar
+
+            if (empty($allProducts)) {
+                echo json_encode(["erro" => "Nenhum produto sem saída encontrado para exportar com os filtros e período informados."]);
+                exit;
+            }
+
+            // Preparar os dados para o exportador
+            $exportData = array_map(function ($produto) {
+                // Obter a quantidade em estoque do galpão (stock_ID = 1)
+                $quantidadeGalpao = 0;
+                foreach ($produto["quantity_in_stock"] as $stock) {
+                    if ($stock["stock_ID"] == 1) { // Assume que o stock_ID 1 é o galpão
+                        $quantidadeGalpao = $stock["quantity"];
+                        break;
+                    }
+                }
+
+                $ultimaEntradaQtde = $produto["productsInContainer"][0]["quantity"] ?? 0;
+                $dataEntradaRaw = $produto["productsInContainer"][0]["updated_at"] ?? ($produto["productsInContainer"][0]["created_at"] ?? null);
+
+                $dataEntradaFormatada = "-";
+                $diasEmEstoque = 0;
+
+                if (!empty($dataEntradaRaw)) {
+                    $timestampEntrada = strtotime(explode('.', $dataEntradaRaw)[0]); // Remove milissegundos
+                    if ($timestampEntrada !== false) {
+                        $dataEntradaFormatada = date("d/m/Y", $timestampEntrada);
+                        $timestampAtual = time();
+                        $diffSeconds = $timestampAtual - $timestampEntrada;
+                        $diasEmEstoque = floor($diffSeconds / (60 * 60 * 24));
+                    }
+                }
+
+                return [
+                    $produto["code"] ?? '',
+                    $produto["description"] ?? '',
+                    $produto["importer"] ?? '',
+                    $quantidadeGalpao, // Saldo atual no Galpão
+                    $ultimaEntradaQtde, // Última Entrada (Quantidade)
+                    $dataEntradaFormatada, // Data da Última Entrada
+                    $diasEmEstoque . " dia(s)" // Dias em Estoque
+                ];
+            }, $allProducts);
+
+            $headers = ['Código', 'Descrição', 'Importadora', 'Saldo Atual (Galpão)', 'Última Entrada (Qtde)', 'Data da Última Entrada', 'Dias em Estoque'];
+
+            $filename = "Produtos_Sem_Saida_" . date('Y-m-d') . ".xlsx"; // Nome do arquivo Excel
+
+            // A chamada PhpExporter::exportToExcel deve ser configurada para gerar Excel
+            // Assumindo que seu PhpExporter já lida com os headers e a criação do arquivo Excel
+            PhpExporter::exportToExcel(
+                $headers,
+                $exportData,
+                $filename
+            );
+
+            return; // Encerra a execução após a exportação
+        }
     }
 }
