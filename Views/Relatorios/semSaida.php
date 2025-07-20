@@ -88,7 +88,7 @@ function truncateString($string, $limit)
                     <th>CÓDIGO</th>
                     <th>DESCRIÇÃO</th>
                     <th>IMPORTADORA</th>
-                    <th>SALDO ATUAL (GALPÃO)</th>
+                    <th>SALDO ATUAL</th>
                     <th>ÚLTIMA ENTRADA (QTDE)</th>
                     <th>DATA DA ÚLTIMA ENTRADA</th>
                     <th>DIAS EM ESTOQUE</th>
