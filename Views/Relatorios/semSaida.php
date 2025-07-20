@@ -107,15 +107,14 @@ function truncateString($string, $limit)
                             <td><?= htmlspecialchars($produto["importer"] ?? '') ?></td>
                             <td>
                                 <?php
-                                $galpaoQuantity = 0;
+                                $productQuantity = 0;
                                 // Loop through quantity_in_stock to find quantity for stock_ID 1 (galpao)
                                 foreach (($produto["quantity_in_stock"] ?? []) as $stockItem) {
-                                    if (isset($stockItem['stock_ID']) && $stockItem['stock_ID'] == 1) {
-                                        $galpaoQuantity = $stockItem['quantity'];
-                                        break;
+                                    if (isset($stockItem['stock_ID'])) {
+                                        $productQuantity += $stockItem['quantity'];
                                     }
                                 }
-                                echo htmlspecialchars($galpaoQuantity);
+                                echo htmlspecialchars($productQuantity);
                                 ?>
                             </td>
                             <td><?= htmlspecialchars($produto["products_in_container"][0]["quantity"] ?? 0) ?></td>
