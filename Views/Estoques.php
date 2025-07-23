@@ -141,7 +141,11 @@ require "Components/Header.php";
                         if ($saldo <= 0 || $saldo >= $quantidade_entrada) {
                             $cobertura_em_dias = 0;
                         } else {
-                            $cobertura_em_dias = floor(($saldo / (($quantidade_entrada - $saldo) / $dias)));
+                            if ($dias == 0) {
+                                $dias = 1; // Evitar divisão por zero
+                            }
+
+                            $cobertura_em_dias = $quantidade_entrada - $saldo == 0 ? 0 : floor($saldo / (($quantidade_entrada - $saldo) / $dias));
                         }
                         ?>
                         <tr>
