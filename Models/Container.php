@@ -107,16 +107,16 @@ class Container extends Model
         $stmt->execute();
     }
 
-    public function confirmProducts($container_ID, $products, $arrival_date)
+    public function confirmProducts($container_ID, $products, $arrival_date, $to_stock)
     {
         // A variavel produtos precisa ter o Id dos produtos, tambem precisa ter a quantidade que foi entregue
         $stmt = $this->db->prepare("UPDATE `products_in_container`
             SET `in_stock` = 1, 
             `arrival_date` = ?, 
             `quantity` = ? ,
-            `quantity_expected` = ? 
+            `quantity_expected` = ?,
+            `to_stock` = ? 
             WHERE `container_ID` = ? AND `product_ID` = ?");
-
 
         foreach ($products as $product) {
             $product_ID = $product['product_ID'];
@@ -124,10 +124,10 @@ class Container extends Model
             $observation = $product['observations'];
             $quantity_expected = $product['quantity_expected'] || 0;
 
-            $stmt->bind_param("siiii", $arrival_date, $quantity, $quantity_expected, $container_ID, $product_ID);
+            $stmt->bind_param("siiiii", $arrival_date, $quantity, $quantity_expected, $to_stock, $container_ID, $product_ID);
             $stmt->execute();
 
-            Lancamento::registrarEntrada($this->db, $product_ID, 1, $quantity, $observation);
+            Lancamento::registrarEntrada($this->db, $product_ID, $to_stock, $quantity, $observation);
         }
 
         $stmt = $this->db->prepare("DELETE FROM  `products_in_container`

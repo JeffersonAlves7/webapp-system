@@ -39,6 +39,7 @@ class LancamentoController extends _Controller
             $produto_id = $_POST["produto_id"];
             $quantidade = $_POST["quantidade"];
             $lote_container = $_POST["lote_container"];
+            $to_stock  =  isset($_POST["to_stock"]) ? $_POST["to_stock"] : 1;
             $observacao = $_POST["observacao"];
 
             try {
@@ -46,6 +47,7 @@ class LancamentoController extends _Controller
                     $produto_id,
                     $quantidade,
                     $lote_container,
+                    $to_stock,
                     $observacao
                 );
                 $_SESSION['sucesso'] = true; // Define a variável de sucesso na sessão

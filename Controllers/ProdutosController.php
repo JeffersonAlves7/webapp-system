@@ -248,6 +248,7 @@ class ProdutosController extends _Controller
             if (json_last_error() === JSON_ERROR_NONE) {
                 $totalSalesGalpao = $nestJsResponseData[1];
                 $totalSalesLoja = $nestJsResponseData[2];
+                $totalSalesGalpao2 = $nestJsResponseData[3];
             } else {
                 error_log("Resposta NestJS inválida ou estrutura ausente para vendas: " . $response);
                 $mensagem_erro .= " Formato de dados de vendas inválido recebido do serviço externo.";
@@ -265,6 +266,7 @@ class ProdutosController extends _Controller
             "startDate" => $startDate,
             "endDate" => $endDate,
             "totalSalesGalpao" => $totalSalesGalpao,
+            "totalSalesGalpao2" => $totalSalesGalpao2,
             "totalSalesLoja" => $totalSalesLoja,
         ]);
     }

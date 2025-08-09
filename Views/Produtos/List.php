@@ -35,7 +35,8 @@ ob_start();
                 </tr>
                 <tr>
                     <th>
-                        <input type="search" class="form-control" name="container" placeholder="Container" value="<?= isset($_GET["container"]) ? $_GET["container"] : "" ?>">
+                        <input type="search" class="form-control" name="container" placeholder="Container"
+                            value="<?= isset($_GET["container"]) ? $_GET["container"] : "" ?>">
                     </th>
                     <th>
                         <select class="form-select" name="importer" id="importer" style="min-width: 220px;">
@@ -45,11 +46,15 @@ ob_start();
                             <option value="ALPHA_YNFINITY" <?= (isset($_GET["importer"]) && $_GET["importer"] == "ALPHA_YNFINITY") ? "selected" : "" ?>>ALPHA_YNFINITY</option>
                         </select>
                     </th>
-                    <th><input type="search" class="form-control" name="code" placeholder="Código" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
+                    <th><input type="search" class="form-control" name="code" placeholder="Código"
+                            value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>"></th>
                     <th>
-                        <input type="search" class="form-control" name="description" placeholder="Descrição" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>">
+                        <input type="search" class="form-control" name="description" placeholder="Descrição"
+                            value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>">
                     </th>
-                    <th><input type="search" class="form-control" name="chinese_description" placeholder="Descrição em Chinês" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>"></th>
+                    <th><input type="search" class="form-control" name="chinese_description"
+                            placeholder="Descrição em Chinês"
+                            value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>"></th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -57,39 +62,48 @@ ob_start();
             </thead>
 
             <tbody>
-                <?php if ($productsExist) : ?>
-                    <?php while ($row = $products->fetch_assoc()) : ?>
+                <?php if ($productsExist): ?>
+                    <?php while ($row = $products->fetch_assoc()): ?>
                         <tr>
                             <td>
                                 <?= $row["container_name"] ?? '-' ?>
                             </td>
                             <td><i class='bi bi-shop'></i> <?= htmlspecialchars($row["importer"] ?? '-') ?></td>
                             <td>
-                                <a href='/produtos/byId/<?= htmlspecialchars($row["ID"]) ?>' title='Ver mais' class="d-flex gap-2">
+                                <a href='/produtos/byId/<?= htmlspecialchars($row["ID"]) ?>' title='Ver mais'
+                                    class="d-flex gap-2">
                                     <i class='bi bi-tag'></i> <?= htmlspecialchars($row["code"]) ?>
                                 </a>
                             </td>
                             <td><?= $row["description"] ?></td>
                             <td><?= $row["chinese_description"] ?></td>
                             <td>
-                                <button type='button' class='btn btn-edit' data-bs-toggle='modal' data-bs-target='#updateProductModal' data-id='<?= htmlspecialchars($row["ID"]) ?>' data-code='<?= htmlspecialchars($row["code"]) ?>' data-ean='<?= $row["ean"] ? htmlspecialchars($row["ean"]) : '' ?>' data-importer='<?= htmlspecialchars($row["importer"]) ?>' data-description='<?= $row["description"] ? htmlspecialchars($row["description"]) : '' ?>' data-chinese-description='<?= $row["chinese_description"] ? htmlspecialchars($row["chinese_description"]) : '' ?>'>
+                                <button type='button' class='btn btn-edit' data-bs-toggle='modal'
+                                    data-bs-target='#updateProductModal' data-id='<?= htmlspecialchars($row["ID"]) ?>'
+                                    data-code='<?= htmlspecialchars($row["code"]) ?>'
+                                    data-ean='<?= $row["ean"] ? htmlspecialchars($row["ean"]) : '' ?>'
+                                    data-importer='<?= htmlspecialchars($row["importer"]) ?>'
+                                    data-description='<?= $row["description"] ? htmlspecialchars($row["description"]) : '' ?>'
+                                    data-chinese-description='<?= $row["chinese_description"] ? htmlspecialchars($row["chinese_description"]) : '' ?>'>
                                     <i class='bi bi-pencil-square text-primary'></i>
                                 </button>
                             </td>
                             <!-- Arquivar produtos -->
                             <td>
-                                <button type='button' class='btn btn-archive' data-bs-toggle='modal' data-bs-target='#archiveProductModal' data-id='<?= htmlspecialchars($row["ID"]) ?>'>
+                                <button type='button' class='btn btn-archive' data-bs-toggle='modal'
+                                    data-bs-target='#archiveProductModal' data-id='<?= htmlspecialchars($row["ID"]) ?>'>
                                     <i class='bi bi-archive text-warning'></i>
                                 </button>
                             </td>
                             <td>
-                                <button type='button' class='btn btn-delete' data-bs-toggle='modal' data-bs-target='#deleteProductModal' data-id='<?= htmlspecialchars($row["ID"]) ?>'>
+                                <button type='button' class='btn btn-delete' data-bs-toggle='modal'
+                                    data-bs-target='#deleteProductModal' data-id='<?= htmlspecialchars($row["ID"]) ?>'>
                                     <i class='bi bi-trash text-danger'></i>
                                 </button>
                             </td>
                         </tr>
                     <?php endwhile; ?>
-                <?php else : ?>
+                <?php else: ?>
                     <tr>
                         <td colspan='8'>Nenhum produto encontrado.</td>
                     </tr>
@@ -100,7 +114,7 @@ ob_start();
         <button type="submit" hidden></button>
     </form>
 
-    <?php if ($pageCount > 1) : ?>
+    <?php if ($pageCount > 1): ?>
         <?php
         function isButtonDisabled($condition)
         {
@@ -114,13 +128,16 @@ ob_start();
         $isNextDisabled = !isset($products) || $products->num_rows <= 0 || $currentPage >= $pageCount;
         ?>
 
-        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap"
+            style="max-width: 250px; margin: 0 auto;">
             <form method="GET" class="d-flex align-items-center">
                 <input type="hidden" name="code" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
                 <input type="hidden" name="ean" value="<?= isset($_GET["ean"]) ? $_GET["ean"] : "" ?>">
                 <input type="hidden" name="importer" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>">
-                <input type="hidden" name="description" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>">
-                <input type="hidden" name="chinese_description" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>">
+                <input type="hidden" name="description"
+                    value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>">
+                <input type="hidden" name="chinese_description"
+                    value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>">
                 <input type="hidden" name="page" value="<?= $prevPage ?>">
                 <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isPrevDisabled) ?> title="Voltar">
                     <i class="bi bi-arrow-left"></i>
@@ -133,8 +150,10 @@ ob_start();
                 <input type="hidden" name="code" value="<?= isset($_GET["code"]) ? $_GET["code"] : "" ?>">
                 <input type="hidden" name="ean" value="<?= isset($_GET["ean"]) ? $_GET["ean"] : "" ?>">
                 <input type="hidden" name="importer" value="<?= isset($_GET["importer"]) ? $_GET["importer"] : "" ?>">
-                <input type="hidden" name="description" value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>">
-                <input type="hidden" name="chinese_description" value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>">
+                <input type="hidden" name="description"
+                    value="<?= isset($_GET["description"]) ? $_GET["description"] : "" ?>">
+                <input type="hidden" name="chinese_description"
+                    value="<?= isset($_GET["chinese_description"]) ? $_GET["chinese_description"] : "" ?>">
                 <input type="hidden" name="page" value="<?= $nextPage ?>">
                 <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isNextDisabled) ?> title="Avançar">
                     <i class="bi bi-arrow-right"></i>
@@ -146,7 +165,8 @@ ob_start();
 
 <?php require "Components/StatusMessage.php" ?>
 
-<div class="modal fade" id="archiveProductModal" tabindex="-1" aria-labelledby="archiveProductModalLabel" aria-hidden="true">
+<div class="modal fade" id="archiveProductModal" tabindex="-1" aria-labelledby="archiveProductModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -214,7 +234,8 @@ ob_start();
     </div>
 </div>
 
-<div class="modal fade" id="updateProductModal" tabindex="-1" aria-labelledby="updateProductModalLabel" aria-hidden="true">
+<div class="modal fade" id="updateProductModal" tabindex="-1" aria-labelledby="updateProductModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -249,7 +270,8 @@ ob_start();
                     </div>
                     <div class="mb-3">
                         <label for="update-chineseDescription" class="form-label">Descrição em Chinês</label>
-                        <input type="text" name="chinese_description" class="form-control" id="update-chineseDescription">
+                        <input type="text" name="chinese_description" class="form-control"
+                            id="update-chineseDescription">
                     </div>
                     <div class="modal-footer">
                         <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -284,8 +306,8 @@ ob_start();
 </div>
 
 <script>
-    document.querySelectorAll('.btn-edit').forEach(function(button) {
-        button.addEventListener('click', function() {
+    document.querySelectorAll('.btn-edit').forEach(function (button) {
+        button.addEventListener('click', function () {
             var productId = this.getAttribute('data-id');
             var code = this.getAttribute('data-code');
             var ean = this.getAttribute('data-ean');
@@ -300,31 +322,31 @@ ob_start();
             document.getElementById('update-description').value = description;
             document.getElementById('update-chineseDescription').value = chineseDescription;
 
-            document.querySelectorAll('.form-control').forEach(function(input) {
+            document.querySelectorAll('.form-control').forEach(function (input) {
                 input.classList.remove('modified');
             });
         });
     });
 
-    document.querySelectorAll('#updateProductModal .form-control').forEach(function(input) {
-        input.addEventListener('input', function() {
+    document.querySelectorAll('#updateProductModal .form-control').forEach(function (input) {
+        input.addEventListener('input', function () {
             this.classList.add('modified');
         });
     });
 
-    document.querySelectorAll('.btn-delete').forEach(function(button) {
-        button.addEventListener('click', function() {
+    document.querySelectorAll('.btn-delete').forEach(function (button) {
+        button.addEventListener('click', function () {
             var productId = this.getAttribute('data-id');
             document.getElementById('deleteProductId').value = productId;
         });
     });
 
-    document.getElementById('importer').addEventListener('change', function() {
+    document.getElementById('importer').addEventListener('change', function () {
         this.form.submit();
     });
 
-    document.querySelectorAll('.btn-archive').forEach(function(button) {
-        button.addEventListener('click', function() {
+    document.querySelectorAll('.btn-archive').forEach(function (button) {
+        button.addEventListener('click', function () {
             var productId = this.getAttribute('data-id');
             document.getElementById('archiveProductId').value = productId;
         });

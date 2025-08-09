@@ -36,12 +36,14 @@ require "Components/Header.php";
 
         <div class="input-group" style="max-width: 300px;">
             <label for="data-inicio" class="input-group-text">Data de início</label>
-            <input type="date" id="data-inicio" class="form-control" name="data-inicio" value="<?= $_GET["data-inicio"] ?? "" ?>">
+            <input type="date" id="data-inicio" class="form-control" name="data-inicio"
+                value="<?= $_GET["data-inicio"] ?? "" ?>">
         </div>
 
         <div class="input-group" style="max-width: 300px;">
             <label for="data-fim" class="input-group-text">Data de fim</label>
-            <input type="date" id="data-fim" class="form-control" name="data-fim" value="<?= $_GET["data-fim"] ?? "" ?>">
+            <input type="date" id="data-fim" class="form-control" name="data-fim"
+                value="<?= $_GET["data-fim"] ?? "" ?>">
         </div>
 
         <div class="input-group" style="max-width: 300px;">
@@ -71,7 +73,7 @@ require "Components/Header.php";
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($reservas as $reserva) : ?>
+                <?php foreach ($reservas as $reserva): ?>
                     <tr>
                         <td><?= $reserva["code"] ?></td>
                         <td><?= $reserva["quantity"] ?></td>
@@ -85,7 +87,7 @@ require "Components/Header.php";
     </div>
 
 
-    <?php if ($pageCount > 1) : ?>
+    <?php if ($pageCount > 1): ?>
         <?php
         function isButtonDisabled($condition)
         {
@@ -99,7 +101,8 @@ require "Components/Header.php";
         $isNextDisabled = !isset($reservas) || !count($reservas) || $currentPage >= $pageCount;
         ?>
 
-        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap"
+            style="max-width: 250px; margin: 0 auto;">
             <form method="GET" class="d-flex align-items-center">
                 <input type="hidden" name="page" value="<?= $prevPage ?>">
                 <input type="hidden" name="code" value="<?= $_GET["code"] ?? "" ?>">

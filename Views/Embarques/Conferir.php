@@ -13,9 +13,11 @@ $firstProduct = $productList[0] ?? null;
         <button id="go-back" class="btn btn-custom">
             <i class="bi bi-arrow-left"></i>
         </button>
+
         <h1 class="mb-0">
             <?= $pageTitle ?> - Conferência do Container <?= $container['name'] ?>
         </h1>
+
         <a href="/embarques/deletar/<?= $container_ID ?>" class="btn btn-outline-danger ms-auto"
             onclick="return confirm('Tem certeza que deseja deletar este embarque? Esta ação não pode ser desfeita.')">
             <i class="bi bi-trash"></i> Deletar Embarque
@@ -33,6 +35,7 @@ $firstProduct = $productList[0] ?? null;
                     data-original="<?= $firstProduct ? htmlspecialchars($firstProduct['departure_date']) : '' ?>">
             </form>
         </div>
+
         <div class="col-3">
             <!-- Campo: Data de chegada -->
             <div class="mb-3" style="max-width: 300px;">
@@ -164,7 +167,22 @@ $firstProduct = $productList[0] ?? null;
         <!-- (Opcional) Enviar departure_date -->
         <input type="hidden" name="departure_date"
             value="<?= $firstProduct ? htmlspecialchars($firstProduct['departure_date']) : '' ?>">
-        <button type="submit" class="btn btn-custom">Confirmar Conferência</button>
+
+
+        <div class="row align-items-end">
+            <div class="col-2">
+                <label for="inputEstoque" class="form-label">Estoque</label>
+                <select class="form-select" id="inputEstoque" name="to_stock" required>
+                    <option value="">Selecione um estoque</option>
+                    <option value="1">Galpão</option>
+                    <option value="3">Galpão 2</option>
+                </select>
+            </div>
+
+            <div class="col-2">
+                <button type="submit" class="btn btn-custom w-100">Confirmar Conferência</button>
+            </div>
+        </div>
     </form>
 
     <?php include_once "Components/StatusMessage.php"; ?>

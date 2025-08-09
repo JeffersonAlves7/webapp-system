@@ -21,6 +21,7 @@ class Lancamento
         $product_ID,
         $quantidade,
         $lote_container,
+        $to_stock = 1,
         $observacao = null
     ) {
         if (!$this->canOperate($product_ID, "Entrada", $quantidade)) {
@@ -52,16 +53,17 @@ class Lancamento
         }
 
         // Criando registro após a criação do container
-        $this->db->query("INSERT INTO `products_in_container` (`container_ID`, `product_ID`, `quantity`, `quantity_expected`, `arrival_date`) 
+        $this->db->query("INSERT INTO `products_in_container` (`container_ID`, `product_ID`, `quantity`, `quantity_expected`,  `to_stock`, `arrival_date`) 
                     VALUES (
                         $containerID,
                         $product_ID,
                         $quantidade,
                         $quantidade,
+                        $to_stock,
                         NOW()
                     )");
 
-        Lancamento::registrarEntrada($this->db, $product_ID, 1, $quantidade, $observacao);
+        Lancamento::registrarEntrada($this->db, $product_ID, $to_stock, $quantidade, $observacao);
     }
 
     public static function registrarEntrada($db, $product_ID, $stock_ID, $quantity, $observation = null)

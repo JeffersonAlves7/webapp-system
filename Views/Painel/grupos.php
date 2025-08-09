@@ -30,17 +30,18 @@ require "Components/Header.php";
             </thead>
 
             <tbody>
-                <?php foreach ($groups as $group) : ?>
+                <?php foreach ($groups as $group): ?>
                     <tr data-id="<?= $group["ID"] ?>">
                         <td><?= $group["name"] ?></td>
                         <td>
                             <div class="d-flex gap-2">
-                                <?php if ($group["ID"] == 1) : ?>
+                                <?php if ($group["ID"] == 1): ?>
                                     <button class="btn btn-custom" disabled>
                                         <i class="bi bi-shield"></i>
                                     </button>
-                                <?php else : ?>
-                                    <button class="btn btn-warning edit-group" data-id="<?= $group["ID"] ?>" title="Editar grupo">
+                                <?php else: ?>
+                                    <button class="btn btn-warning edit-group" data-id="<?= $group["ID"] ?>"
+                                        title="Editar grupo">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <button class="btn btn-danger delete-group" data-id="<?= $group["ID"] ?>">
@@ -104,7 +105,8 @@ require "Components/Header.php";
                                 </tr>
                                 <tr>
                                     <td>
-                                        <button id="selectAll" type="button" style="border: none; background: none; cursor: pointer;">
+                                        <button id="selectAll" type="button"
+                                            style="border: none; background: none; cursor: pointer;">
                                             <strong>
                                                 <i class="bi bi-check2-all"></i> Selecionar todos
                                             </strong>

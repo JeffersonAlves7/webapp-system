@@ -26,7 +26,8 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
 
             <div class="col-md-3">
                 <label for="product_code" class="form-label">Código ou EAN do produto</label>
-                <input type="text" class="form-control" name="product_code" placeholder="Ex.: AB1445" value="<?= isset($_GET['product_code']) ? $_GET['product_code'] : "" ?>">
+                <input type="text" class="form-control" name="product_code" placeholder="Ex.: AB1445"
+                    value="<?= isset($_GET['product_code']) ? $_GET['product_code'] : "" ?>">
             </div>
 
             <div class="col-md-3">
@@ -43,8 +44,10 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                 <label for="status" class="form-label">Status</label>
                 <select class="form-select" name="status">
                     <option value="">Todos</option>
-                    <option value="1" <?= isset($_GET['status']) && $_GET['status'] == '1' ? 'selected' : '' ?>>Em Estoque</option>
-                    <option value="0" <?= isset($_GET['status']) && $_GET['status'] == '0' ? 'selected' : '' ?>>Em Trânsito</option>
+                    <option value="1" <?= isset($_GET['status']) && $_GET['status'] == '1' ? 'selected' : '' ?>>Em Estoque
+                    </option>
+                    <option value="0" <?= isset($_GET['status']) && $_GET['status'] == '0' ? 'selected' : '' ?>>Em Trânsito
+                    </option>
                 </select>
             </div>
         </div>
@@ -52,12 +55,14 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
         <div class="row g-3">
             <div class="col-md-3">
                 <label for="start_date" class="form-label sr-only">Data de início</label>
-                <input type="date" class="form-control" name="start_date" placeholder="Data de início" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : "" ?>">
+                <input type="date" class="form-control" name="start_date" placeholder="Data de início"
+                    value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : "" ?>">
             </div>
 
             <div class="col-md-3">
                 <label for="end_date" class="form-label sr-only">Data de término</label>
-                <input type="date" class="form-control" name="end_date" placeholder="Data de término" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : "" ?>">
+                <input type="date" class="form-control" name="end_date" placeholder="Data de término"
+                    value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : "" ?>">
             </div>
 
             <div class="col-md-3 d-flex justify-content-start align-items-end">
@@ -88,8 +93,8 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                 </tr>
             </thead>
             <tbody>
-                <?php if (isset($products) && $products->num_rows > 0) : ?>
-                    <?php while ($row = $products->fetch_assoc()) : ?>
+                <?php if (isset($products) && $products->num_rows > 0): ?>
+                    <?php while ($row = $products->fetch_assoc()): ?>
                         <tr>
                             <td><?= $row['ean'] ?></td>
                             <td><?= $row['code'] ?></td>
@@ -102,7 +107,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                             </td>
                             <td>
                                 <p class="text-center">
-                                    <?= $row['in_stock'] ?  $row['quantity'] : ($row['quantity_expected'] ? $row['quantity_expected'] : '-') ?>
+                                    <?= $row['in_stock'] ? $row['quantity'] : ($row['quantity_expected'] ? $row['quantity_expected'] : '-') ?>
                                 </p>
                             </td>
                             <td>
@@ -112,7 +117,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                             </td>
                             <td>
                                 <p class="text-center">
-                                    <?= $row['departure_date'] ?  date('d/m/Y', strtotime($row['departure_date'])) : '-' ?>
+                                    <?= $row['departure_date'] ? date('d/m/Y', strtotime($row['departure_date'])) : '-' ?>
                                 </p>
                             </td>
                             <td>
@@ -162,26 +167,29 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                             </td>
                             <td><?= $row['arrival_date'] ?></td>
                             <td>
-                                <?php if ($row['in_stock']) : ?>
-                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#editProductModal" data-id="<?= $row['product_ID'] ?>">
+                                <?php if ($row['in_stock']): ?>
+                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#editProductModal"
+                                        data-id="<?= $row['product_ID'] ?>">
                                         <i class='bi bi-pencil'></i>
                                     </button>
-                                <?php else : ?>
+                                <?php else: ?>
                                     <!-- <button type="button" class="btn" disabled>
                                         <i class='bi bi-pencil'></i>
                                     </button> -->
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteProductModal" data-id="<?= $row['product_ID'] ?>" data-container-id="<?= $row['container_ID'] ?>">
+                                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteProductModal"
+                                    data-id="<?= $row['product_ID'] ?>" data-container-id="<?= $row['container_ID'] ?>">
                                     <i class='bi bi-trash text-danger'></i>
                                 </button>
                             </td>
                         </tr>
                     <?php endwhile; ?>
-                <?php else : ?>
+                <?php else: ?>
                     <tr>
-                        <td colspan='10' class="text-center" style="padding: 1rem;">Nenhum produto encontrado neste container.</td>
+                        <td colspan='10' class="text-center" style="padding: 1rem;">Nenhum produto encontrado neste
+                            container.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -213,7 +221,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
         </div>
     </form>
 
-    <?php if ($pageCount > 1) : ?>
+    <?php if ($pageCount > 1): ?>
         <?php
         function isButtonDisabled($condition)
         {
@@ -227,13 +235,15 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
         $isNextDisabled = !isset($products) || !$products->num_rows || $currentPage >= $pageCount;
         ?>
 
-        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap"
+            style="max-width: 250px; margin: 0 auto;">
             <form method="GET" class="d-flex align-items-center">
                 <input type="hidden" name="page" value="<?= $prevPage ?>">
                 <input type="hidden" name="search" value="<?= $search ?>">
                 <input type="hidden" name="start_date" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : "" ?>">
                 <input type="hidden" name="end_date" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : "" ?>">
-                <input type="hidden" name="product_code" value="<?= isset($_GET['product_code']) ? $_GET['product_code'] : "" ?>">
+                <input type="hidden" name="product_code"
+                    value="<?= isset($_GET['product_code']) ? $_GET['product_code'] : "" ?>">
                 <input type="hidden" name="status" value="<?= isset($_GET['status']) ? $_GET['status'] : "" ?>">
                 <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isPrevDisabled) ?> title="Voltar">
                     <i class="bi bi-arrow-left"></i>
@@ -248,7 +258,8 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
                 <input type="hidden" name="status" value="<?= isset($_GET['status']) ? $_GET['status'] : "" ?>">
                 <input type="hidden" name="start_date" value="<?= isset($_GET['start_date']) ? $_GET['start_date'] : "" ?>">
                 <input type="hidden" name="end_date" value="<?= isset($_GET['end_date']) ? $_GET['end_date'] : "" ?>">
-                <input type="hidden" name="product_code" value="<?= isset($_GET['product_code']) ? $_GET['product_code'] : "" ?>">
+                <input type="hidden" name="product_code"
+                    value="<?= isset($_GET['product_code']) ? $_GET['product_code'] : "" ?>">
                 <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isNextDisabled) ?> title="Avançar">
                     <i class="bi bi-arrow-right"></i>
                 </button>
@@ -257,7 +268,8 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
     <?php endif; ?>
 
     <!-- Modal para editar o produto -->
-    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form method="post" id="editProductForm">
@@ -289,7 +301,8 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
     </div>
 
     <!-- Modal para confirmar o delete do produto -->
-    <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -332,7 +345,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
     }
 
     // Adiciona o ID do produto ao formulário de delete
-    deleteProductModal.addEventListener('show.bs.modal', function(event) {
+    deleteProductModal.addEventListener('show.bs.modal', function (event) {
         var button = event.relatedTarget;
         var product_ID = button.getAttribute('data-id');
         var container_ID = button.getAttribute('data-container-id');
@@ -343,7 +356,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : "";
     });
 
     // Adiciona o ID do produto ao formulário de edição
-    editProductModal.addEventListener('show.bs.modal', function(event) {
+    editProductModal.addEventListener('show.bs.modal', function (event) {
         var button = event.relatedTarget;
         var product_ID = button.getAttribute('data-id');
         var editProductForm = document.getElementById('editProductForm');

@@ -1,7 +1,8 @@
 <form class="d-flex flex-wrap gap-4 my-4" id="form-filtro">
     <div class="input-group" style="max-width: 300px;">
         <label for="data-inicio" class="input-group-text">Data de início</label>
-        <input type="date" id="data-inicio" class="form-control" name="data-inicio" value="<?= $_GET["data-inicio"] ?? "" ?>">
+        <input type="date" id="data-inicio" class="form-control" name="data-inicio"
+            value="<?= $_GET["data-inicio"] ?? "" ?>">
     </div>
 
     <div class="input-group" style="max-width: 300px;">
@@ -37,7 +38,7 @@
         </thead>
 
         <tbody>
-            <?php foreach ($transactions as $devolucao) : ?>
+            <?php foreach ($transactions as $devolucao): ?>
                 <tr>
                     <td><?= $devolucao["code"] ?></td>
                     <td><?= $devolucao["quantity"] ?></td>
@@ -50,7 +51,7 @@
                 </tr>
             <?php endforeach; ?>
 
-            <?php if (empty($transactions)) : ?>
+            <?php if (empty($transactions)): ?>
                 <tr>
                     <td colspan="6" class="text-center">Nenhuma devolução encontrada</td>
                 </tr>
@@ -59,7 +60,7 @@
     </table>
 </div>
 
-<?php if ($pageCount > 1) : ?>
+<?php if ($pageCount > 1): ?>
     <?php
     function isButtonDisabled($condition)
     {
@@ -73,7 +74,8 @@
     $isNextDisabled = !isset($transactions) || !count($transactions) || $currentPage >= $pageCount;
     ?>
 
-    <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap"
+        style="max-width: 250px; margin: 0 auto;">
         <form method="GET" class="d-flex align-items-center">
             <input type="hidden" name="page" value="<?= $prevPage ?>">
             <input type="hidden" name="code" value="<?= $_GET["code"] ?? "" ?>">

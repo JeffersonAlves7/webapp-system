@@ -67,8 +67,8 @@ ob_start();
                             $estoque_data = $quantidade_em_estoque; // Já é um array
                         }
 
-                        if (!empty($estoque_data)) :
-                            foreach ($estoque_data as $dados) : ?>
+                        if (!empty($estoque_data)):
+                            foreach ($estoque_data as $dados): ?>
                                 <tr>
                                     <td><?= $dados["stock_name"]; ?></td>
                                     <td><?= $dados["quantity"]; ?></td>
@@ -76,7 +76,9 @@ ob_start();
                                     <td><?= $dados["quantity"] + $dados["quantity_in_reserve"]; ?></td>
                                     <td>
                                         <div class="input-group">
-                                            <input data-stockId="<?= $dados["stock_ID"]; ?>" data-productId="<?= $produto["ID"]; ?>" type="text" class="form-control" value="<?= htmlspecialchars($dados["location"] ?? '') ?>" />
+                                            <input data-stockId="<?= $dados["stock_ID"]; ?>"
+                                                data-productId="<?= $produto["ID"]; ?>" type="text" class="form-control"
+                                                value="<?= htmlspecialchars($dados["location"] ?? '') ?>" />
                                             <button class="btn btn-custom change-location-btn">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
@@ -84,7 +86,7 @@ ob_start();
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
-                        <?php else : ?>
+                        <?php else: ?>
                             <tr>
                                 <td colspan="5" class="text-center">Nenhum dado de estoque encontrado.</td>
                             </tr>
@@ -113,10 +115,12 @@ ob_start();
                     <input type="hidden" name="product_ID" value="<?= $produto['ID'] ?>">
                     <div class="row g-2 align-items-end">
                         <div class="col-6"> <label for="startDate" class="form-label mb-1">Data Início</label>
-                            <input type="date" class="form-control form-control-sm" id="startDate" name="startDate" value="<?= htmlspecialchars($startDate) ?>" required>
+                            <input type="date" class="form-control form-control-sm" id="startDate" name="startDate"
+                                value="<?= htmlspecialchars($startDate) ?>" required>
                         </div>
                         <div class="col-6"> <label for="endDate" class="form-label mb-1">Data Fim</label>
-                            <input type="date" class="form-control form-control-sm" id="endDate" name="endDate" value="<?= htmlspecialchars($endDate) ?>" required>
+                            <input type="date" class="form-control form-control-sm" id="endDate" name="endDate"
+                                value="<?= htmlspecialchars($endDate) ?>" required>
                         </div>
                         <div class="col-12 mt-2"> <button type="submit" class="btn btn-custom w-100">
                                 <i class="bi bi-search"></i> Buscar Vendas
@@ -127,14 +131,19 @@ ob_start();
                 <div class="mt-3">
                     <h5>Total de Vendas no Período</h5>
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-3">
                             <p>Galpao: <strong><?= htmlspecialchars($totalSalesGalpao) ?></strong></p>
                         </div>
-                        <div class="col-4">
+                        <div class="col-3">
+                            <p>Galpao 2: <strong><?= htmlspecialchars($totalSalesGalpao2) ?></strong></p>
+                        </div>
+                        <div class="col-3">
                             <p>Loja: <strong><?= htmlspecialchars($totalSalesLoja) ?></strong></p>
                         </div>
-                        <div class="col-4">
-                            <p>Total: <strong><?= htmlspecialchars($totalSalesLoja+ $totalSalesGalpao) ?></strong></p>
+                        <div class="col-3">
+                            <p>Total:
+                                <strong><?= htmlspecialchars($totalSalesLoja + $totalSalesGalpao2 + $totalSalesGalpao) ?></strong>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -156,7 +165,8 @@ ob_start();
         </form>
 
         <form method="get">
-            <button type="submit" class="btn btn-custom <?= isset($_GET["estoque"]) && $_GET["estoque"] != '' ? "" : "active" ?>">Geral</button>
+            <button type="submit"
+                class="btn btn-custom <?= isset($_GET["estoque"]) && $_GET["estoque"] != '' ? "" : "active" ?>">Geral</button>
         </form>
 
         <?php
@@ -191,9 +201,9 @@ ob_start();
                     <th></th>
                 </tr>
             </thead>
-            <?php if (isset($transactions) && count($transactions) > 0) : ?>
+            <?php if (isset($transactions) && count($transactions) > 0): ?>
                 <tbody>
-                    <?php foreach ($transactions as $row) : ?>
+                    <?php foreach ($transactions as $row): ?>
                         <tr>
                             <td><?= $row["type"]; ?></td>
                             <td><?= $row["quantity"]; ?></td>
@@ -203,12 +213,13 @@ ob_start();
                             <td><?= $row["observation"]; ?></td>
                             <td><?= date('d/m/Y H:i:s', strtotime($row["updated_at"])) ?></td>
                             <td>
-                                <button type='button' class='btn btn-danger delete-transaction' data-id='<?= $row["ID"] ?>' data-bs-toggle='modal' data-bs-target='#cancelModal' class='btn-cancel'>Apagar</button>
+                                <button type='button' class='btn btn-danger delete-transaction' data-id='<?= $row["ID"] ?>'
+                                    data-bs-toggle='modal' data-bs-target='#cancelModal' class='btn-cancel'>Apagar</button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
-            <?php else : ?>
+            <?php else: ?>
                 <tbody>
                     <td colspan="7">Nenhuma transação encontrada.</td>
                 </tbody>
@@ -216,7 +227,7 @@ ob_start();
         </table>
     </div>
 
-    <?php if (isset($pageCount) && $pageCount > 1) : ?>
+    <?php if (isset($pageCount) && $pageCount > 1): ?>
         <?php
         function isButtonDisabled($condition)
         {
@@ -230,7 +241,8 @@ ob_start();
         $isNextDisabled = !isset($transactions) || !count($transactions) > 0 || $currentPage >= $pageCount;
         ?>
 
-        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap"
+            style="max-width: 250px; margin: 0 auto;">
             <form method="GET" class="d-flex align-items-center">
                 <input type="hidden" name="page" value="<?= $prevPage ?>">
                 <input type="hidden" name="estoque" value="<?= $_GET["estoque"] ?? "" ?>">
@@ -307,14 +319,14 @@ ob_start();
 </div>
 
 <script>
-    document.querySelectorAll('.delete-transaction').forEach(function(element) {
-        element.addEventListener('click', function() {
+    document.querySelectorAll('.delete-transaction').forEach(function (element) {
+        element.addEventListener('click', function () {
             var reserveID = this.getAttribute('data-id');
             document.getElementById('deleteTransactionId').value = reserveID;
         });
     });
 
-    document.getElementById('form-lancamento').addEventListener('submit', function(event) {
+    document.getElementById('form-lancamento').addEventListener('submit', function (event) {
         event.preventDefault();
         var form = event.target;
         var productID = form.querySelector('input[name="product_ID"]').value;
@@ -324,8 +336,8 @@ ob_start();
         var modal = new bootstrap.Modal(document.getElementById('lancamentoModal'));
         modal.show();
 
-        document.getElementById('lancamentoModal').querySelectorAll('.lancamento-type').forEach(function(element) {
-            element.addEventListener('click', function() {
+        document.getElementById('lancamentoModal').querySelectorAll('.lancamento-type').forEach(function (element) {
+            element.addEventListener('click', function () {
                 var type = this.getAttribute('data-type');
                 window.location.href = `/lancamento/${type}?product_ID=${productID}&product_code=${productCode}&product_importer=${productImporter}`;
             });
@@ -333,7 +345,7 @@ ob_start();
     });
 
     // Script to toggle table visibility
-    document.getElementById('toggleTableBtn').addEventListener('click', function() {
+    document.getElementById('toggleTableBtn').addEventListener('click', function () {
         var table = document.getElementById('stockTable');
         var salesDiv = document.getElementById("salesPerPeriod")
 
@@ -342,18 +354,18 @@ ob_start();
 
         if (table.style.display === 'none') {
             table.style.display = 'table';
-            salesDiv.style.display="block"
+            salesDiv.style.display = "block"
             this.innerHTML = htmlMinimize;
         } else {
-            salesDiv.style.display="none"
+            salesDiv.style.display = "none"
             table.style.display = 'none';
             this.innerHTML = htmlMaximize;
         }
     });
 
     // Ao clicar para alterar a localização do produto
-    document.querySelectorAll('.change-location-btn').forEach(function(element) {
-        element.addEventListener('click', function() {
+    document.querySelectorAll('.change-location-btn').forEach(function (element) {
+        element.addEventListener('click', function () {
             var input = this.previousElementSibling;
             var stockId = input.getAttribute('data-stockId');
             var productId = input.getAttribute('data-productId');
@@ -369,19 +381,19 @@ ob_start();
                     productId: productId,
                     location: location
                 })
-            }).then(function(response) {
+            }).then(function (response) {
                 if (response.ok) {
                     input.classList.add('is-valid');
-                    setTimeout(function() {
+                    setTimeout(function () {
                         input.classList.remove('is-valid');
                     }, 2000);
                 } else {
                     input.classList.add('is-invalid');
-                    setTimeout(function() {
+                    setTimeout(function () {
                         input.classList.remove('is-invalid');
                     }, 2000);
                 }
-            }).catch(function(error) {
+            }).catch(function (error) {
                 console.error('Erro na requisição de mudança de localização:', error);
                 // Opcional: mostrar uma mensagem de erro genérica ao usuário
             });

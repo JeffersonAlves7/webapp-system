@@ -7,16 +7,19 @@ ob_start();
     <form method="post" class="">
         <div class="mb-3">
             <label for="username" class="form-label">Nome de usuário</label>
-            <input type="text" name="username" id="username" class="form-control" placeholder="Seu Nome de Usuário" pattern="[^\s]+" title="O nome de usuário não pode conter espaços em branco" required>
+            <input type="text" name="username" id="username" class="form-control" placeholder="Seu Nome de Usuário"
+                pattern="[^\s]+" title="O nome de usuário não pode conter espaços em branco" required>
             <div class="invalid-feedback">O nome de usuário não pode conter espaços em branco.</div>
         </div>
         <div class="mb-3">
             <label for="user-email" class="form-label">Email</label>
-            <input type="email" name="email" id="user-email" class="form-control" placeholder="example@email.com" required>
+            <input type="email" name="email" id="user-email" class="form-control" placeholder="example@email.com"
+                required>
         </div>
         <div class="mb-3">
             <label for="user-password" class="form-label">Password</label>
-            <input type="password" name="password" id="user-password" class="form-control" placeholder="******" required>
+            <input type="password" name="password" id="user-password" class="form-control" placeholder="******"
+                required>
         </div>
         <div class="d-grid gap-2">
             <button type="submit" class="btn btn-custom btn-lg">Entrar</button>

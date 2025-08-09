@@ -39,21 +39,27 @@ require "Components/Header.php";
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="inputProduto" class="form-label">Produto</label>
-                                <?php if (isset($_GET['product_ID']) && !empty($_GET['product_ID'])) : ?>
-                                    <input type="text" class="form-control" value="<?= $_GET['product_code'] . '-' . $_GET['product_importer'] ?>" id="inputProduto" name="produto" placeholder="Insira o código ou EAN" required>
-                                    <input type="hidden" id="inputProdutoId" name="produto_id" value="<?= $_GET['product_ID'] ?>" required readonly>
-                                <?php else : ?>
-                                    <input type="text" class="form-control" id="inputProduto" name="produto" placeholder="Insira o código ou EAN" required>
+                                <?php if (isset($_GET['product_ID']) && !empty($_GET['product_ID'])): ?>
+                                    <input type="text" class="form-control"
+                                        value="<?= $_GET['product_code'] . '-' . $_GET['product_importer'] ?>"
+                                        id="inputProduto" name="produto" placeholder="Insira o código ou EAN" required>
+                                    <input type="hidden" id="inputProdutoId" name="produto_id"
+                                        value="<?= $_GET['product_ID'] ?>" required readonly>
+                                <?php else: ?>
+                                    <input type="text" class="form-control" id="inputProduto" name="produto"
+                                        placeholder="Insira o código ou EAN" required>
                                     <input type="hidden" id="inputProdutoId" name="produto_id" required readonly>
                                 <?php endif; ?>
-                                <div id="productListContainer" class="product-list-container"></div> <!-- Container para exibir a lista de produtos -->
+                                <div id="productListContainer" class="product-list-container"></div>
+                                <!-- Container para exibir a lista de produtos -->
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="inputQuantidade" class="form-label">Quantidade</label>
-                                <input type="number" class="form-control" id="inputQuantidade" name="quantidade" placeholder="0" required min="0">
+                                <input type="number" class="form-control" id="inputQuantidade" name="quantidade"
+                                    placeholder="0" required min="0">
                             </div>
                         </div>
                     </div>
@@ -76,7 +82,8 @@ require "Components/Header.php";
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="inputCliente" class="form-label">Destino/Cliente</label>
-                                <input type="text" class="form-control" id="inputCliente" name="cliente" placeholder="Nome do Cliente" required>
+                                <input type="text" class="form-control" id="inputCliente" name="cliente"
+                                    placeholder="Nome do Cliente" required>
                             </div>
                         </div>
                     </div>
@@ -84,7 +91,8 @@ require "Components/Header.php";
                         <div class="col-md-12">
                             <div class="mb-3">
                                 <label for="inputObservacao" class="form-label">Observação</label>
-                                <textarea class="form-control" id="inputObservacao" name="observacao" rows="3" placeholder="Observação"></textarea>
+                                <textarea class="form-control" id="inputObservacao" name="observacao" rows="3"
+                                    placeholder="Observação"></textarea>
                             </div>
                         </div>
                     </div>
@@ -92,7 +100,8 @@ require "Components/Header.php";
                     <div class="d-flex justify-content-between align-items-center">
                         <button type="submit" class="btn btn-custom">Enviar</button>
 
-                        <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#importModal">
+                        <button type="button" class="btn btn-custom" data-bs-toggle="modal"
+                            data-bs-target="#importModal">
                             Importar
                             <i class="bi bi-file-earmark-arrow-up"></i>
                         </button>
@@ -129,7 +138,7 @@ require "Components/Header.php";
 
 <script src="/public/lancamento.js"></script>
 <script>
-    document.getElementById('file').addEventListener('change', function() {
+    document.getElementById('file').addEventListener('change', function () {
         this.form.submit();
     });
 </script>

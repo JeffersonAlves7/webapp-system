@@ -52,16 +52,13 @@ class EstoquesController extends _Controller
         }
         if (isset($_GET["orderType"]) && !empty($_GET["orderType"]) && ($_GET["orderType"] == "asc" || $_GET["orderType"] == "desc")) {
             $orderType = $_GET["orderType"];
-        }
-        else{ 
+        } else {
             $orderType = "desc";
         }
 
         $nestJsEndpointPath = "/products";
-        if ($estoque_ID == 1) {
-            $nestJsEndpointPath = "/products/galpao";
-        } elseif ($estoque_ID == 2) {
-            $nestJsEndpointPath = "/products/loja";
+        if ($estoque_ID && $estoque_ID > 0) {
+            $nestJsEndpointPath = "/products/$estoque_ID";
         }
 
         $queryParams = [
@@ -140,15 +137,22 @@ class EstoquesController extends _Controller
                     ];
 
                     // Inicializa quantidades do galpão e loja
-                    $mappedProduct["quantity_galpao"] = 0;
+                    $mappedProduct["quantity_galpao_1"] = 0;
+                    $mappedProduct["quantity_galpao_2"] = 0;
                     $mappedProduct["quantity_loja"] = 0;
 
                     if (isset($productData["quantity_in_stock"]) && is_array($productData["quantity_in_stock"])) {
                         foreach ($productData["quantity_in_stock"] as $stockEntry) {
                             if (isset($stockEntry["stock_ID"]) && isset($stockEntry["quantity"])) {
                                 if ($stockEntry["stock_ID"] == 1) { // Galpão
-                                    $mappedProduct["quantity_galpao"] = $stockEntry["quantity"];
-                                } elseif ($stockEntry["stock_ID"] == 2) { // Loja
+                                    $mappedProduct["quantity_galpao_1"] += $stockEntry["quantity"];
+                                }
+
+                                if ($stockEntry["stock_ID"] == 3) { // Galpão
+                                    $mappedProduct["quantity_galpao_2"] += $stockEntry["quantity"];
+                                }
+
+                                if ($stockEntry["stock_ID"] == 2) { // Loja
                                     $mappedProduct["quantity_loja"] = $stockEntry["quantity"];
                                 }
                             }
@@ -157,7 +161,7 @@ class EstoquesController extends _Controller
 
                     // Define o saldo atual com base no estoque selecionado ou total
                     if ($estoque_ID == 1) { // Galpão
-                        $mappedProduct["saldo_atual"] = $mappedProduct["quantity_galpao"];
+                        $mappedProduct["saldo_atual"] = $mappedProduct["quantity_galpao_1"];
                         // O "container_de_origem" só é relevante para o galpão, e o NestJS o retorna em "entry.containers"
                         $mappedProduct["container_de_origem"] = $productData["entry"]["containers"] ?? '';
                     } elseif ($estoque_ID == 2) { // Loja
@@ -165,8 +169,11 @@ class EstoquesController extends _Controller
                         // Para a loja, o container de origem não é retornado na mesma estrutura
                         // ou é uma transação que não tem container direto na entrada
                         $mappedProduct["container_de_origem"] = ''; // Ou defina uma lógica específica se tiver
+                    } elseif ($estoque_ID == 3) { // Loja
+                        $mappedProduct["saldo_atual"] = $mappedProduct["quantity_galpao_2"];
+                        $mappedProduct["container_de_origem"] = ''; // Ou defina uma lógica específica se tiver
                     } else { // Geral (sem filtro por estoque específico)
-                        $mappedProduct["saldo_atual"] = ($mappedProduct["quantity_galpao"] ?? 0) + ($mappedProduct["quantity_loja"] ?? 0);
+                        $mappedProduct["saldo_atual"] = ($mappedProduct["quantity_galpao_1"] ?? 0) + ($mappedProduct["quantity_galpao_2"] ?? 0) + ($mappedProduct["quantity_loja"] ?? 0);
                         // No caso geral, se o container de origem é relevante para o galpão, inclua
                         $mappedProduct["container_de_origem"] = $productData["entry"]["containers"] ?? '';
                     }
@@ -201,7 +208,7 @@ class EstoquesController extends _Controller
                 "pageCount" => $pageCount,
                 "sucesso" => $sucesso,
                 "mensagem_erro" => $mensagem_erro,
-                "totalProdutos"  => $totalProdutos,
+                "totalProdutos" => $totalProdutos,
                 "totalCaixas" => $totalCaixas,
                 "orderType" => $orderType,
                 "orderBy" => $orderBy

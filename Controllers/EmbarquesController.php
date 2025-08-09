@@ -205,6 +205,11 @@ class EmbarquesController extends _Controller
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             try {
+                if (!isset($_POST["to_stock"]) || !is_numeric($_POST["to_stock"])) {
+                    throw new Exception("O estoque precisa ser especificado");
+                }
+                $to_stock = $_POST["to_stock"];
+
                 $productsToConfirm = []; // Renomeado para evitar conflito com a variável de view
 
                 // O JavaScript está enviando os dados como 'products_data'
@@ -236,7 +241,8 @@ class EmbarquesController extends _Controller
                 $this->containerModel->confirmProducts(
                     $container_ID,
                     $productsToConfirm,
-                    $arrival_date
+                    $arrival_date,
+                    $to_stock
                 );
 
                 $_SESSION["sucesso"] = true;
@@ -332,7 +338,7 @@ class EmbarquesController extends _Controller
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $departure_date = $_POST["departure_date"];
 
-            $this->containerModel->editDate($container_ID,  $departure_date);
+            $this->containerModel->editDate($container_ID, $departure_date);
             $_SESSION["sucesso"] = true;
         } else {
             $_SESSION["mensagem_erro"] = "Falha ao editar produto!";

@@ -8,11 +8,13 @@ ob_start();
     <form method="post">
         <div class="mb-3">
             <label for="user-email" class="form-label">Email</label>
-            <input type="email" name="email" id="user-email" class="form-control" placeholder="example@email.com" required>
+            <input type="email" name="email" id="user-email" class="form-control" placeholder="example@email.com"
+                required>
         </div>
         <div class="mb-3">
             <label for="user-password" class="form-label">Password</label>
-            <input type="password" name="password" id="user-password" class="form-control" placeholder="*********" required>
+            <input type="password" name="password" id="user-password" class="form-control" placeholder="*********"
+                required>
         </div>
         <div class="d-grid gap-2">
             <button type="submit" class="btn btn-custom btn-lg">Entrar</button>

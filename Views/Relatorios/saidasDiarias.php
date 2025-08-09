@@ -3,7 +3,7 @@ $pageTitle = "Relatórios";
 ob_start();
 
 require "Components/Header.php"
-?>
+    ?>
 
 <style>
     /* Fixar tamanho das colunas da tabela */
@@ -34,10 +34,16 @@ require "Components/Header.php"
     </div>
 
     <form class="d-flex mb-3 gap-4" style="max-width: 800px;">
-        <input type="date" id="data-inicio" class="form-control" value="<?= isset($_GET["dataInicio"]) && !empty($_GET["dataInicio"]) ? $_GET["dataInicio"] : date("Y-m-d") ?>" name="dataInicio">
-        <input type="date" id="data-fim" class="form-control" value="<?= isset($_GET["dataFim"]) && !empty($_GET["dataFim"]) ? $_GET["dataFim"] : date("Y-m-d") ?>" name="dataFim">
+        <input type="date" id="data-inicio" class="form-control"
+            value="<?= isset($_GET["dataInicio"]) && !empty($_GET["dataInicio"]) ? $_GET["dataInicio"] : date("Y-m-d") ?>"
+            name="dataInicio">
+        <input type="date" id="data-fim" class="form-control"
+            value="<?= isset($_GET["dataFim"]) && !empty($_GET["dataFim"]) ? $_GET["dataFim"] : date("Y-m-d") ?>"
+            name="dataFim">
 
-        <input type="text" id="pesquisa-cliente" class="form-control" value="<?= isset($_GET["cliente"]) && !empty($_GET["cliente"]) ? $_GET["cliente"] : "" ?>" placeholder="Pesquisar por cliente" name="cliente">
+        <input type="text" id="pesquisa-cliente" class="form-control"
+            value="<?= isset($_GET["cliente"]) && !empty($_GET["cliente"]) ? $_GET["cliente"] : "" ?>"
+            placeholder="Pesquisar por cliente" name="cliente">
         <button class="btn btn-custom" id="btn-pesquisar">Pesquisar</button>
     </form>
 
@@ -57,7 +63,7 @@ require "Components/Header.php"
             </thead>
 
             <tbody id="tbody-saidas-diarias">
-                <?php while ($row = $dados->fetch_assoc()) : ?>
+                <?php while ($row = $dados->fetch_assoc()): ?>
                     <tr>
                         <td><?= $row["code"] ?></td>
                         <td><?= $row["QUANTIDADE"] ?></td>

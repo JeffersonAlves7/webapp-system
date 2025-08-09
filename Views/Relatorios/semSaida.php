@@ -1,5 +1,5 @@
 <?php
-$pageTitle = "Relatório de Produtos Sem Saída";
+$pageTitle = "Relatórios";
 ob_start();
 
 require "Components/Header.php"; // Certifique-se de que o caminho para o Header está correto
@@ -76,6 +76,7 @@ function truncateString($string, $limit)
         $representatividade = ($totalProdutos / $totalProductsInGalpaoUnfiltered) * 100;
     }
     ?>
+    
     <p>Representatividade dos produtos sem saída:
         <strong><?= number_format($representatividade, 2, ',', '.') ?>%</strong>
     </p>

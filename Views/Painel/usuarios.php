@@ -26,8 +26,9 @@ require "Components/Header.php";
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($users as $user) : ?>
-                <?php if ($user["ID"] == 1) continue; ?>
+            <?php foreach ($users as $user): ?>
+                <?php if ($user["ID"] == 1)
+                    continue; ?>
                 <tr data-id="<?= $user["ID"] ?>">
                     <td><?= $user["username"] ?></td>
                     <td><?= $user["email"] ?></td>
@@ -40,13 +41,13 @@ require "Components/Header.php";
                         $groupName = array_values($group)[0]["name"] ?? "Sem permisões";
                         ?>
 
-                        <select class="form-select" data-value="<?= !$hasGroup ? 0 : $user["group_ID"]  ?>">
-                            <?php foreach ($groups as $group) : ?>
+                        <select class="form-select" data-value="<?= !$hasGroup ? 0 : $user["group_ID"] ?>">
+                            <?php foreach ($groups as $group): ?>
                                 <option value="<?= $group["ID"] ?>" <?= $group["ID"] == $user["group_ID"] ? "selected" : "" ?>>
                                     <?= $group["name"] ?>
                                 </option>
                             <?php endforeach; ?>
-                            <?php if (!$hasGroup) : ?>
+                            <?php if (!$hasGroup): ?>
                                 <option value="0" selected>
                                     <?= $groupName ?>
                                 </option>
@@ -54,7 +55,8 @@ require "Components/Header.php";
                         </select>
                     </td>
                     <td>
-                        <input type="checkbox" <?= $user["active"] ? "checked" : "" ?> data-value="<?= $user["active"] ? 'true' : 'false' ?>">
+                        <input type="checkbox" <?= $user["active"] ? "checked" : "" ?>
+                            data-value="<?= $user["active"] ? 'true' : 'false' ?>">
                     </td>
                     <td>
                         <div class="d-flex gap-2">
@@ -81,7 +83,7 @@ require "Components/Header.php";
                 </tr>
             <?php endforeach; ?>
 
-            <?php if (empty($users)) : ?>
+            <?php if (empty($users)): ?>
                 <tr>
                     <td colspan="4" class="text-center">Nenhum usuário</td>
                 </tr>
@@ -89,7 +91,7 @@ require "Components/Header.php";
         </tbody>
     </table>
 
-    <?php if ($pageCount > 1) : ?>
+    <?php if ($pageCount > 1): ?>
         <?php
         function isButtonDisabled($condition)
         {
@@ -103,7 +105,8 @@ require "Components/Header.php";
         $isNextDisabled = !isset($products) || $products->num_rows <= 0 || $currentPage >= $pageCount;
         ?>
 
-        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap"
+            style="max-width: 250px; margin: 0 auto;">
             <form method="GET" class="d-flex align-items-center">
                 <input type="hidden" name="page" value="<?= $prevPage ?>">
                 <button class="btn bg-quaternary text-white" <?= isButtonDisabled($isPrevDisabled) ?> title="Voltar">

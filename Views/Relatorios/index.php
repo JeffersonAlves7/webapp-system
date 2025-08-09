@@ -2,7 +2,7 @@
 $pageTitle = "Relatórios";
 ob_start();
 require "Components/Header.php"
-?>
+    ?>
 
 <main>
     <div class="d-flex gap-4 align-items-center">
@@ -16,28 +16,32 @@ require "Components/Header.php"
 
     <div class="d-flex gap-4 flex-wrap">
         <div class="d-flex gap-4">
-            <a href="/relatorios/saidasDiarias" class="card p-3 bg-secondary" style="width: 18rem; text-decoration: none;">
+            <a href="/relatorios/saidasDiarias" class="card p-3 bg-secondary"
+                style="width: 18rem; text-decoration: none;">
                 <h5 class="card-title text-white">Saídas Diárias</h5>
                 <p class="card-text text-white">Acessar Relatório de saídas Diárias</p>
             </a>
         </div>
 
         <div class="d-flex gap-4">
-            <a href="/relatorios/estoqueMinimo" class="card p-3 bg-secondary" style="width: 18rem; text-decoration: none;">
+            <a href="/relatorios/estoqueMinimo" class="card p-3 bg-secondary"
+                style="width: 18rem; text-decoration: none;">
                 <h5 class="card-title text-white">Estoque Mínimo</h5>
                 <p class="card-text text-white">Acessar Relatório de SKU's com estoque mínimo atingido</p>
             </a>
         </div>
 
         <div class="d-flex gap-4">
-            <a href="/relatorios/movimentacoes" class="card p-3 bg-secondary" style="width: 18rem; text-decoration: none;">
+            <a href="/relatorios/movimentacoes" class="card p-3 bg-secondary"
+                style="width: 18rem; text-decoration: none;">
                 <h5 class="card-title text-white">Movimentações</h5>
                 <p class="card-text text-white">Acessar Relatório de Movimentações</p>
             </a>
         </div>
 
         <div class="d-flex gap-4">
-            <a href="/relatorios/comparativoDeVendas" class="card p-3 bg-secondary" style="width: 18rem; text-decoration: none;">
+            <a href="/relatorios/comparativoDeVendas" class="card p-3 bg-secondary"
+                style="width: 18rem; text-decoration: none;">
                 <h5 class="card-title text-white">Comparativo de Vendas</h5>
                 <p class="card-text text-white">
                     Acessar Relatório de Comparativo de Vendas
@@ -55,7 +59,8 @@ require "Components/Header.php"
         <div class="d-flex gap-4">
             <a href="/relatorios/semSaida" class="card p-3 bg-secondary" style="width: 18rem; text-decoration: none;">
                 <h5 class="card-title text-white">Produtos sem saída</h5>
-                <p class="card-text text-white">Acessar Relatório de produtos que não tiveram saída desde sua última entrada</p>
+                <p class="card-text text-white">Acessar Relatório de produtos que não tiveram saída desde sua última
+                    entrada</p>
             </a>
         </div>
     </div>

@@ -48,7 +48,7 @@ require "Components/Header.php";
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($transferencias as $transferencia) : ?>
+                <?php foreach ($transferencias as $transferencia): ?>
                     <tr id=<?= "row-" . $transferencia['ID'] ?>>
                         <td><input type="checkbox" name="is-checked" value="<?= $transferencia["ID"] ?>"></td>
                         <td><?= $transferencia["code"] ?></td>
@@ -57,11 +57,17 @@ require "Components/Header.php";
                         <td><?= $transferencia["quantity"] ?></td>
                         <td>
                             <div class="d-flex" style="width: 150px;">
-                                <input type="number" class="form-control" placeholder="0" min="0" name="quantity_received" required data-quantity-expected="<?= $transferencia['quantity'] ?>" data-id="<?= $transferencia['ID'] ?>">
-                                <button class="btn btn-outline-secondary fill-button" title="Preencher com a quantidade esperada" data-id="<?= $transferencia['ID'] ?>">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M8 3.5a.5.5 0 0 1 .5.5v2.793l1.354-1.353a.5.5 0 0 1 .708.708l-2.147 2.146a.5.5 0 0 1-.708 0L5.94 6.646a.5.5 0 0 1 .708-.708L7.5 6.793V4a.5.5 0 0 1 .5-.5z" />
-                                        <path fill-rule="evenodd" d="M8 4.5a.5.5 0 0 0-.5.5V7.207l-1.354-1.353a.5.5 0 0 0-.708.708l2.147 2.146a.5.5 0 0 0 .708 0l2.147-2.146a.5.5 0 0 0-.708-.708L8.5 7.207V5a.5.5 0 0 0-.5-.5z" />
+                                <input type="number" class="form-control" placeholder="0" min="0" name="quantity_received"
+                                    required data-quantity-expected="<?= $transferencia['quantity'] ?>"
+                                    data-id="<?= $transferencia['ID'] ?>">
+                                <button class="btn btn-outline-secondary fill-button"
+                                    title="Preencher com a quantidade esperada" data-id="<?= $transferencia['ID'] ?>">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd"
+                                            d="M8 3.5a.5.5 0 0 1 .5.5v2.793l1.354-1.353a.5.5 0 0 1 .708.708l-2.147 2.146a.5.5 0 0 1-.708 0L5.94 6.646a.5.5 0 0 1 .708-.708L7.5 6.793V4a.5.5 0 0 1 .5-.5z" />
+                                        <path fill-rule="evenodd"
+                                            d="M8 4.5a.5.5 0 0 0-.5.5V7.207l-1.354-1.353a.5.5 0 0 0-.708.708l2.147 2.146a.5.5 0 0 0 .708 0l2.147-2.146a.5.5 0 0 0-.708-.708L8.5 7.207V5a.5.5 0 0 0-.5-.5z" />
                                     </svg>
                                 </button>
                             </div>
@@ -72,7 +78,7 @@ require "Components/Header.php";
                     </tr>
                 <?php endforeach; ?>
 
-                <?php if (empty($transferencias)) : ?>
+                <?php if (empty($transferencias)): ?>
                     <tr>
                         <td colspan="9" class="text-center">Nenhuma transferência pendente</td>
                     </tr>
@@ -81,7 +87,7 @@ require "Components/Header.php";
         </table>
     </div>
 
-    <?php if (!empty($transferencias)) : ?>
+    <?php if (!empty($transferencias)): ?>
         <div class="d-flex gap-4">
             <form action="/lancamento/confirmarTransferencias" method="post" id="form-confirm">
                 <button type="submit" class="btn btn-custom">Confirmar</button>
@@ -89,7 +95,8 @@ require "Components/Header.php";
             <form action="/lancamento/cancelarTransferencias" method="post" id="form-cancel">
                 <button type="submit" class="btn btn-danger">Cancelar</button>
             </form>
-            <form action="/lancamento/exportarConferirTransferencias" method="post" id="form-export" onsubmit="handleFormExportSubmit(event)" target="_blank">
+            <form action="/lancamento/exportarConferirTransferencias" method="post" id="form-export"
+                onsubmit="handleFormExportSubmit(event)" target="_blank">
                 <button type="submit" class="btn btn-success">Exportar</button>
             </form>
         </div>

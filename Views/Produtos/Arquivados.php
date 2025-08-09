@@ -3,7 +3,7 @@ $pageTitle = "Produtos";
 ob_start();
 
 require "Components/Header.php"
-?>
+    ?>
 
 <main>
     <h1 class="mt-4 mb-3"><?= $pageTitle ?> Arquivados</h1>
@@ -22,7 +22,8 @@ require "Components/Header.php"
 
             <div>
                 <label for="code" class="form-label">Código</label>
-                <input type="text" class="form-control" name="code" placeholder="Ex.: BT-001" value="<?= isset($_GET['code']) ? $_GET['code'] : '' ?>">
+                <input type="text" class="form-control" name="code" placeholder="Ex.: BT-001"
+                    value="<?= isset($_GET['code']) ? $_GET['code'] : '' ?>">
             </div>
 
             <div class="col-md-3">
@@ -47,7 +48,7 @@ require "Components/Header.php"
             <tbody>
                 <?php
                 foreach ($products as $product) {
-                ?>
+                    ?>
                     <tr>
                         <td><?= $product["code"] ?></td>
                         <td></td>
@@ -55,7 +56,7 @@ require "Components/Header.php"
                         <td><?= $product["importer"] ?></td>
                         <td><?= date("d/m/Y", strtotime($product["entry_date"])) ?></td>
                     </tr>
-                <?php
+                    <?php
                 }
                 ?>
                 <?php if (count($products) == 0) { ?>
@@ -70,7 +71,7 @@ require "Components/Header.php"
 
 
 <script>
-    document.querySelector("select[name='importer']").addEventListener("change", function() {
+    document.querySelector("select[name='importer']").addEventListener("change", function () {
         this.form.submit();
     }); 
 </script>

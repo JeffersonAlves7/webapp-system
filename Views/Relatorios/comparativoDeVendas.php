@@ -3,7 +3,7 @@ $pageTitle = "Relatórios";
 ob_start();
 
 require "Components/Header.php"
-?>
+    ?>
 
 
 <main>
@@ -82,7 +82,7 @@ require "Components/Header.php"
 
         mesesSelecionados.appendChild(div);
 
-        button.addEventListener("click", function() {
+        button.addEventListener("click", function () {
             removeMonth(date);
         });
     }
@@ -91,11 +91,11 @@ require "Components/Header.php"
         let meses = getMonths();
 
         fetch("/relatorios/comparativoDeVendas", {
-                method: "POST",
-                body: JSON.stringify({
-                    meses: meses
-                }),
-            })
+            method: "POST",
+            body: JSON.stringify({
+                meses: meses
+            }),
+        })
             .then(response => response.json())
             .then(data => {
                 const dates = Object.keys(data);
@@ -145,7 +145,7 @@ require "Components/Header.php"
         loadMonthsData();
     }
 
-    window.onload = function() {
+    window.onload = function () {
         // Mes atual
         insertMonth("<?= date("Y-m") ?>");
 
@@ -155,7 +155,7 @@ require "Components/Header.php"
         loadMonthsData();
     }
 
-    document.getElementById("btn-pesquisar").addEventListener("click", function() {
+    document.getElementById("btn-pesquisar").addEventListener("click", function () {
         let mes = document.getElementById("mes").value;
         insertMonth(mes);
         loadMonthsData();

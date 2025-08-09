@@ -3,7 +3,7 @@ $pageTitle = "Relatórios";
 ob_start();
 
 require "Components/Header.php"
-?>
+    ?>
 
 <main>
     <div class="d-flex w-100 justify-content-between mt-4 mb-3">
@@ -21,7 +21,8 @@ require "Components/Header.php"
     </div>
 
     <form class="d-flex mb-3 gap-4" style="max-width: 400px;">
-        <input type="month" class="form-control" id="data-movimentacao" name="dataMovimentacao" value="<?= $_GET["dataMovimentacao"] ?? date("Y-m") ?>" required>
+        <input type="month" class="form-control" id="data-movimentacao" name="dataMovimentacao"
+            value="<?= $_GET["dataMovimentacao"] ?? date("Y-m") ?>" required>
         <button class="btn btn-custom" id="btn-pesquisar">Pesquisar</button>
     </form>
 
@@ -53,27 +54,29 @@ require "Components/Header.php"
                 </tr>
             </thead>
             <tbody>
-                <?php if (empty($dados)) : ?>
+                <?php if (empty($dados)): ?>
                     <tr>
                         <td colspan="4" class="text-center">Nenhum dado encontrado</td>
-                    <?php else : ?>
-                        <?php foreach ($dados as $row) : ?>
-                    <tr>
-                        <td><?= $row["CODIGO"] ?></td>
-                        <td><?= $row["SAIDAS"] ?></td>
-                        <td>
-                            <span class="badge bg-<?= $row["PERCENTUAL"] >= 80 ? "success" : ($row["PERCENTUAL"] >= 15 ? "warning" : "danger") ?> " style="color: black; width: 70px; height: 30px; display: flex; align-items: center; justify-content: center">
-                                <?= $row["PERCENTUAL"] ?>%
-                            </span>
-                        </td>
-                        <td><?= $row["ESTOQUE"] ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
+                    <?php else: ?>
+                        <?php foreach ($dados as $row): ?>
+                        <tr>
+                            <td><?= $row["CODIGO"] ?></td>
+                            <td><?= $row["SAIDAS"] ?></td>
+                            <td>
+                                <span
+                                    class="badge bg-<?= $row["PERCENTUAL"] >= 80 ? "success" : ($row["PERCENTUAL"] >= 15 ? "warning" : "danger") ?> "
+                                    style="color: black; width: 70px; height: 30px; display: flex; align-items: center; justify-content: center">
+                                    <?= $row["PERCENTUAL"] ?>%
+                                </span>
+                            </td>
+                            <td><?= $row["ESTOQUE"] ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
         </table>
     </div>
 
-    <?php if ($pageCount > 1) : ?>
+    <?php if ($pageCount > 1): ?>
         <?php
         function isButtonDisabled($condition)
         {
@@ -87,7 +90,8 @@ require "Components/Header.php"
         $isNextDisabled = !isset($dados) || !(count($dados) > 0) || $currentPage >= $pageCount;
         ?>
 
-        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="max-width: 250px; margin: 0 auto;">
+        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap"
+            style="max-width: 250px; margin: 0 auto;">
             <form method="GET" class="d-flex align-items-center">
                 <input type="hidden" name="page" value="<?= $prevPage ?>">
                 <input type="hidden" name="dataMovimentacao" value="<?= $_GET["dataMovimentacao"] ?? "" ?>">

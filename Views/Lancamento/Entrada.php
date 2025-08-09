@@ -63,7 +63,19 @@ require "Components/Header.php";
                                 <input type="text" class="form-control" id="inputLoteContainer" name="lote_container" placeholder="Ex.: LT-001" required>
                             </div>
                         </div>
+
+                         <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="inputEstoque" class="form-label">Estoque de Origem</label>
+                                <select class="form-select" id="inputEstoque" name="to_stock" required>
+                                    <option value="">Selecione um estoque</option>
+                                    <option value="1">Galpão</option>
+                                    <option value="3">Galpão 2</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">

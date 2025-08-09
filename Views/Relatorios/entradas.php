@@ -3,7 +3,7 @@ $pageTitle = "Relatórios";
 ob_start();
 
 require "Components/Header.php"
-?>
+    ?>
 
 
 <main>
@@ -33,8 +33,8 @@ require "Components/Header.php"
 
     function loadData() {
         fetch("/relatorios/entradas", {
-                method: "POST",
-            })
+            method: "POST",
+        })
             .then(response => response.json())
             .then(data => {
                 labels = Object.keys(data).reverse();
@@ -56,7 +56,7 @@ require "Components/Header.php"
             });
     }
 
-    window.onload = function() {
+    window.onload = function () {
         loadData();
     }
 </script>
