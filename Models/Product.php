@@ -143,13 +143,36 @@ class Product extends Model
 
     public function quantityInStockById($id)
     {
-        $sql = "SELECT qs.*, s.name as stock_name FROM `quantity_in_stock` qs 
+        // Buscar todos os estoques existentes
+        $result = $this->db->query("SELECT `ID` FROM stocks");
+        $stocks = $result->fetch_all(MYSQLI_ASSOC);
+
+        foreach ($stocks as $row) {
+            $stockID = (int) $row['ID'];
+
+            // Verificar se já existe registro para esse produto nesse estoque
+            $check = $this->db->query("SELECT ID 
+            FROM quantity_in_stock 
+            WHERE product_ID = $id 
+              AND stock_ID = $stockID 
+            LIMIT 1");
+
+            if ($check->num_rows == 0) {
+                // Criar registro se não existir
+                $this->db->query("INSERT INTO quantity_in_stock (`product_ID`, `stock_ID`) 
+                VALUES ($id, $stockID)");
+            }
+        }
+
+        // Retornar todos os registros do produto com nome do estoque
+        $sql = "SELECT qs.*, s.name as stock_name 
+        FROM `quantity_in_stock` qs 
         INNER JOIN `stocks` s ON s.ID = qs.stock_ID
         WHERE qs.product_ID = $id";
 
-        $result = $this->db->query($sql);
-        return $result;
+        return $this->db->query($sql);
     }
+
 
     public function changeLocation($product_id, $stock_id, $location)
     {
