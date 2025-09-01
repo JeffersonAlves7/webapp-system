@@ -90,8 +90,8 @@ class EstoquesController extends _Controller
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "GET",
             CURLOPT_HTTPHEADER => [
-                "User-Agent: PHP EstoquesController Index"
-            ],
+                    "User-Agent: PHP EstoquesController Index"
+                ],
         ]);
 
         $response = curl_exec($curl);
@@ -278,8 +278,8 @@ class EstoquesController extends _Controller
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => "GET",
                 CURLOPT_HTTPHEADER => [
-                    "User-Agent: PHP EstoquesController Export"
-                ],
+                        "User-Agent: PHP EstoquesController Export"
+                    ],
             ]);
 
             $response = curl_exec($curl);
@@ -308,6 +308,8 @@ class EstoquesController extends _Controller
                             "importer" => $productData["importer"] ?? '',
                             "daysInStock" => $productData["daysInStock"] ?? 0 // Incluindo Dias Em Estoque
                         ];
+
+                        $mappedProduct["dias_em_estoque"] = $productData["daysInStock"] ?? 0;
 
                         // Inicializa quantidades do galpão e loja
                         $mappedProduct["quantity_galpao"] = 0;
