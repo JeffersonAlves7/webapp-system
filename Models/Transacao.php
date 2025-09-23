@@ -48,7 +48,7 @@ class Transacao extends Model
 
     public function delete($id)
     {
-        $result =  $this->db->query("SELECT * FROM `transactions` t 
+        $result = $this->db->query("SELECT * FROM `transactions` t 
             INNER JOIN `transaction_types` tt ON t.`type_ID` = tt.ID
             WHERE t.`ID` = $id");
 
@@ -75,6 +75,17 @@ class Transacao extends Model
 
                     $this->db->query("UPDATE `quantity_in_stock` SET quantity = quantity - $quantity 
                     WHERE product_ID = $product_ID AND stock_ID = $to_stock_ID");
+                    break;
+                case "Devolução":
+                    $this->db->query("UPDATE `quantity_in_stock` SET quantity = quantity - $quantity 
+                    WHERE product_ID = $product_ID AND stock_ID = $to_stock_ID");
+                    break;
+                case "Reserva":
+                    $this->db->query("UPDATE `quantity_in_stock` 
+                    SET
+                        quantity = quantity + $quantity,
+                        quantity_in_reserve = quantity_in_reserve - $quantity
+                    WHERE product_ID = $product_ID AND stock_ID = $from_stock_ID");
                     break;
                 default:
                     break;
