@@ -265,7 +265,14 @@ class Lancamento
             $stock_ID = $reserve['stock_ID'];
             $product_ID = $reserve['product_ID'];
 
-            $this->criarSaida($product_ID, $quantity, $stock_ID, $reserve['client_name'], $reserve['observation']);
+            $this->criarSaidaDaReserva(
+                $product_ID,
+                $quantity,
+                $stock_ID,
+                $reserve['client_name'],
+                $reserve['observation']
+            );
+
             $this->db->query("UPDATE `reserves` SET `confirmed` = 1 WHERE `ID` = $id");
             return true;
         }
@@ -318,6 +325,42 @@ class Lancamento
             $this->db->rollback();
             throw $e;
         }
+    }
+    public function criarSaidaDaReserva(
+        $product_ID,
+        $quantidade,
+        $stock_ID,
+        $nome_cliente,
+        $observacao
+    ) {
+        if (!$this->canOperate($product_ID, "Saída", $quantidade)) {
+            throw new Exception("Essa operação já foi realizada. Aguarde alguns segundos e recarregue a página");
+        }
+
+        // $this->db->beginTransaction(); // Inicia a transação
+        $result = $this->db->query(
+            "SELECT * FROM `quantity_in_stock` 
+            WHERE `product_ID` = $product_ID AND `stock_ID` = $stock_ID"
+        );
+
+        if ($result->num_rows == 0) {
+            throw new Exception("Quantidade insuficiente do produto no estoque selecionado");
+        }
+
+        $row = $result->fetch_assoc();
+        if ($row["quantity_in_reserve"] < (int) $quantidade) {
+            throw new Exception("Quantidade insuficiente do produto no estoque selecionado");
+        }
+
+        // Alterando quantidade do produto no estoque
+        $this->db->query(
+            "UPDATE `quantity_in_stock` 
+            SET `quantity_in_reserve` = `quantity_in_reserve` - $quantidade 
+            WHERE `ID` = " . $row["ID"]
+        );
+
+        // Criando Transação do tipo Saída para esse produto e estoque
+        self::createTransaction($this->db, $product_ID, $stock_ID, null, "Saída", $quantidade, $nome_cliente, $observacao);
     }
 
     public function criarSaida(
@@ -463,7 +506,7 @@ class Lancamento
                 $quantityCheckResult = $this->db->query("SELECT * FROM `quantity_in_stock` WHERE `product_ID` = $product_ID AND `stock_ID` = $from_stock_ID");
                 $row = $quantityCheckResult->fetch_assoc();
 
-                if ($row == null || $row["quantity"] < (int)$quantity) {
+                if ($row == null || $row["quantity"] < (int) $quantity) {
                     throw new Exception("Quantidade insuficiente do produto de ID '$product_ID' e Código '$product_code' no estoque '$from_stock_name'");
                 }
 
@@ -769,7 +812,8 @@ class Lancamento
                 $entries[] = $row['ID'];
                 $quantity_sum += $row['quantity'];
 
-                if ($quantity_sum >= $required_quantity) break;
+                if ($quantity_sum >= $required_quantity)
+                    break;
             }
         }
         // Consultar entradas para o estoque 2
@@ -788,7 +832,8 @@ class Lancamento
                 $entries[] = $row['ID'];
                 $quantity_sum += $row['quantity'];
 
-                if ($quantity_sum >= $required_quantity) break;
+                if ($quantity_sum >= $required_quantity)
+                    break;
             }
         }
 
