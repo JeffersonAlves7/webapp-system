@@ -56,6 +56,16 @@ class Product extends Model
 
     public static function createStatic($db, $code, $ean, $importer, $description, $chinese_description)
     {
+        $stmt = $db->prepare("SELECT * FROM `products` WHERE `code` = ? AND `importer` = ? LIMIT 1");
+        $stmt->bind_param("ss", $code, $importer);
+        $stmt->execute();
+        $product_result = $stmt->get_result();
+
+        if ($product_result->num_rows > 0) {
+            $existing_product = $product_result->fetch_assoc();
+            return $existing_product['ID'];
+        }
+
         $ean_string = isset($ean) && $ean != "" ? $ean : null;
         $description_string = isset($description) && $description != "" ? $description : null;
         $chinese_description_string = isset($chinese_description) && $chinese_description != "" ? $chinese_description : null;
