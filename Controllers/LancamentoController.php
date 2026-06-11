@@ -238,21 +238,12 @@ class LancamentoController extends _Controller
             $transferenciasIds = json_decode($_POST["transference-ids"]);
             $idsString = implode(",", $transferenciasIds);
 
-            PhpExporter::exportToExcel(
-                array('Produto', 'Importadora', 'Descrição', 'Quantidade', 'Origem', 'Destino', 'Observação'),
-                array_map(function ($transferencia) {
-                    return [
-                        $transferencia['code'],
-                        $transferencia['importer'],
-                        $transferencia['description'],
-                        $transferencia['quantity'],
-                        $transferencia['from_stock_name'],
-                        $transferencia['to_stock_name'],
-                        $transferencia['observation']
-                    ];
-                }, $this->lancamentoModel->getTransferenciasPendentes(
-                    "`transferences`.`ID` IN ($idsString)"
-                )),
+            $transferencias = $this->lancamentoModel->getTransferenciasPendentes(
+                "`transferences`.`ID` IN ($idsString)"
+            );
+
+            $this->exportTransferenciasExcel(
+                $transferencias,
                 "Transferências Data" . date('d-m-Y H:i:s')
             );
         }
@@ -282,26 +273,68 @@ class LancamentoController extends _Controller
             $transferenciasIds = json_decode($_POST["transference-ids"]);
             $idsString = implode(",", $transferenciasIds);
 
-            $nome_pdf = "Transferencias_a_conferir " . date('d-m-Y H\h i\m');
+            $transferencias = $this->lancamentoModel->getTransferenciasPendentes(
+                "`transferences`.`ID` IN ($idsString)"
+            );
 
-            PhpExporter::exportToPdf(
-                array('Produto', 'Importadora', 'Descrição', 'Quantidade', 'Origem', 'Destino', 'Observação'),
-                array_map(function ($transferencia) {
-                    return [
-                        $transferencia['code'],
-                        $transferencia['importer'],
-                        $transferencia['description'],
-                        $transferencia['quantity'],
-                        $transferencia['from_stock_name'],
-                        $transferencia['to_stock_name'],
-                        $transferencia['observation']
-                    ];
-                }, $this->lancamentoModel->getTransferenciasPendentes(
-                    "`transferences`.`ID` IN ($idsString)"
-                )),
-                $nome_pdf
+            $this->exportTransferenciasExcel(
+                $transferencias,
+                "Transferencias_a_conferir " . date('d-m-Y H\h i\m')
             );
         }
+    }
+
+    public function baixarTemplateTransferencia()
+    {
+        $stockOptions = $this->getStockOptions();
+
+        PhpExporter::exportToExcel(
+            ['EAN', 'Código', 'Importadora', 'Quantidade', 'Estoque Origem', 'Estoque Destino', 'Localização', 'Observação'],
+            [],
+            "template_transferencia",
+            [
+                ['column' => 5, 'options' => $stockOptions],
+                ['column' => 6, 'options' => $stockOptions],
+            ]
+        );
+    }
+
+    private function getStockOptions()
+    {
+        return array_column(
+            $this->estoqueModel->getAll()->fetch_all(MYSQLI_ASSOC),
+            'name'
+        );
+    }
+
+    private function mapTransferenciasToExportRows($transferencias)
+    {
+        return array_map(function ($transferencia) {
+            return [
+                $transferencia['code'],
+                $transferencia['importer'],
+                $transferencia['description'],
+                $transferencia['quantity'],
+                $transferencia['from_stock_name'],
+                $transferencia['to_stock_name'],
+                $transferencia['observation']
+            ];
+        }, $transferencias);
+    }
+
+    private function exportTransferenciasExcel($transferencias, $fileName)
+    {
+        $stockOptions = $this->getStockOptions();
+
+        PhpExporter::exportToExcel(
+            ['Produto', 'Importadora', 'Descrição', 'Quantidade', 'Origem', 'Destino', 'Observação'],
+            $this->mapTransferenciasToExportRows($transferencias),
+            $fileName,
+            [
+                ['column' => 5, 'options' => $stockOptions],
+                ['column' => 6, 'options' => $stockOptions],
+            ]
+        );
     }
 
     public function confirmarTransferencias()

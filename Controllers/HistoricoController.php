@@ -1,5 +1,6 @@
 <?php
 require_once "Models/Historico.php";
+require_once "Models/Estoque.php";
 require_once "Controllers/_Controller.php";
 require_once "Utils/PhpExporter.php";
 
@@ -128,6 +129,18 @@ class HistoricoController extends _Controller
 
         if (isset($_GET["action"]) && $_GET["action"] == "exportar") {
             $devolucoes = $this->historicoModel->getAll($transaction_type_ID, 1, 1000000, $where);
+            $transactions = $devolucoes["transactions"];
+
+            $estoqueModel = new Estoque();
+            $stockOptions = array_column($estoqueModel->getAll()->fetch_all(MYSQLI_ASSOC), 'name');
+            foreach ($transactions as $t) {
+                $stockOptions[] = $t['from_stock_name'];
+                $stockOptions[] = $t['to_stock_name'];
+            }
+            $stockOptions = array_values(array_unique(array_filter($stockOptions, function ($v) {
+                return $v !== null && $v !== '';
+            })));
+
             PhpExporter::exportToExcel(
                 ['Produto', 'Quantidade', 'Origem', 'Destino', 'Data', 'Observação'],
                 array_map(function ($devolucao) {
@@ -139,8 +152,12 @@ class HistoricoController extends _Controller
                         date("d/m/Y H:i", strtotime($devolucao["created_at"])),
                         $devolucao["observation"],
                     ];
-                }, $devolucoes["transactions"]),
-                $exportFileName
+                }, $transactions),
+                $exportFileName,
+                [
+                    ['column' => 3, 'options' => $stockOptions],
+                    ['column' => 4, 'options' => $stockOptions],
+                ]
             );
 
             return;

@@ -220,8 +220,6 @@ class ImporterController extends _Controller
                     exit();
                 }
 
-                echo PhpExcel::formatAsTable($rows);
-
                 array_shift($rows); // Remove o cabeçalho
 
                 $products = [];
@@ -266,7 +264,7 @@ class ImporterController extends _Controller
             }
         }
 
-        header("Location: /lancamento/transferencias");
+        header("Location: /lancamento/transferencia");
     }
 
     public function importarReservas()

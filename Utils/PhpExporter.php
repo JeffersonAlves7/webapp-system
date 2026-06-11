@@ -1,16 +1,25 @@
 <?php
 require 'vendor/autoload.php';
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
 
 class PhpExporter
 {
-    public static function exportToExcel($headers, $rows, $fileName)
+    /**
+     * @param array $headers
+     * @param array $rows
+     * @param string $fileName
+     * @param array|null $columnSelectValidations Lista de validações por coluna (índice 1 = coluna A).
+     *   Cada item: ['column' => int, 'options' => string[]]. Gera dropdown (lista) nas células de dados.
+     */
+    public static function exportToExcel($headers, $rows, $fileName, $columnSelectValidations = null)
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -33,6 +42,14 @@ class PhpExporter
             $rowIndex++;
         }
 
+        $dataRowCount = count($rows);
+        $lastDataRow = max(2, $dataRowCount + 1);
+        $validationEndRow = max($lastDataRow, 1000);
+
+        if (!empty($columnSelectValidations) && is_array($columnSelectValidations)) {
+            self::applyColumnListValidations($spreadsheet, $sheet, $columnSelectValidations, $validationEndRow);
+        }
+
         // Configurar cabeçalhos HTTP para o download
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $fileName . '.xlsx"');
@@ -41,6 +58,66 @@ class PhpExporter
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
         exit;
+    }
+
+    /**
+     * @param Spreadsheet $spreadsheet
+     * @param Worksheet $dataSheet
+     * @param array $columnSelectValidations
+     * @param int $validationEndRow Última linha (inclusive) que recebe a lista suspensa
+     */
+    private static function applyColumnListValidations($spreadsheet, $dataSheet, $columnSelectValidations, $validationEndRow)
+    {
+        $listSheet = new Worksheet($spreadsheet, 'Listas');
+        $spreadsheet->addSheet($listSheet);
+        $listSheet->setSheetState(Worksheet::SHEETSTATE_HIDDEN);
+
+        $listCol = 1;
+        foreach ($columnSelectValidations as $spec) {
+            if (empty($spec['column']) || empty($spec['options']) || !is_array($spec['options'])) {
+                continue;
+            }
+            $options = array_values(array_unique(array_filter($spec['options'], function ($v) {
+                return $v !== null && $v !== '';
+            })));
+            if ($options === []) {
+                continue;
+            }
+
+            $targetCol = (int) $spec['column'];
+            if ($targetCol < 1) {
+                continue;
+            }
+
+            $startRow = 1;
+            foreach ($options as $i => $opt) {
+                $listSheet->setCellValue(
+                    Coordinate::stringFromColumnIndex($listCol) . ($startRow + $i),
+                    $opt
+                );
+            }
+            $endOptRow = $startRow + count($options) - 1;
+            $listColLetter = Coordinate::stringFromColumnIndex($listCol);
+            $listSheetTitle = $listSheet->getTitle();
+            $quotedTitle = str_replace("'", "''", $listSheetTitle);
+            $formula = "'{$quotedTitle}'!\$" . $listColLetter . "\$" . $startRow . ":\$" . $listColLetter . "\$" . $endOptRow;
+
+            $targetColLetter = Coordinate::stringFromColumnIndex($targetCol);
+            $range = $targetColLetter . '2:' . $targetColLetter . $validationEndRow;
+
+            $validation = new DataValidation();
+            $validation->setType(DataValidation::TYPE_LIST);
+            $validation->setErrorStyle(DataValidation::STYLE_STOP);
+            $validation->setAllowBlank(true);
+            $validation->setShowInputMessage(true);
+            $validation->setShowErrorMessage(true);
+            $validation->setShowDropDown(true);
+            $validation->setFormula1('=' . $formula);
+
+            $dataSheet->setDataValidation($range, $validation);
+
+            $listCol++;
+        }
     }
 
     public static function exportToPdf($headers, $data, $output_filename)

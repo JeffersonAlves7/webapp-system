@@ -336,9 +336,14 @@ class EmbarquesController extends _Controller
         }
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $departure_date = $_POST["departure_date"];
+            if (isset($_POST["departure_date"])) {
+                $this->containerModel->editDate($container_ID, $_POST["departure_date"]);
+            }
 
-            $this->containerModel->editDate($container_ID, $departure_date);
+            if (isset($_POST["arrival_date"])) {
+                $this->containerModel->editArrivalDate($container_ID, $_POST["arrival_date"]);
+            }
+
             $_SESSION["sucesso"] = true;
         } else {
             $_SESSION["mensagem_erro"] = "Falha ao editar produto!";

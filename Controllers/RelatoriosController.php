@@ -4,6 +4,7 @@
 require_once "Controllers/_Controller.php";
 require_once "Utils/PhpExporter.php";
 require_once "Models/Relatorios.php";
+require_once "Models/Estoque.php";
 require_once "Managers/ConfigManager.php";
 
 class RelatoriosController extends _Controller
@@ -92,6 +93,14 @@ class RelatoriosController extends _Controller
                 exit;
             }
 
+            $origemOptions = array_column((new Estoque())->getAll()->fetch_all(MYSQLI_ASSOC), 'name');
+            foreach ($dados as $saida) {
+                $origemOptions[] = $saida['ORIGEM'];
+            }
+            $origemOptions = array_values(array_unique(array_filter($origemOptions, function ($v) {
+                return $v !== null && $v !== '';
+            })));
+
             $pdf = PhpExporter::exportToExcel(
                 ['Código', 'Quantidade', 'Operação', 'Cliente', 'Operador', 'Origem', 'Data', 'Observação'],
                 array_map(function ($saida) {
@@ -106,7 +115,10 @@ class RelatoriosController extends _Controller
                         $saida["OBSERVACAO"]
                     ];
                 }, $dados),
-                "SaidasDiarias-$dataInicio-$dataFim"
+                "SaidasDiarias-$dataInicio-$dataFim",
+                [
+                    ['column' => 6, 'options' => $origemOptions],
+                ]
             );
 
             return;

@@ -7,6 +7,9 @@ require "Components/Header.php";
 // Corrigido: Pegando todos os produtos como array e armazenando o primeiro item
 $productList = $products->fetch_all(MYSQLI_ASSOC);
 $firstProduct = $productList[0] ?? null;
+$arrivalDateValue = $firstProduct && !empty($firstProduct['arrival_date'])
+    ? $firstProduct['arrival_date']
+    : date('Y-m-d');
 ?>
 <main>
     <div class="d-flex gap-4 align-items-center mb-3">
@@ -37,11 +40,13 @@ $firstProduct = $productList[0] ?? null;
         </div>
 
         <div class="col-3">
-            <!-- Campo: Data de chegada -->
-            <div class="mb-3" style="max-width: 300px;">
+            <form method="POST" action="/embarques/editar/<?= $container_ID ?>" id="arrival-form" class="mb-3"
+                style="max-width: 300px;">
                 <label for="arrival_date" class="form-label">Data de chegada</label>
-                <input type="date" class="form-control" id="arrival_date" value="<?= date('Y-m-d') ?>">
-            </div>
+                <input type="date" class="form-control" id="arrival_date" name="arrival_date"
+                    value="<?= htmlspecialchars($arrivalDateValue) ?>"
+                    data-original="<?= htmlspecialchars($arrivalDateValue) ?>">
+            </form>
         </div>
     </div>
 
@@ -189,35 +194,45 @@ $firstProduct = $productList[0] ?? null;
 </main>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const departureInput = document.getElementById('departure_date');
-        const departureForm = document.getElementById('departure-form');
-        const originalDeparture = departureInput.dataset.original;
+        const saveDateOnChange = (input, form, successMessage, errorMessage) => {
+            input.addEventListener('change', () => {
+                const newDate = input.value;
 
-        departureInput.addEventListener('change', () => {
-            const newDate = departureInput.value;
+                if (newDate !== input.dataset.original) {
+                    const formData = new FormData(form);
 
-            if (newDate !== originalDeparture) {
-                // Cria um formulário temporário se quiser evitar recarregamento:
-                const formData = new FormData(departureForm);
-
-                fetch(departureForm.action, {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erro ao atualizar a data de saída.');
-                        }
-                        // Atualiza o valor original para não submeter novamente se mudar para a mesma data
-                        departureInput.dataset.original = newDate;
-                        alert('Data de saída atualizada com sucesso!');
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: formData
                     })
-                    .catch(error => {
-                        alert(error.message);
-                        console.error(error);
-                    });
-            }
-        });
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(errorMessage);
+                            }
+                            input.dataset.original = newDate;
+                            alert(successMessage);
+                        })
+                        .catch(error => {
+                            alert(error.message);
+                            console.error(error);
+                        });
+                }
+            });
+        };
+
+        saveDateOnChange(
+            document.getElementById('departure_date'),
+            document.getElementById('departure-form'),
+            'Data de saída atualizada com sucesso!',
+            'Erro ao atualizar a data de saída.'
+        );
+
+        saveDateOnChange(
+            document.getElementById('arrival_date'),
+            document.getElementById('arrival-form'),
+            'Data de chegada atualizada com sucesso!',
+            'Erro ao atualizar a data de chegada.'
+        );
     });
 </script>
 

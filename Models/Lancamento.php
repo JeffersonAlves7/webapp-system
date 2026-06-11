@@ -471,8 +471,6 @@ class Lancamento
             $query = "INSERT INTO `transferences` (`product_ID`, `quantity`, `from_stock_ID`, `to_stock_ID`, `location`, `observation`) 
             VALUES ($product_ID, $quantity, $from_stock_ID, $to_stock_ID, '$location', '$observation')";
 
-            echo $query;
-
             $this->db->query($query);
         }
     }

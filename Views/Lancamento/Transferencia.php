@@ -148,7 +148,7 @@ require "Components/Header.php";
             <div class="modal-body">
                 <p>Escolha uma opção:</p>
                 <div class="d-flex justify-content-between">
-                    <a href="/public/Templates/transferencia.xlsx" download>
+                    <a href="/lancamento/baixarTemplateTransferencia" download>
                         <button type="button" class="btn btn-custom">Baixar planilha</button>
                     </a>
 
