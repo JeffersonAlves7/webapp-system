@@ -7,9 +7,9 @@ require "Components/Header.php";
 // Corrigido: Pegando todos os produtos como array e armazenando o primeiro item
 $productList = $products->fetch_all(MYSQLI_ASSOC);
 $firstProduct = $productList[0] ?? null;
-$arrivalDateValue = $firstProduct && !empty($firstProduct['arrival_date'])
-    ? $firstProduct['arrival_date']
-    : date('Y-m-d');
+$departureDateValue = $firstProduct && !empty($firstProduct['departure_date'])
+    ? $firstProduct['departure_date']
+    : '';
 ?>
 <main>
     <div class="d-flex gap-4 align-items-center mb-3">
@@ -34,8 +34,8 @@ $arrivalDateValue = $firstProduct && !empty($firstProduct['arrival_date'])
                 style="max-width: 300px;">
                 <label for="departure_date" class="form-label">Data de saída</label>
                 <input type="date" class="form-control" id="departure_date" name="departure_date"
-                    value="<?= $firstProduct ? htmlspecialchars($firstProduct['departure_date']) : '' ?>"
-                    data-original="<?= $firstProduct ? htmlspecialchars($firstProduct['departure_date']) : '' ?>">
+                    value="<?= htmlspecialchars($departureDateValue) ?>"
+                    data-original="<?= htmlspecialchars($departureDateValue) ?>">
             </form>
         </div>
 
@@ -43,9 +43,9 @@ $arrivalDateValue = $firstProduct && !empty($firstProduct['arrival_date'])
             <form method="POST" action="/embarques/editar/<?= $container_ID ?>" id="arrival-form" class="mb-3"
                 style="max-width: 300px;">
                 <label for="arrival_date" class="form-label">Data de chegada</label>
-                <input type="date" class="form-control" id="arrival_date" name="arrival_date"
-                    value="<?= htmlspecialchars($arrivalDateValue) ?>"
-                    data-original="<?= htmlspecialchars($arrivalDateValue) ?>">
+                <input type="date" class="form-control" id="arrival_date" name="departure_date"
+                    value="<?= htmlspecialchars($departureDateValue) ?>"
+                    data-original="<?= htmlspecialchars($departureDateValue) ?>">
             </form>
         </div>
     </div>
@@ -169,9 +169,8 @@ $arrivalDateValue = $firstProduct && !empty($firstProduct['arrival_date'])
     <form method="POST" action="/embarques/conferir/<?= $container_ID ?>" id="main-form" class="mt-3">
         <input type="hidden" name="container_ID" value="<?= $container_ID ?>">
         <input type="hidden" name="arrival_date" id="form-arrival-date">
-        <!-- (Opcional) Enviar departure_date -->
-        <input type="hidden" name="departure_date"
-            value="<?= $firstProduct ? htmlspecialchars($firstProduct['departure_date']) : '' ?>">
+        <input type="hidden" name="departure_date" id="form-departure-date"
+            value="<?= htmlspecialchars($departureDateValue) ?>">
 
 
         <div class="row align-items-end">
@@ -194,6 +193,16 @@ $arrivalDateValue = $firstProduct && !empty($firstProduct['arrival_date'])
 </main>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        const departureInput = document.getElementById('departure_date');
+        const arrivalInput = document.getElementById('arrival_date');
+
+        const syncDepartureFields = (value) => {
+            departureInput.value = value;
+            departureInput.dataset.original = value;
+            arrivalInput.value = value;
+            arrivalInput.dataset.original = value;
+        };
+
         const saveDateOnChange = (input, form, successMessage, errorMessage) => {
             input.addEventListener('change', () => {
                 const newDate = input.value;
@@ -209,7 +218,7 @@ $arrivalDateValue = $firstProduct && !empty($firstProduct['arrival_date'])
                             if (!response.ok) {
                                 throw new Error(errorMessage);
                             }
-                            input.dataset.original = newDate;
+                            syncDepartureFields(newDate);
                             alert(successMessage);
                         })
                         .catch(error => {
@@ -221,14 +230,14 @@ $arrivalDateValue = $firstProduct && !empty($firstProduct['arrival_date'])
         };
 
         saveDateOnChange(
-            document.getElementById('departure_date'),
+            departureInput,
             document.getElementById('departure-form'),
             'Data de saída atualizada com sucesso!',
             'Erro ao atualizar a data de saída.'
         );
 
         saveDateOnChange(
-            document.getElementById('arrival_date'),
+            arrivalInput,
             document.getElementById('arrival-form'),
             'Data de chegada atualizada com sucesso!',
             'Erro ao atualizar a data de chegada.'
@@ -240,7 +249,6 @@ $arrivalDateValue = $firstProduct && !empty($firstProduct['arrival_date'])
     const selectAll = document.getElementById('selectAll');
     const totalSpan = document.getElementById('total');
     const mainForm = document.getElementById('main-form');
-    const arrivalDateInput = document.getElementById('arrival_date');
 
     // Função para obter todos os checkboxes visíveis (não removidos)
     function getProductCheckboxes() {
@@ -421,8 +429,9 @@ $arrivalDateValue = $firstProduct && !empty($firstProduct['arrival_date'])
             }
         });
 
-        // Adiciona a data de chegada ao formulário
-        document.getElementById('form-arrival-date').value = arrivalDateInput.value;
+        // arrival_date na conferência = data efetiva de entrada no estoque (hoje)
+        document.getElementById('form-arrival-date').value = new Date().toISOString().slice(0, 10);
+        document.getElementById('form-departure-date').value = document.getElementById('departure_date').value;
 
         // Finalmente, submete o formulário
         mainForm.submit();

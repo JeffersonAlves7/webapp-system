@@ -107,13 +107,6 @@ class Container extends Model
         $stmt->execute();
     }
 
-    public function editArrivalDate($container_ID, $arrival_date)
-    {
-        $stmt = $this->db->prepare("UPDATE `products_in_container` SET `arrival_date` = ? WHERE `container_ID` = ? AND `in_stock` = 0");
-        $stmt->bind_param("si", $arrival_date, $container_ID);
-        $stmt->execute();
-    }
-
     public function confirmProducts($container_ID, $products, $arrival_date, $to_stock)
     {
         // A variavel produtos precisa ter o Id dos produtos, tambem precisa ter a quantidade que foi entregue
